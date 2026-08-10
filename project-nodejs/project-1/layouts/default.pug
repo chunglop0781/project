@@ -2,7 +2,12 @@ doctype html
 html
   head
     title= #{pageTitle}
+    link(
+    href="/assets/css/style.css" 
+    rel="stylesheet"
+    )
   body
-    div= Header
+    includes ../layouts/header.pug
     block main
-    div= Footer
+    includes ../layouts/footer.pug
+    script(src="/assets/js/script.js")
