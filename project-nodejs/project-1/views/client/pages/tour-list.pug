@@ -3,4 +3,7 @@ extends  ../layouts/default.pug
 block main
   h1= #{pageTitle}
     h1= #{pageTitle}
+    ul
+      each tour in tourList
+        li= #{tour.name} (Phương tiện: #{tour.vehicle})
     div= Footer

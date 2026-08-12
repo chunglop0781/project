@@ -6,6 +6,7 @@
   },
   "dependencies": {
     "express": "^5.2.1",
+    "mongoose": "^9.9.2",
     "nodemon": "^3.1.14",
     "pug": "^3.0.4"
   }
