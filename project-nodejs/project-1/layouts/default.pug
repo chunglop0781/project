@@ -1,13 +1,13 @@
 doctype html
 html
   head
-    title= #{pageTitle}
+    title= pageTitle
     link(
-    href="/assets/css/style.css" 
-    rel="stylesheet"
+      href="/assets/css/style.css"
+      rel="stylesheet"
     )
   body
-    includes ../layouts/header.pug
+    include ../layouts/header.pug
     block main
-    includes ../layouts/footer.pug
+    include ../layouts/footer.pug
     script(src="/assets/js/script.js")
