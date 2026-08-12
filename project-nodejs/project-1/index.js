@@ -1,22 +1,15 @@
 const express = require('express');
 const path = require('path');
 require('dotenv').config();
-const mongoose = require('mongoose');
 
-mongoose.connect(process.env.DATABASE)
-    .then(() => {
-        console.log('Kết nối thành công đến MongoDB');
-        console.log('Database:', mongoose.connection.name);
-    })
-    .catch((error) => {
-        console.error('Lỗi kết nối đến MongoDB:', error);
-    });
-
+const database = require('./config/database.config');
 const clientRoutes = require('./routes/client/index.route');
-
 
 const app = express();
 const port = 3000;
+
+//Kết nối đến cơ sở dữ liệu MongoDB
+database.connect();
 
 app.locals.header = "Website Du Lịch";
 app.locals.footer = "© 2026 Website Du lịch";
