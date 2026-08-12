@@ -1,0 +1,64 @@
+header.header
+  .header-top
+    .container
+      .header-contact
+        a.contact-item(href="tel:0123456789")
+          i.fas.fa-phone
+          span 0123.456.789
+        a.contact-item(href="mailto:contact@28travel.com")
+          i.fas.fa-envelope
+          span contact@28travel.com
+        span.contact-item
+          i.fas.fa-map-marker-alt
+          span Số 123, đường ABC, thành phố XYZ
+
+  .header-main
+    .container.header-inner
+      button.menu-toggle(type="button", aria-label="Menu")
+        i.fas.fa-bars
+
+      a.logo(href="/")
+        img(src="/assets/image/logo.png", alt=header)
+
+      nav.menu
+        ul
+          li
+            a(href="/", class=(pageTitle === "Trang chủ" ? "active" : "")) Trang Chủ
+
+          li.has-dropdown
+            a(href="/tours")
+              span Tour Trong Nước
+              i.fas.fa-caret-down.arrow
+            ul.dropdown
+              li: a(href="/tours/mien-bac") Tour Miền Bắc
+              li: a(href="/tours/mien-trung") Tour Miền Trung
+              li: a(href="/tours/mien-nam") Tour Miền Nam
+              li: a(href="/tours/xuyen-viet") Tour Xuyên Việt
+
+          li.has-dropdown
+            a(href="/tours/foreign")
+              span Tour Nước Ngoài
+              i.fas.fa-caret-down.arrow
+            ul.dropdown
+              li: a(href="/tours/foreign/asia") Tour Châu Á
+              li: a(href="/tours/foreign/europe") Tour Châu Âu
+              li: a(href="/tours/foreign/america") Tour Châu Mỹ
+              li: a(href="/tours/foreign/australia") Tour Châu Úc
+
+          li
+            a(href="/news") Tin Tức
+
+          li
+            a(href="/contact") Liên Hệ
+
+      .header-actions
+        .auth-links
+          a.login-link(href="/login") Đăng nhập
+          span.divider |
+          a.register-link(href="/register") Đăng ký
+
+        a.cart(href="/cart")
+          i.fas.fa-shopping-cart
+          span.cart-count= cartCount || 0
+
+  .menu-overlay

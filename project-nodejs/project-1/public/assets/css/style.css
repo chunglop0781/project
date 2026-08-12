@@ -1,3 +1,636 @@
-h1 {
-    color: #008000;
+/* =========================================================
+RESET
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* =========================================================
+TOP BAR
+========================================================= */
+
+.header-top {
+    width: 100%;
+    background: #4b0082;
+    color: #fff;
+    font-size: 13px;
+    padding: 6px 0;
+    font-weight: bold;
+}
+
+.header-contact {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.header-contact a,
+.header-contact span {
+    color: #fff;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* =========================================================
+HEADER CHÍNH
+========================================================= */
+
+.header-inner {
+    width: 100%;
+    height: 70px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 20px;
+
+    gap: 10px;
+
+    background: #fff;
+
+    position: relative;
+
+    /*
+    QUAN TRỌNG:
+    Không đặt z-index ở đây.
+    Nếu đặt z-index thấp hơn overlay,
+    toàn bộ menu sẽ bị overlay che.
+    */
+    z-index: auto;
+}
+
+/* =========================================================
+NÚT 3 SỌC
+========================================================= */
+
+.menu-toggle {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: transparent;
+    border: none;
+
+    color: #4b0082;
+    font-size: 25px;
+
+    cursor: pointer;
+    padding: 0;
+
+    flex-shrink: 0;
+
+    /*
+    Không để nút 3 sọc nổi trên overlay
+    */
+    position: relative;
+    z-index: 110;
+}
+
+.menu-toggle:hover {
+    color: #0d930d;
+}
+
+/* =========================================================
+LOGO
+========================================================= */
+
+.logo {
+    display: flex;
+    align-items: center;
+
+    text-decoration: none;
+
+    flex-shrink: 0;
+
+    /*
+    Logo nằm cùng lớp với header,
+    không nổi trên overlay
+    */
+    position: relative;
+    z-index: 110;
+}
+
+.logo img {
+    height: 45px;
+
+    width: auto;
+
+    display: block;
+
+    object-fit: contain;
+}
+
+/* =========================================================
+MENU
+========================================================= */
+
+.menu {
+    margin: 0;
+    padding: 0;
+
+    position: static;
+}
+
+/* =========================================================
+MENU DỌC BÊN TRÁI
+========================================================= */
+
+.menu > ul {
+    display: flex;
+
+    flex-direction: column;
+
+    list-style: none;
+
+    margin: 0;
+
+    padding: 60px 0 20px 0;
+
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    width: 300px;
+
+    height: 100vh;
+
+    background: #ffffff;
+
+    /*
+    Ẩn menu sang bên trái
+    */
+
+    transform: translateX(-100%);
+
+    transition: transform 0.3s ease;
+
+    overflow-y: auto;
+
+    /*
+    MENU NẰM TRÊN OVERLAY
+    */
+
+    z-index: 200;
+
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.2);
+
+    /*
+    Đảm bảo menu luôn sáng,
+    không bị opacity của phần ngoài ảnh hưởng
+    */
+
+    opacity: 1;
+    visibility: visible;
+
+    pointer-events: auto;
+}
+
+/* =========================================================
+KHI MENU MỞ
+========================================================= */
+
+.menu.open > ul {
+    transform: translateX(0);
+
+    /*
+    Cho phép click bình thường
+    */
+
+    pointer-events: auto;
+}
+
+/* =========================================================
+ITEM MENU
+========================================================= */
+
+.menu li {
+    width: 100%;
+
+    list-style: none;
+}
+
+/* =========================================================
+LINK MENU
+========================================================= */
+
+.menu a {
+    width: 100%;
+
+    min-height: 52px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 14px 24px;
+
+    text-decoration: none;
+
+    color: #031b03;
+
+    font-size: 16px;
+
+    font-weight: 500;
+
+    background: #ffffff;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+
+    /*
+    Cho phép click
+    */
+
+    pointer-events: auto;
+}
+
+/* =========================================================
+HOVER MENU
+========================================================= */
+
+.menu a:hover {
+    background: #f1f8f1;
+
+    color: #0d930d;
+}
+
+/* =========================================================
+MENU ĐANG ĐƯỢC CHỌN
+========================================================= */
+
+.menu a.active {
+    background: #e8f5e9;
+
+    color: #0d930d;
+
+    font-weight: bold;
+
+    border-left: 5px solid #0d930d;
+
+    padding-left: 19px;
+
+    /*
+    Làm nổi bật item đang chọn
+    */
+
+    box-shadow: inset 0 0 0 1px #d5ecd5;
+}
+
+/* =========================================================
+MŨI TÊN
+========================================================= */
+
+.arrow {
+    font-size: 11px;
+
+    margin-left: 10px;
+
+    transition: transform 0.2s ease;
+}
+
+/* =========================================================
+MŨI TÊN KHI DROPDOWN MỞ
+========================================================= */
+
+.has-dropdown.open > a .arrow {
+    transform: rotate(180deg);
+}
+
+/* =========================================================
+DROPDOWN CON
+========================================================= */
+
+.dropdown {
+    display: none;
+
+    width: 100%;
+
+    list-style: none;
+
+    padding: 0;
+
+    margin: 0;
+
+    background: #f7f7f7;
+}
+
+/* =========================================================
+DROPDOWN ĐƯỢC MỞ
+========================================================= */
+
+.has-dropdown.open > .dropdown {
+    display: block;
+}
+
+/* =========================================================
+LINK DROPDOWN
+========================================================= */
+
+.dropdown a {
+    padding: 12px 24px 12px 45px;
+
+    font-size: 14px;
+
+    color: #333;
+
+    background: #f7f7f7;
+}
+
+.dropdown a:hover {
+    background: #eeeeee;
+
+    color: #0d930d;
+}
+
+/* =========================================================
+DROPDOWN ACTIVE
+========================================================= */
+
+.dropdown a.active {
+    background: #e8f5e9;
+
+    color: #0d930d;
+
+    border-left: 4px solid #0d930d;
+
+    padding-left: 41px;
+}
+
+/* =========================================================
+OVERLAY LÀM MỜ PHẦN TRANG BÊN NGOÀI
+========================================================= */
+
+.menu-overlay {
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 100vh;
+
+    /*
+    Chỉ làm mờ phần bên ngoài menu
+    */
+
+    background: rgba(0, 0, 0, 0.55);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        opacity 0.3s ease,
+        visibility 0.3s ease;
+
+    /*
+    Overlay nằm dưới menu
+    */
+
+    z-index: 150;
+}
+
+/* =========================================================
+OVERLAY KHI MENU MỞ
+========================================================= */
+
+.menu-overlay.active {
+    opacity: 1;
+
+    visibility: visible;
+
+    /*
+    Overlay có thể click để đóng menu
+    */
+
+    pointer-events: auto;
+}
+
+/* =========================================================
+HEADER ACTIONS
+========================================================= */
+
+.header-actions {
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    /*
+    Đẩy các chức năng sang phải
+    */
+
+    margin-left: auto;
+
+    position: relative;
+
+    z-index: 300;
+}
+
+/* =========================================================
+SỐ ĐIỆN THOẠI
+========================================================= */
+
+.contact-phone {
+    text-decoration: none;
+
+    color: #333;
+
+    white-space: nowrap;
+
+    font-size: 14px;
+}
+
+/* =========================================================
+ĐĂNG NHẬP / ĐĂNG KÝ
+========================================================= */
+
+.auth-links {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    white-space: nowrap;
+}
+
+.auth-links a {
+    text-decoration: none;
+
+    color: #333;
+
+    font-size: 14px;
+}
+
+.auth-links a:hover {
+    color: #0d930d;
+}
+
+.auth-links .divider {
+    color: #ccc;
+
+    font-size: 12px;
+}
+
+/* =========================================================
+GIỎ HÀNG
+========================================================= */
+
+.cart {
+    position: relative;
+
+    text-decoration: none;
+
+    color: #333;
+
+    font-size: 22px;
+
+    display: flex;
+
+    align-items: center;
+}
+
+.cart-count {
+    position: absolute;
+
+    top: -8px;
+
+    right: -10px;
+
+    background: #d32f2f;
+
+    color: #fff;
+
+    font-size: 11px;
+
+    min-width: 17px;
+
+    height: 17px;
+
+    padding: 1px 4px;
+
+    border-radius: 999px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+/* =========================================================
+MAIN
+========================================================= */
+
+main {
+    position: relative;
+
+    z-index: 1;
+}
+
+/* =========================================================
+TIÊU ĐỀ
+========================================================= */
+
+h1 {
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-weight: bold;
+}
+
+/* =========================================================
+RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .header-top {
+        font-size: 11px;
+    }
+
+    .header-contact {
+        gap: 10px;
+
+        padding: 0 10px;
+
+        justify-content: center;
+    }
+
+    .header-contact span:nth-child(3) {
+        display: none;
+    }
+
+    .header-inner {
+        height: 65px;
+
+        padding: 0 10px;
+    }
+
+    .logo img {
+        height: 40px;
+    }
+
+    .menu > ul {
+        width: 280px;
+    }
+
+    .contact-phone {
+        display: none;
+    }
+
+    .auth-links {
+        display: none;
+    }
+
+    .header-actions {
+        gap: 8px;
+    }
+}
+
+/* =========================================================
+MOBILE NHỎ
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .menu > ul {
+        width: 260px;
+    }
+
+    .logo img {
+        height: 36px;
+    }
+
+    .menu-toggle {
+        font-size: 23px;
+
+        width: 38px;
+
+        height: 38px;
+    }
+}
+
