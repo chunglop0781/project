@@ -634,3 +634,334 @@ MOBILE NHỎ
     }
 }
 
+/* =========================================================
+   FOOTER - TĂNG KÍCH THƯỚC ~30%
+========================================================= */
+
+.footer {
+    width: 100%;
+    background: #f5f5f7;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.footer-container {
+    width: 100%;
+    max-width: 1020px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   ĐĂNG KÝ NHẬN THÔNG TIN
+========================================================= */
+
+.footer-register {
+    padding: 45px 0 32px;
+}
+
+.footer-register-content {
+    min-height: 115px;
+    background: #4b00c9;
+    border-radius: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 25px 30px;
+}
+
+.footer-register-title {
+    color: #fff;
+    font-size: 19px;
+    font-weight: bold;
+    line-height: 1.45;
+}
+
+.footer-register-form {
+    width: 550px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    background: #fff;
+    padding: 9px;
+    border-radius: 12px;
+}
+
+.footer-register-form input {
+    flex: 1;
+
+    height: 48px;
+
+    border: 1px solid #ccc;
+    border-radius: 7px;
+
+    padding: 0 18px;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+
+    outline: none;
+}
+
+.footer-register-form input:focus {
+    border-color: #4b00c9;
+}
+
+.footer-register-form button {
+    height: 48px;
+
+    padding: 0 22px;
+
+    border: none;
+    border-radius: 7px;
+
+    background: #4b00c9;
+    color: #fff;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.footer-register-form button:hover {
+    background: #3b009c;
+}
+
+
+/* =========================================================
+   MENU FOOTER
+========================================================= */
+
+.footer-menu {
+    border-bottom: 1px solid #ddd;
+}
+
+.footer-menu .footer-container {
+    min-height: 85px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.footer-nav {
+    display: flex;
+    align-items: center;
+    gap: 35px;
+}
+
+.footer-nav a {
+    text-decoration: none;
+
+    color: #222;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+}
+
+.footer-nav a:hover {
+    color: #4b00c9;
+}
+
+
+/* =========================================================
+   SOCIAL
+========================================================= */
+
+.footer-social {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.footer-social a {
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-decoration: none;
+
+    color: #222;
+
+    font-size: 20px;
+}
+
+.footer-social a:hover {
+    color: #4b00c9;
+}
+
+
+/* =========================================================
+   FOOTER BOTTOM
+========================================================= */
+
+.footer-bottom {
+    min-height: 105px;
+}
+
+.footer-bottom .footer-container {
+    min-height: 105px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+/* =========================================================
+   COPYRIGHT
+========================================================= */
+
+.footer-copyright {
+    color: #888;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   LOGO FOOTER
+========================================================= */
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-logo img {
+    width: 190px;
+    height: auto;
+
+    display: block;
+
+    object-fit: contain;
+}
+
+
+/* =========================================================
+   LINK CUỐI FOOTER
+========================================================= */
+
+.footer-links {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.footer-links a {
+    text-decoration: none;
+
+    color: #888;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+}
+
+.footer-links a:hover {
+    color: #4b00c9;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .footer-container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .footer-register-content {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 20px;
+    }
+
+    .footer-register-form {
+        width: 100%;
+    }
+
+    .footer-menu .footer-container {
+        flex-direction: column;
+        gap: 25px;
+        padding-top: 25px;
+        padding-bottom: 25px;
+    }
+
+    .footer-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 18px;
+    }
+
+    .footer-social {
+        gap: 25px;
+    }
+
+    .footer-bottom .footer-container {
+        flex-direction: column;
+        gap: 20px;
+        padding-top: 25px;
+        padding-bottom: 25px;
+    }
+
+    .footer-logo {
+        order: -1;
+    }
+
+    .footer-links {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .footer-register {
+        padding: 25px 10px;
+    }
+
+    .footer-register-content {
+        padding: 22px;
+    }
+
+    .footer-register-title {
+        font-size: 16px;
+    }
+
+    .footer-register-form {
+        flex-direction: column;
+        background: transparent;
+        padding: 0;
+    }
+
+    .footer-register-form input,
+    .footer-register-form button {
+        width: 100%;
+    }
+
+    .footer-nav {
+        gap: 15px;
+    }
+
+    .footer-nav a {
+        font-size: 12px;
+    }
+
+    .footer-logo img {
+        width: 160px;
+    }
+}

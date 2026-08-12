@@ -1,3 +1,67 @@
 footer.footer
-  .container
-    p= footer
+
+  // ==============================
+  // PHẦN ĐĂNG KÝ NHẬN THÔNG TIN
+  // ==============================
+  .footer-register
+    .footer-container
+      .footer-register-content
+        .footer-register-title
+          | Đăng Ký Ngay Để Không Bỏ Lỡ Các
+          br
+          | Chương Trình Của Chúng Tôi
+
+        .footer-register-form
+          input(
+            type="email"
+            placeholder="Nhập email của bạn..."
+          )
+          button(type="submit") Đăng Ký Ngay
+
+
+  // ==============================
+  // MENU FOOTER
+  // ==============================
+  .footer-menu
+    .footer-container
+
+      nav.footer-nav
+        a(href="/") Trang Chủ
+        a(href="/tours") Tour Trong Nước
+        a(href="/tours/foreign") Tour Nước Ngoài
+        a(href="/news") Tin Tức
+        a(href="/contact") Liên Hệ
+
+      .footer-social
+        a(href="#" aria-label="Facebook")
+          i.fab.fa-facebook-f
+
+        a(href="#" aria-label="Twitter")
+          i.fab.fa-twitter
+
+        a(href="#" aria-label="Instagram")
+          i.fab.fa-instagram
+
+        a(href="#" aria-label="YouTube")
+          i.fab.fa-youtube
+
+
+  // ==============================
+  // PHẦN CUỐI FOOTER
+  // ==============================
+  .footer-bottom
+    .footer-container
+
+      .footer-copyright
+        | © 2024 28Tech. All rights reserved.
+
+      .footer-logo
+        a(href="/")
+          img(
+            src="/assets/image/logo.png"
+            alt="28Travel"
+          )
+
+      .footer-links
+        a(href="/terms") Điều khoản dịch vụ
+        a(href="/privacy") Chính sách bảo mật
