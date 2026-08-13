@@ -2513,3 +2513,333 @@ h1 {
         width: 160px;
     }
 }
+
+/* =========================================================
+   SECTION 5 - BANNER
+========================================================= */
+
+.section-5 {
+    width: 100%;
+    padding: 25px 0;
+    margin: 0;
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    display: block;
+    position: relative;
+    clear: both;
+    overflow: hidden;
+}
+
+/* =========================================================
+   CONTAINER
+========================================================= */
+
+.section-5-container {
+    width: calc(100% - 55px);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0;
+    display: block;
+    overflow: hidden;
+}
+
+/* =========================================================
+   KHUNG ẢNH
+========================================================= */
+
+.section-5-image {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    display: block;
+    overflow: hidden;
+    border-radius: 7px;
+    line-height: 0;
+}
+
+/* =========================================================
+   LINK
+========================================================= */
+
+.section-5-image a {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    display: block;
+    line-height: 0;
+}
+
+/* =========================================================
+   ẢNH
+========================================================= */
+
+.section-5-image img {
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    display: block;
+    border: 0;
+    object-fit: cover;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    max-width: 100%;
+}
+
+/* =========================================================
+   HOVER
+========================================================= */
+
+.section-5-image img:hover {
+    transform: none;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1000px) {
+    .section-5-container {
+        width: calc(100% - 30px);
+    }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+    .section-5 {
+        padding: 20px 0;
+    }
+
+    .section-5-container {
+        width: calc(100% - 20px);
+    }
+}
+
+/* =========================================================
+   MOBILE NHỎ
+========================================================= */
+
+@media (max-width: 480px) {
+    .section-5 {
+        padding: 15px 0;
+    }
+
+    .section-5-container {
+        width: calc(100% - 15px);
+    }
+}
+
+/* =========================================================
+   SECTION 8 - TIN TUC MOI
+   ========================================================= */
+
+.section-8 {
+  padding: 50px 0;
+  background: #fff;
+}
+
+.section-8-container {
+  width: 1200px;
+  max-width: calc(100% - 30px);
+  margin: 0 auto;
+}
+
+.section-8-title {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.section-8-title h2 {
+  margin: 0;
+  color: #3513a5;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.section-8-news {
+  display: grid;
+  grid-template-columns: 1fr 1.8fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 10px;
+  height: 500px;
+}
+
+/* ITEM CHUNG */
+
+.section-8-item {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 12px;
+  text-decoration: none;
+  background: #eee;
+}
+
+.section-8-item img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.section-8-item:hover img {
+  transform: scale(1.05);
+}
+
+/* =========================================================
+   BAI LON O GIUA
+   ========================================================= */
+
+.section-8-item-large {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+}
+
+.section-8-item-large img {
+  height: 65%;
+  flex-shrink: 0;
+}
+
+.section-8-content {
+  padding: 10px 14px;
+  color: #333;
+}
+
+.section-8-content .section-8-date {
+  margin-bottom: 5px;
+}
+
+.section-8-content h3 {
+  margin: 0 0 8px;
+  color: #3513a5;
+  font-size: 17px;
+  line-height: 1.35;
+}
+
+.section-8-content p {
+  margin: 0;
+  color: #555;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   BAI NHO
+   ========================================================= */
+
+.section-8-item-small:nth-child(1) {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.section-8-item-small:nth-child(3) {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.section-8-item-small:nth-child(4) {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.section-8-item-small:nth-child(5) {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.section-8-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 35px 10px 10px;
+  background: linear-gradient(
+    transparent,
+    rgba(45, 0, 120, 0.9)
+  );
+  color: #fff;
+}
+
+.section-8-date {
+  font-size: 10px;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.section-8-overlay h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 500;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  .section-8-news {
+    height: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 300px 200px 200px;
+  }
+
+  .section-8-item-large {
+    grid-column: 1 / 3;
+    grid-row: 1;
+  }
+
+  .section-8-item-small:nth-child(1) {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .section-8-item-small:nth-child(3) {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .section-8-item-small:nth-child(4) {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .section-8-item-small:nth-child(5) {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  .section-8-item-large img {
+    height: 65%;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .section-8-news {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
+
+  .section-8-item-small {
+    height: 220px;
+  }
+
+  .section-8-item-large {
+    height: 400px;
+  }
+}

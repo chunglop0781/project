@@ -1,3 +1,10 @@
+document.addEventListener("DOMContentLoaded", () => {
+    AOS.init({
+        duration: 800,
+        once: true
+    });
+});
+
 const menuToggle = document.querySelector('.menu-toggle');
 const menuEl = document.querySelector('.menu');
 const overlayEl = document.querySelector('.menu-overlay');
@@ -14,20 +21,16 @@ function closeMenu() {
 }
 
 if (menuToggle && menuEl && overlayEl) {
-  // Bấm ☰ để mở/đóng
   menuToggle.addEventListener('click', function (e) {
     e.stopPropagation();
     menuEl.classList.contains('open') ? closeMenu() : openMenu();
   });
 
-  // Di chuột vào ☰ thì tự mở
   menuToggle.addEventListener('mouseenter', openMenu);
 
-  // Bấm vào lớp phủ mờ (overlay) thì đóng menu
   overlayEl.addEventListener('click', closeMenu);
 }
 
-// Bấm "Tour Trong Nước" / "Tour Nước Ngoài" để mở dropdown con
 document.querySelectorAll('.has-dropdown > a').forEach(link => {
   link.addEventListener('click', function (e) {
     e.preventDefault();
@@ -41,7 +44,6 @@ document.querySelectorAll('.has-dropdown > a').forEach(link => {
   });
 });
 
-// Bấm phím Esc để đóng menu nhanh
 document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape') closeMenu();
 });

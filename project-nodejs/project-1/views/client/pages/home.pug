@@ -533,3 +533,501 @@ block main
         each item in productListSection4
 
           +productItem(item)
+  //END SECTION 4 - TOUR TRONG NƯỚC
+
+  // =========================================================
+  // SECTION 5
+  // =========================================================
+
+  section.section-5(
+    data-aos="fade-up"
+    data-aos-duration="800"
+  )
+
+    .section-5-container
+
+      .section-5-image
+
+        a(href="#")
+
+          img(
+            src="/assets/image/banner-4.png"
+            alt=""
+          )
+
+  //END SECTION 5
+
+  // =========================================================
+  // SECTION 6 - TOUR NƯỚC NGOÀI
+  // DÙNG CHUNG BỐ CỤC VỚI SECTION 4
+  // =========================================================
+
+  -
+    var productListSection6 = [
+      {
+        avatar: "/assets/image/sec6-1.jpg",
+        slug: "#",
+        discount: 30,
+        name: "Hà Nội - Bangkok - Pattaya 5N4Đ",
+        priceOld: 12500000,
+        priceNew: 8750000,
+        code: "TOUR000041",
+        departureDate: "05/02/2027",
+        time: "5 Ngày 4 Đêm",
+        ratingStars: 4.8,
+        ratingTotal: 35,
+        stock: 10
+      },
+      {
+        avatar: "/assets/image/sec6-2.jpg",
+        slug: "#",
+        discount: 25,
+        name: "Singapore - Sentosa - Universal Studios 4N3Đ",
+        priceOld: 16800000,
+        priceNew: 12600000,
+        code: "TOUR000042",
+        departureDate: "08/02/2027",
+        time: "4 Ngày 3 Đêm",
+        ratingStars: 4.9,
+        ratingTotal: 42,
+        stock: 8
+      },
+      {
+        avatar: "/assets/image/sec6-3.jpg",
+        slug: "#",
+        discount: 20,
+        name: "Malaysia - Kuala Lumpur - Genting 4N3Đ",
+        priceOld: 14200000,
+        priceNew: 11360000,
+        code: "TOUR000043",
+        departureDate: "11/02/2027",
+        time: "4 Ngày 3 Đêm",
+        ratingStars: 4.7,
+        ratingTotal: 28,
+        stock: 12
+      },
+      {
+        avatar: "/assets/image/sec6-4.jpg",
+        slug: "#",
+        discount: 30,
+        name: "Hàn Quốc - Seoul - Nami - Everland 6N5Đ",
+        priceOld: 23900000,
+        priceNew: 16730000,
+        code: "TOUR000044",
+        departureDate: "14/02/2027",
+        time: "6 Ngày 5 Đêm",
+        ratingStars: 4.9,
+        ratingTotal: 51,
+        stock: 7
+      },
+      {
+        avatar: "/assets/image/sec6-5.jpg",
+        slug: "#",
+        discount: 25,
+        name: "Nhật Bản - Tokyo - Núi Phú Sĩ - Kyoto 6N5Đ",
+        priceOld: 28900000,
+        priceNew: 21675000,
+        code: "TOUR000045",
+        departureDate: "17/02/2027",
+        time: "6 Ngày 5 Đêm",
+        ratingStars: 4.9,
+        ratingTotal: 47,
+        stock: 6
+      },
+      {
+        avatar: "/assets/image/sec6-6.jpg",
+        slug: "#",
+        discount: 20,
+        name: "Trung Quốc - Bắc Kinh - Vạn Lý Trường Thành 5N4Đ",
+        priceOld: 19800000,
+        priceNew: 15840000,
+        code: "TOUR000046",
+        departureDate: "20/02/2027",
+        time: "5 Ngày 4 Đêm",
+        ratingStars: 4.8,
+        ratingTotal: 33,
+        stock: 11
+      },
+      {
+        avatar: "/assets/image/sec6-7.jpg",
+        slug: "#",
+        discount: 30,
+        name: "Đài Loan - Đài Bắc - Đài Trung - Cao Hùng 5N4Đ",
+        priceOld: 17500000,
+        priceNew: 12250000,
+        code: "TOUR000047",
+        departureDate: "23/02/2027",
+        time: "5 Ngày 4 Đêm",
+        ratingStars: 4.7,
+        ratingTotal: 29,
+        stock: 13
+      },
+      {
+        avatar: "/assets/image/sec6-8.jpg",
+        slug: "#",
+        discount: 25,
+        name: "Thái Lan - Chiang Mai - Chiang Rai 5N4Đ",
+        priceOld: 13500000,
+        priceNew: 10125000,
+        code: "TOUR000048",
+        departureDate: "26/02/2027",
+        time: "5 Ngày 4 Đêm",
+        ratingStars: 4.6,
+        ratingTotal: 24,
+        stock: 15
+      },
+      {
+        avatar: "/assets/image/sec6-9.jpg",
+        slug: "#",
+        discount: 30,
+        name: "Pháp - Paris - Versailles 6N5Đ",
+        priceOld: 45900000,
+        priceNew: 32130000,
+        code: "TOUR000049",
+        departureDate: "01/03/2027",
+        time: "6 Ngày 5 Đêm",
+        ratingStars: 4.9,
+        ratingTotal: 38,
+        stock: 5
+      },
+      {
+        avatar: "/assets/image/sec6-10.jpg",
+        slug: "#",
+        discount: 20,
+        name: "Pháp - Thụy Sĩ - Ý 9N8Đ",
+        priceOld: 58900000,
+        priceNew: 47120000,
+        code: "TOUR000050",
+        departureDate: "04/03/2027",
+        time: "9 Ngày 8 Đêm",
+        ratingStars: 4.9,
+        ratingTotal: 45,
+        stock: 4
+      },
+      {
+        avatar: "/assets/image/sec6-11.jpg",
+        slug: "#",
+        discount: 25,
+        name: "Đức - Áo - Séc 8N7Đ",
+        priceOld: 52500000,
+        priceNew: 39375000,
+        code: "TOUR000051",
+        departureDate: "07/03/2027",
+        time: "8 Ngày 7 Đêm",
+        ratingStars: 4.8,
+        ratingTotal: 31,
+        stock: 6
+      },
+      {
+        avatar: "/assets/image/sec6-12.jpg",
+        slug: "#",
+        discount: 30,
+        name: "Anh - London - Oxford - Manchester 7N6Đ",
+        priceOld: 48900000,
+        priceNew: 34230000,
+        code: "TOUR000052",
+        departureDate: "10/03/2027",
+        time: "7 Ngày 6 Đêm",
+        ratingStars: 4.8,
+        ratingTotal: 36,
+        stock: 5
+      },
+      {
+        avatar: "/assets/image/sec6-13.jpg",
+        slug: "#",
+        discount: 15,
+        name: "Dubai - Abu Dhabi - Sa Mạc Safari 5N4Đ",
+        priceOld: 31900000,
+        priceNew: 27115000,
+        code: "TOUR000053",
+        departureDate: "13/03/2027",
+        time: "5 Ngày 4 Đêm",
+        ratingStars: 4.7,
+        ratingTotal: 27,
+        stock: 8
+      },
+      {
+        avatar: "/assets/image/sec6-14.jpg",
+        slug: "#",
+        discount: 20,
+        name: "Úc - Sydney - Blue Mountains 6N5Đ",
+        priceOld: 42900000,
+        priceNew: 34320000,
+        code: "TOUR000054",
+        departureDate: "16/03/2027",
+        time: "6 Ngày 5 Đêm",
+        ratingStars: 4.8,
+        ratingTotal: 34,
+        stock: 6
+      },
+      {
+        avatar: "/assets/image/sec6-15.jpg",
+        slug: "#",
+        discount: 25,
+        name: "Mỹ - New York - Washington D.C. 7N6Đ",
+        priceOld: 62900000,
+        priceNew: 47175000,
+        code: "TOUR000055",
+        departureDate: "19/03/2027",
+        time: "7 Ngày 6 Đêm",
+        ratingStars: 4.9,
+        ratingTotal: 40,
+        stock: 4
+      },
+      {
+        avatar: "/assets/image/sec6-16.jpg",
+        slug: "#",
+        discount: 30,
+        name: "Canada - Toronto - Niagara Falls 6N5Đ",
+        priceOld: 55900000,
+        priceNew: 39130000,
+        code: "TOUR000056",
+        departureDate: "22/03/2027",
+        time: "6 Ngày 5 Đêm",
+        ratingStars: 4.8,
+        ratingTotal: 26,
+        stock: 5
+      },
+      {
+        avatar: "/assets/image/sec6-17.jpg",
+        slug: "#",
+        discount: 20,
+        name: "Hy Lạp - Athens - Santorini 6N5Đ",
+        priceOld: 51900000,
+        priceNew: 41520000,
+        code: "TOUR000057",
+        departureDate: "25/03/2027",
+        time: "6 Ngày 5 Đêm",
+        ratingStars: 4.9,
+        ratingTotal: 37,
+        stock: 5
+      },
+      {
+        avatar: "/assets/image/sec6-18.jpg",
+        slug: "#",
+        discount: 25,
+        name: "Thổ Nhĩ Kỳ - Istanbul - Cappadocia 6N5Đ",
+        priceOld: 43900000,
+        priceNew: 32925000,
+        code: "TOUR000058",
+        departureDate: "28/03/2027",
+        time: "6 Ngày 5 Đêm",
+        ratingStars: 4.8,
+        ratingTotal: 30,
+        stock: 7
+      },
+      {
+        avatar: "/assets/image/sec6-19.jpg",
+        slug: "#",
+        discount: 30,
+        name: "Ai Cập - Cairo - Kim Tự Tháp Giza 6N5Đ",
+        priceOld: 47900000,
+        priceNew: 33530000,
+        code: "TOUR000059",
+        departureDate: "31/03/2027",
+        time: "6 Ngày 5 Đêm",
+        ratingStars: 4.7,
+        ratingTotal: 22,
+        stock: 6
+      },
+      {
+        avatar: "/assets/image/sec6-20.jpg",
+        slug: "#",
+        discount: 20,
+        name: "Thụy Sĩ - Pháp - Ý 9N8Đ",
+        priceOld: 61900000,
+        priceNew: 49520000,
+        code: "TOUR000060",
+        departureDate: "03/04/2027",
+        time: "9 Ngày 8 Đêm",
+        ratingStars: 4.9,
+        ratingTotal: 43,
+        stock: 4
+      }
+    ]
+
+  // =========================================================
+  // HIỂN THỊ SECTION 6
+  // DÙNG Y NGUYÊN FORMAT SECTION 4
+  // =========================================================
+
+  section.section-4
+
+    .section-4-container
+
+      //- TIÊU ĐỀ
+      .section-4-title
+        h2 Tour Nước Ngoài
+
+      //- DANH SÁCH TOUR
+      .section-4-list
+
+        each item in productListSection6
+
+          +productItem(item)
+
+  
+
+  // =========================================================
+  // SECTION 7
+  // =========================================================
+
+  section.section-5(
+    data-aos="fade-up"
+    data-aos-duration="800"
+  )
+
+    .section-5-container
+
+      .section-5-image
+
+        a(href="#")
+
+          img(
+            src="/assets/image/banner-5.png"
+            alt=""
+          )
+
+  //END SECTION 7
+
+  // =========================================================
+  // SECTION 8 - TIN TỨC MỚI
+  // =========================================================
+
+  -
+    var newsListSection8 = [
+      {
+        image: "/assets/image/sec8-1.jpg",
+        title: "Những địa điểm du lịch nổi tiếng ở Việt Nam không thể bỏ qua",
+        link: "https://cellphones.com.vn/sforum/dia-diem-du-lich-noi-tieng-o-viet-nam"
+      },
+      {
+        image: "/assets/image/sec8-2.jpg",
+        title: "Top địa điểm du lịch Việt Nam nổi tiếng không thể bỏ lỡ",
+        link: "https://www.traveloka.com/vi-vn/explore/destination/dia-diem-du-lich-viet-nam/117179"
+      },
+      {
+        image: "/assets/image/sec8-3.jpg",
+        title: "30 Địa Điểm Du Lịch Hà Nội Nổi Tiếng Cập Nhật Mới - Klook Blog",
+        link: "https://www.klook.com/vi/blog/dia-diem-du-lich-ha-noi/"
+      },
+      {
+        image: "/assets/image/sec8-4.jpg",
+        title: "Báo Anh giới thiệu 12 điểm đến đẹp nhất ở Việt Nam",
+        link: "https://thanhnien.vn/bao-anh-gioi-thieu-12-diem-den-dep-nhat-o-viet-nam-185241129145224514.htm"
+      },
+      {
+        image: "/assets/image/sec8-5.jpg",
+        title: "Đóng vai hướng dẫn viên, giới thiệu một địa điểm du lịch trên đất nước Việt Nam (8 mẫu)",
+        link: "https://hoatieu.vn/dong-vai-huong-dan-vien-gioi-thieu-mot-dia-diem-du-lich-tren-dat-nuoc-viet-nam-220187"
+      }
+    ]
+
+  section.section-8
+
+    .section-8-container
+
+      //- TIÊU ĐỀ
+      .section-8-title
+        h2 Tin Tức Mới
+
+      //- BỐ CỤC 5 BÀI VIẾT
+      .section-8-news
+
+        //- BÀI 1 - BÊN TRÁI PHÍA TRÊN
+        a.section-8-item.section-8-item-small(
+          href=newsListSection8[0].link
+          target="_blank"
+          rel="noopener noreferrer"
+        )
+
+          img(
+            src=newsListSection8[0].image
+            alt=newsListSection8[0].title
+          )
+
+          .section-8-overlay
+
+            .section-8-date 23/05/2024
+
+            h3= newsListSection8[0].title
+
+
+        //- BÀI 2 - Ở GIỮA
+        a.section-8-item.section-8-item-large(
+          href=newsListSection8[1].link
+          target="_blank"
+          rel="noopener noreferrer"
+        )
+
+          img(
+            src=newsListSection8[1].image
+            alt=newsListSection8[1].title
+          )
+
+          .section-8-content
+
+            .section-8-date 23/05/2024
+
+            h3= newsListSection8[1].title
+
+            p
+              | Khám phá những địa điểm du lịch nổi tiếng tại Việt Nam,
+              | mang đến những trải nghiệm thú vị và đáng nhớ cho chuyến đi.
+
+
+        //- BÀI 3 - BÊN PHẢI PHÍA TRÊN
+        a.section-8-item.section-8-item-small(
+          href=newsListSection8[2].link
+          target="_blank"
+          rel="noopener noreferrer"
+        )
+
+          img(
+            src=newsListSection8[2].image
+            alt=newsListSection8[2].title
+          )
+
+          .section-8-overlay
+
+            .section-8-date 23/05/2024
+
+            h3= newsListSection8[2].title
+
+
+        //- BÀI 4 - BÊN TRÁI PHÍA DƯỚI
+        a.section-8-item.section-8-item-small(
+          href=newsListSection8[3].link
+          target="_blank"
+          rel="noopener noreferrer"
+        )
+
+          img(
+            src=newsListSection8[3].image
+            alt=newsListSection8[3].title
+          )
+
+          .section-8-overlay
+
+            .section-8-date 23/05/2024
+
+            h3= newsListSection8[3].title
+
+
+        //- BÀI 5 - BÊN PHẢI PHÍA DƯỚI
+        a.section-8-item.section-8-item-small(
+          href=newsListSection8[4].link
+          target="_blank"
+          rel="noopener noreferrer"
+        )
+
+          img(
+            src=newsListSection8[4].image
+            alt=newsListSection8[4].title
+          )
+
+          .section-8-overlay
+
+            .section-8-date 23/05/2024
+
+            h3= newsListSection8[4].title
