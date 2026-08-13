@@ -1,4 +1,86 @@
 extends ../../layouts/default
 
 block main
-  h1= pageTitle
+
+  // =========================================================
+  // SECTION 1 - BANNER
+  // =========================================================
+
+  section.section-1
+
+    //- ẢNH NỀN
+    .section-1-background
+      img(
+        src="/assets/image/banner1.jpg"
+        alt="Du lịch"
+      )
+
+    //- NỘI DUNG NẰM TRÊN ẢNH
+    .section-1-content
+
+      //- TIÊU ĐỀ
+      .section-1-title
+        h1
+          | Du lịch Châu Á - Khám phá Mỹ, Úc, Âu
+          br
+          | Đi nơi đâu bạn muốn
+
+      //- MÔ TẢ
+      .section-1-description
+        p
+          | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+          br
+          | labore et dolore magna aliqua.
+
+      //- KHUNG TÌM KIẾM
+      .section-1-search
+
+        //- ĐIỂM ĐẾN
+        .search-location
+          i.fas.fa-map-marker-alt
+
+          select(name="tour")
+            option(value="" selected disabled) Bạn muốn đi đâu?
+            option(value="mien-bac") Tour Miền Bắc
+            option(value="mien-trung") Tour Miền Trung
+            option(value="mien-nam") Tour Miền Nam
+            option(value="xuyen-viet") Tour Xuyên Việt
+            option(value="chau-a") Tour Châu Á
+            option(value="chau-au") Tour Châu Âu
+            option(value="chau-my") Tour Châu Mỹ
+            option(value="chau-uc") Tour Châu Úc
+
+          i.fas.fa-chevron-down
+
+        //- HÀNG BÊN DƯỚI
+        .search-row
+
+          //- SỐ LƯỢNG
+          .search-item
+            i.fas.fa-user
+
+            input(
+              type="number"
+              name="number"
+              min="1"
+              placeholder="Số lượng"
+            )
+
+          //- LỊCH KHỞI HÀNH
+          .search-item
+            i.fas.fa-calendar-alt
+
+            input(
+              type="text"
+              name="date"
+              placeholder="Lịch khởi hành"
+              onfocus="this.type='date'"
+              onblur="if(!this.value)this.type='text'"
+            )
+
+          //- NÚT TÌM KIẾM
+          button.search-button(
+            type="button"
+          )
+            i.fas.fa-search
+            | Tìm kiếm

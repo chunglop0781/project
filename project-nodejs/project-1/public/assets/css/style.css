@@ -60,12 +60,6 @@ body {
 
     position: relative;
 
-    /*
-    QUAN TRỌNG:
-    Không đặt z-index ở đây.
-    Nếu đặt z-index thấp hơn overlay,
-    toàn bộ menu sẽ bị overlay che.
-    */
     z-index: auto;
 }
 
@@ -92,9 +86,6 @@ body {
 
     flex-shrink: 0;
 
-    /*
-    Không để nút 3 sọc nổi trên overlay
-    */
     position: relative;
     z-index: 110;
 }
@@ -115,10 +106,6 @@ body {
 
     flex-shrink: 0;
 
-    /*
-    Logo nằm cùng lớp với header,
-    không nổi trên overlay
-    */
     position: relative;
     z-index: 110;
 }
@@ -171,26 +158,15 @@ body {
 
     background: #ffffff;
 
-    /*
-    Ẩn menu sang bên trái
-    */
     transform: translateX(-100%);
 
     transition: transform 0.3s ease;
 
     overflow-y: auto;
 
-    /*
-    MENU NẰM TRÊN OVERLAY
-    */
     z-index: 200;
 
     box-shadow: 5px 0 20px rgba(0, 0, 0, 0.2);
-
-    /*
-    Đảm bảo menu luôn sáng,
-    không bị opacity của phần ngoài ảnh hưởng
-    */
 
     opacity: 1;
     visibility: visible;
@@ -204,10 +180,6 @@ body {
 
 .menu.open > ul {
     transform: translateX(0);
-
-    /*
-    Cho phép click bình thường
-    */
 
     pointer-events: auto;
 }
@@ -253,10 +225,6 @@ body {
         background 0.2s ease,
         color 0.2s ease;
 
-    /*
-    Cho phép click
-    */
-
     pointer-events: auto;
 }
 
@@ -285,9 +253,6 @@ body {
 
     padding-left: 19px;
 
-    /*
-    Làm nổi bật item đang chọn
-    */
     box-shadow: inset 0 0 0 1px #d5ecd5;
 }
 
@@ -386,9 +351,6 @@ body {
 
     height: 100vh;
 
-    /*
-    Chỉ làm mờ phần bên ngoài menu
-    */
     background: rgba(0, 0, 0, 0.55);
 
     opacity: 0;
@@ -401,10 +363,6 @@ body {
         opacity 0.3s ease,
         visibility 0.3s ease;
 
-    /*
-    Overlay nằm dưới menu
-    */
-
     z-index: 150;
 }
 
@@ -416,10 +374,6 @@ body {
     opacity: 1;
 
     visibility: visible;
-
-    /*
-    Overlay có thể click để đóng menu
-    */
 
     pointer-events: auto;
 }
@@ -434,10 +388,6 @@ body {
     align-items: center;
 
     gap: 16px;
-
-    /*
-    Đẩy các chức năng sang phải
-    */
 
     margin-left: auto;
 
@@ -501,10 +451,8 @@ body {
 
     text-decoration: none;
 
-    /* TÍM ĐẬM */
     color: #4b0082;
 
-    /* IN ĐẬM */
     font-weight: bold;
 
     font-size: 22px;
@@ -515,7 +463,6 @@ body {
 }
 
 .cart i {
-    /* TÍM ĐẬM + IN ĐẬM */
     color: #4b0082;
 
     font-weight: 900;
@@ -572,7 +519,7 @@ h1 {
 }
 
 /* =========================================================
-   RESPONSIVE
+   RESPONSIVE HEADER
 ========================================================= */
 
 @media (max-width: 768px) {
@@ -874,7 +821,7 @@ h1 {
 }
 
 /* =========================================================
-   RESPONSIVE
+   RESPONSIVE FOOTER
 ========================================================= */
 
 @media (max-width: 768px) {
@@ -1044,7 +991,7 @@ h1 {
 }
 
 /* =========================================================
-   MOBILE
+   MOBILE BOX CONTACT
 ========================================================= */
 
 @media (max-width: 768px) {
@@ -1063,5 +1010,466 @@ h1 {
 
     .box-contact i {
         font-size: 15px;
+    }
+}
+
+/* =========================================================
+   SECTION 1
+========================================================= */
+
+.section-1 {
+    position: relative;
+
+    width: 100%;
+    min-height: 600px;
+
+    overflow: hidden;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* =========================================================
+   ẢNH NỀN
+========================================================= */
+
+.section-1-background {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    z-index: 1;
+}
+
+.section-1-background img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+}
+
+
+/* =========================================================
+   NỘI DUNG
+========================================================= */
+
+.section-1-content {
+    position: relative;
+
+    z-index: 2;
+
+    width: 100%;
+    max-width: 1000px;
+
+    margin: 0 auto;
+
+    padding: 65px 20px;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   TIÊU ĐỀ
+========================================================= */
+
+.section-1-title {
+    width: 100%;
+}
+
+.section-1-content h1 {
+    margin: 0 0 18px;
+
+    color: #4b00c9;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-size: 42px;
+
+    line-height: 1.2;
+
+    font-weight: bold;
+}
+
+
+/* =========================================================
+   MÔ TẢ
+========================================================= */
+
+.section-1-description {
+    width: 100%;
+}
+
+.section-1-description p {
+    margin: 0 0 32px;
+
+    color: #222;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-size: 16px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   KHUNG TÌM KIẾM
+========================================================= */
+
+.section-1-search {
+    position: relative;
+
+    z-index: 3;
+
+    width: 730px;
+    max-width: 100%;
+
+    margin: 0 auto;
+
+    padding: 34px;
+
+    background: rgba(50, 65, 75, 0.68);
+
+    border-radius: 12px;
+}
+
+
+/* =========================================================
+   Ô ĐỊA ĐIỂM
+========================================================= */
+
+.search-location {
+    width: 100%;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 0 17px;
+
+    background: #fff;
+
+    border-radius: 8px;
+
+    color: #aaa;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-size: 15px;
+}
+
+.search-location i:first-child {
+    color: #6b25d9;
+
+    font-size: 19px;
+}
+
+.search-location span {
+    flex: 1;
+
+    text-align: left;
+}
+
+.search-location i:last-child {
+    color: #6b25d9;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   HÀNG TÌM KIẾM
+========================================================= */
+
+.search-row {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 17px;
+
+    margin-top: 20px;
+}
+
+
+/* =========================================================
+   Ô SỐ LƯỢNG + NGÀY
+========================================================= */
+
+.search-item {
+    height: 52px;
+
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 0 17px;
+
+    background: #fff;
+
+    border-radius: 8px;
+
+    color: #aaa;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-size: 15px;
+}
+
+.search-item i:first-child {
+    color: #6b25d9;
+
+    font-size: 18px;
+}
+
+.search-item span {
+    flex: 1;
+
+    text-align: left;
+}
+
+.search-item i:last-child {
+    color: #6b25d9;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   NÚT TÌM KIẾM
+========================================================= */
+
+.search-button {
+    height: 52px;
+
+    min-width: 135px;
+
+    padding: 0 22px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #4b00c9;
+
+    color: #fff;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 9px;
+}
+
+.search-button:hover {
+    background: #370096;
+}
+
+.search-button i {
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   TABLET / MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .section-1 {
+        min-height: 560px;
+    }
+
+    .section-1-content {
+        padding: 45px 15px;
+    }
+
+    .section-1-content h1 {
+        font-size: 32px;
+    }
+
+    .section-1-description p {
+        font-size: 14px;
+    }
+
+    .section-1-search {
+        width: 600px;
+
+        padding: 28px;
+    }
+
+    .search-row {
+        flex-direction: column;
+    }
+
+    .search-item,
+    .search-button {
+        width: 100%;
+    }
+
+    .search-button {
+        height: 52px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE NHỎ
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .section-1 {
+        min-height: 600px;
+    }
+
+    .section-1-content {
+        padding: 40px 12px;
+    }
+
+    .section-1-content h1 {
+        font-size: 27px;
+    }
+
+    .section-1-description p {
+        font-size: 13px;
+    }
+
+    .section-1-search {
+        width: 100%;
+
+        padding: 22px;
+    }
+
+    .search-location,
+    .search-item,
+    .search-button {
+        height: 48px;
+    }
+
+    .search-location,
+    .search-item {
+        font-size: 14px;
+    }
+
+    .search-button {
+        font-size: 14px;
+    }
+}
+
+
+/* =========================================================
+   SELECT ĐIỂM ĐẾN
+========================================================= */
+
+.search-location select {
+    flex: 1;
+
+    width: 100%;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #121111;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+    appearance: none;
+}
+
+.search-location select:focus {
+    outline: none;
+}
+
+
+/* =========================================================
+   INPUT SỐ LƯỢNG + NGÀY
+========================================================= */
+
+.search-item input {
+    flex: 1;
+
+    width: 100%;
+
+    min-width: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #121111;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-size: 15px;
+}
+
+.search-item input:focus {
+    outline: none;
+}
+
+
+/* =========================================================
+   INPUT DATE
+========================================================= */
+
+.search-item input[type="date"] {
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   INPUT NUMBER
+========================================================= */
+
+.search-item input[type="number"] {
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .search-location select,
+    .search-item input {
+        font-size: 14px;
     }
 }
