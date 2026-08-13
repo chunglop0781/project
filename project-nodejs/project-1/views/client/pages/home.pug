@@ -1,4 +1,5 @@
 extends ../../layouts/default
+include ../mixins/product-item
 
 block main
 
@@ -84,3 +85,111 @@ block main
           )
             i.fas.fa-search
             | Tìm kiếm
+
+
+  // =========================================================
+  // SECTION 2 - TOUR GIỜ CHÓT
+  // =========================================================
+
+  -
+    var productListSection2 = [
+      {
+        avatar: "/assets/image/sec2-1.jpg",
+        slug: "#",
+        discount: 30,
+        name: "Hà Nội - Lào Cai - SaPa 4N3Đ",
+        priceOld: 13650000,
+        priceNew: 2590000,
+        code: "TOUR000001",
+        departureDate: "22/12/2025",
+        time: "10 Ngày 9 Đêm",
+        ratingStars: 4,
+        ratingTotal: 20,
+        stock: 10
+      },
+      {
+        avatar: "/assets/image/sec2-2.jpg",
+        slug: "#",
+        discount: 0,
+        name: "Tour 2024 Phú Quốc - Thiên Đường Đảo Ngọc (3N2Đ)",
+        priceOld: 12000000,
+        priceNew: 12000000,
+        code: "TOUR000002",
+        departureDate: "24/12/2025",
+        time: "3 Ngày 2 Đêm",
+        ratingStars: 5,
+        ratingTotal: 20,
+        stock: 10
+      },
+      {
+        avatar: "/assets/image/sec2-3.jpg",
+        slug: "#",
+        discount: 30,
+        name: "Combo Đà Nẵng 2024: Đà Nẵng - Hội An - Bà Nà Hill",
+        priceOld: 13650000,
+        priceNew: 2590000,
+        code: "TOUR000003",
+        departureDate: "27/12/2025",
+        time: "4 Ngày 3 Đêm",
+        ratingStars: 3.5,
+        ratingTotal: 20,
+        stock: 10
+      }
+    ]
+
+  section.section-2
+
+    .section-2-container
+
+      //- CỘT ƯU ĐÃI
+      .section-2-sale
+
+        h2
+          | ƯU ĐÃI 2024
+          br
+          | TOUR GIỜ CHÓT
+
+        p
+          | Lorem ipsum dolor sit amet, consectetur
+          br
+          | adipiscing elit, sed do eiusmod tempor
+
+        h3 Kết thúc sau
+
+        .section-2-countdown
+
+          .countdown-item
+            span 12
+
+          .countdown-item
+            span 20
+
+          .countdown-item
+            span 30
+
+        .section-2-discount-title
+          | GIẢM ĐẾN
+
+        .section-2-discount-price
+          | 990.000₫
+
+
+      //- DANH SÁCH TOUR
+      .section-2-tours
+
+        button.section-2-arrow.section-2-arrow-prev(type="button")
+          i.fas.fa-chevron-left
+
+        .section-2-swiper.swiper
+
+          .swiper-wrapper
+
+            each item in productListSection2
+              .swiper-slide
+                +productItem(item)
+
+        button.section-2-arrow.section-2-arrow-next(type="button")
+          i.fas.fa-chevron-right
+
+  //END SECTION 2 - TOUR GIỜ CHÓT
+

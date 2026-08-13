@@ -3,26 +3,37 @@ html(lang="vi")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
+
     title= pageTitle ? pageTitle + " - " + header : header
+
     link(
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
     )
+
     link(
       rel="stylesheet"
       href="https://unpkg.com/aos@2.3.1/dist/aos.css"
     )
+
+    //- SWIPER CSS
     link(
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
     )
+
     link(
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.7/viewer.min.css"
     )
-    link(rel="stylesheet", href="/assets/css/style.css")
+
+    link(
+      rel="stylesheet"
+      href="/assets/css/style.css"
+    )
 
   body
+
     include ../partials/header.pug
 
     main
@@ -34,13 +45,18 @@ html(lang="vi")
     script(
       src="https://unpkg.com/aos@2.3.1/dist/aos.js"
     )
+
+    //- SWIPER JS
     script(
       src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"
     )
+
     script(
       src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.7/viewer.min.js"
     )
+
     script(
       src="https://cdn.jsdelivr.net/npm/just-validate@4.3.0/dist/just-validate.production.min.js"
     )
+
     script(src="/assets/js/script.js")

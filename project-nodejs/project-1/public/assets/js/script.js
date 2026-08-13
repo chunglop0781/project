@@ -45,3 +45,31 @@ document.querySelectorAll('.has-dropdown > a').forEach(link => {
 document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape') closeMenu();
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const section2Swiper = new Swiper(".section-2-swiper", {
+        slidesPerView: 3,
+        spaceBetween: 14,
+
+        navigation: {
+            nextEl: ".section-2-arrow-next",
+            prevEl: ".section-2-arrow-prev"
+        },
+
+        breakpoints: {
+            0: {
+                slidesPerView: 1
+            },
+
+            576: {
+                slidesPerView: 2
+            },
+
+            1000: {
+                slidesPerView: 3
+            }
+        }
+    });
+
+});

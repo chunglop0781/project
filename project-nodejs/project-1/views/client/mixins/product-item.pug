@@ -1,0 +1,78 @@
+mixin productItem(item)
+  .section-2-tour-card
+
+    //- ẢNH TOUR
+    .section-2-tour-image
+
+      a(href=item.slug)
+        img(
+          src=item.avatar
+          alt=item.name
+        )
+
+      //- CHỈ HIỆN GIẢM GIÁ KHI discount > 0
+      if item.discount > 0
+        .section-2-sale-label
+          i.fas.fa-bolt
+          | GIẢM -#{item.discount}%
+
+
+    //- NỘI DUNG TOUR
+    .section-2-tour-content
+
+      //- TÊN TOUR
+      h3
+        a(
+          href=item.slug
+          style="text-decoration: none; color: inherit;"
+        )= item.name
+
+
+      //- GIÁ TOUR
+      .section-2-tour-price
+
+        if item.priceOld > item.priceNew
+          span.old-price
+            = item.priceOld.toLocaleString("vi-VN") + "đ"
+
+        span.new-price
+          = item.priceNew.toLocaleString("vi-VN") + "đ"
+
+
+      //- THÔNG TIN
+      p
+        | Mã Tour: #{item.code}
+
+      p
+        | Ngày Khởi Hành: #{item.departureDate}
+
+      p
+        | Thời Gian: #{item.time}
+
+
+      //- BOTTOM
+      .section-2-tour-bottom
+
+        //- ĐÁNH GIÁ
+        .section-2-rating
+
+          .section-2-stars(
+            style=`--rating: ${item.ratingStars};`
+            aria-label=`Đánh giá ${item.ratingStars} trên 5`
+          )
+            span ★
+            span ★
+            span ★
+            span ★
+            span ★
+
+          small
+            | (#{item.ratingTotal})
+
+
+        //- SỐ CHỖ CÒN
+        .section-2-remaining
+
+          span Số chỗ còn:
+
+          b= item.stock
