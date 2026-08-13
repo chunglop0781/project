@@ -156,16 +156,23 @@ block main
 
         h3 Kết thúc sau
 
-        .section-2-countdown
+        .clock-expire(
+          clock-expire="2026-12-10T15:00:00"
+        )
 
-          .countdown-item
-            span 12
+          .section-2-countdown
 
-          .countdown-item
-            span 20
+            .countdown-item
+              span.countdown-days 00
 
-          .countdown-item
-            span 30
+            .countdown-item
+              span.countdown-hours 00
+
+            .countdown-item
+              span.countdown-minutes 00
+
+            .countdown-item
+              span.countdown-seconds 00
 
         .section-2-discount-title
           | GIẢM ĐẾN
@@ -193,3 +200,32 @@ block main
 
   //END SECTION 2 - TOUR GIỜ CHÓT
 
+
+  // =========================================================
+  // SECTION 3 - KHUYẾN MÃI
+  // =========================================================
+
+  section.section-3
+
+    .section-3-container
+
+      .section-3-title
+        h2 Khuyến Mãi Bùng Nổ - Đánh Tan Nóng Bức
+
+      .section-3-swiper.swiper
+
+        .swiper-wrapper
+
+          - for (var i = 1; i <= 10; i++)
+
+            .swiper-slide
+
+              a(href="#")
+
+                img(
+                  src=`/assets/image/sec3-${i}.jpg`
+                  alt=`Khuyến mãi ${i}`
+                )
+
+        .swiper-pagination
+  //END SECTION 3 - KHUYẾN MÃI

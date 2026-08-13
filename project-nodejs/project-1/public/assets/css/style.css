@@ -2264,3 +2264,207 @@ h1 {
 
     flex: none;
 }
+
+/* =========================================================
+   SECTION 3 - KHUYẾN MÃI
+========================================================= */
+
+.section-3 {
+    width: 100%;
+
+    padding: 25px 0;
+
+    background: #fff;
+
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* =========================================================
+   KHUNG CHÍNH
+========================================================= */
+
+.section-3-container {
+    width: calc(100% - 55px);
+
+    max-width: 1200px;
+
+    margin: 0 auto;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   TIÊU ĐỀ
+========================================================= */
+
+.section-3-title {
+    width: 100%;
+
+    text-align: center;
+
+    margin-bottom: 18px;
+}
+
+.section-3-title h2 {
+    margin: 0;
+
+    color: #4b00c9;
+
+    font-size: 27px;
+
+    line-height: 1.2;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   SWIPER
+========================================================= */
+
+.section-3-swiper {
+    width: 100%;
+
+    padding-bottom: 32px !important;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   SLIDE
+========================================================= */
+
+.section-3-swiper .swiper-slide {
+    width: auto;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   ẢNH
+========================================================= */
+
+.section-3-swiper .swiper-slide a {
+    display: block;
+
+    width: 100%;
+
+    overflow: hidden;
+
+    border-radius: 7px;
+}
+
+.section-3-swiper .swiper-slide img {
+    display: block;
+
+    width: 100%;
+
+    height: 180px;
+
+    object-fit: cover;
+
+    object-position: center;
+
+    border-radius: 7px;
+
+    transition: transform 0.3s ease;
+}
+
+.section-3-swiper .swiper-slide img:hover {
+    transform: scale(1.03);
+}
+
+
+/* =========================================================
+   PAGINATION
+========================================================= */
+
+.section-3-swiper .swiper-pagination {
+    bottom: 0 !important;
+}
+
+.section-3-swiper .swiper-pagination-bullet {
+    width: 10px;
+
+    height: 10px;
+
+    opacity: 1;
+
+    background: #ddd;
+}
+
+.section-3-swiper .swiper-pagination-bullet-active {
+    background: #4b00c9;
+
+    width: 10px;
+
+    height: 10px;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1000px) {
+
+    .section-3-container {
+        width: calc(100% - 30px);
+    }
+
+    .section-3-title h2 {
+        font-size: 24px;
+    }
+
+    .section-3-swiper .swiper-slide img {
+        height: 160px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .section-3 {
+        padding: 20px 0;
+    }
+
+    .section-3-container {
+        width: calc(100% - 20px);
+    }
+
+    .section-3-title {
+        margin-bottom: 15px;
+    }
+
+    .section-3-title h2 {
+        font-size: 21px;
+    }
+
+    .section-3-swiper .swiper-slide img {
+        height: 150px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE NHỎ
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .section-3-title h2 {
+        font-size: 18px;
+    }
+
+    .section-3-swiper .swiper-slide img {
+        height: 130px;
+    }
+}
