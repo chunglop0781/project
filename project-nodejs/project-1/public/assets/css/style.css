@@ -12,6 +12,7 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+
 /* =========================================================
    TOP BAR
 ========================================================= */
@@ -41,6 +42,7 @@ body {
     gap: 6px;
 }
 
+
 /* =========================================================
    HEADER CHÍNH
 ========================================================= */
@@ -53,15 +55,14 @@ body {
     align-items: center;
 
     padding: 0 20px;
-
     gap: 10px;
 
     background: #fff;
 
     position: relative;
-
     z-index: auto;
 }
+
 
 /* =========================================================
    NÚT 3 SỌC
@@ -94,6 +95,7 @@ body {
     color: #0d930d;
 }
 
+
 /* =========================================================
    LOGO
 ========================================================= */
@@ -112,13 +114,12 @@ body {
 
 .logo img {
     height: 45px;
-
     width: auto;
 
     display: block;
-
     object-fit: contain;
 }
+
 
 /* =========================================================
    MENU
@@ -131,29 +132,26 @@ body {
     position: static;
 }
 
+
 /* =========================================================
-   MENU DỌC BÊN TRÁI
+   MENU DỌC
 ========================================================= */
 
 .menu > ul {
     display: flex;
-
     flex-direction: column;
 
     list-style: none;
 
     margin: 0;
-
     padding: 60px 0 20px 0;
 
     position: fixed;
 
     top: 0;
-
     left: 0;
 
     width: 300px;
-
     height: 100vh;
 
     background: #ffffff;
@@ -174,15 +172,16 @@ body {
     pointer-events: auto;
 }
 
+
 /* =========================================================
-   KHI MENU MỞ
+   MENU MỞ
 ========================================================= */
 
 .menu.open > ul {
     transform: translateX(0);
-
     pointer-events: auto;
 }
+
 
 /* =========================================================
    ITEM MENU
@@ -190,9 +189,9 @@ body {
 
 .menu li {
     width: 100%;
-
     list-style: none;
 }
+
 
 /* =========================================================
    LINK MENU
@@ -200,13 +199,10 @@ body {
 
 .menu a {
     width: 100%;
-
     min-height: 52px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
 
     padding: 14px 24px;
@@ -216,7 +212,6 @@ body {
     color: #031b03;
 
     font-size: 16px;
-
     font-weight: 500;
 
     background: #ffffff;
@@ -228,23 +223,18 @@ body {
     pointer-events: auto;
 }
 
-/* =========================================================
-   HOVER MENU
-========================================================= */
-
 .menu a:hover {
     background: #f1f8f1;
-
     color: #0d930d;
 }
 
+
 /* =========================================================
-   MENU ĐANG ĐƯỢC CHỌN
+   MENU ACTIVE
 ========================================================= */
 
 .menu a.active {
     background: #e8f5e9;
-
     color: #0d930d;
 
     font-weight: bold;
@@ -256,8 +246,9 @@ body {
     box-shadow: inset 0 0 0 1px #d5ecd5;
 }
 
+
 /* =========================================================
-   MŨI TÊN
+   ARROW
 ========================================================= */
 
 .arrow {
@@ -268,16 +259,13 @@ body {
     transition: transform 0.2s ease;
 }
 
-/* =========================================================
-   MŨI TÊN KHI DROPDOWN MỞ
-========================================================= */
-
 .has-dropdown.open > a .arrow {
     transform: rotate(180deg);
 }
 
+
 /* =========================================================
-   DROPDOWN CON
+   DROPDOWN
 ========================================================= */
 
 .dropdown {
@@ -288,23 +276,14 @@ body {
     list-style: none;
 
     padding: 0;
-
     margin: 0;
 
     background: #f7f7f7;
 }
 
-/* =========================================================
-   DROPDOWN ĐƯỢC MỞ
-========================================================= */
-
 .has-dropdown.open > .dropdown {
     display: block;
 }
-
-/* =========================================================
-   LINK DROPDOWN
-========================================================= */
 
 .dropdown a {
     padding: 12px 24px 12px 45px;
@@ -318,13 +297,8 @@ body {
 
 .dropdown a:hover {
     background: #eeeeee;
-
     color: #0d930d;
 }
-
-/* =========================================================
-   DROPDOWN ACTIVE
-========================================================= */
 
 .dropdown a.active {
     background: #e8f5e9;
@@ -336,25 +310,23 @@ body {
     padding-left: 41px;
 }
 
+
 /* =========================================================
-   OVERLAY LÀM MỜ PHẦN TRANG BÊN NGOÀI
+   OVERLAY
 ========================================================= */
 
 .menu-overlay {
     position: fixed;
 
     top: 0;
-
     left: 0;
 
     width: 100%;
-
     height: 100vh;
 
     background: rgba(0, 0, 0, 0.55);
 
     opacity: 0;
-
     visibility: hidden;
 
     pointer-events: none;
@@ -366,10 +338,6 @@ body {
     z-index: 150;
 }
 
-/* =========================================================
-   OVERLAY KHI MENU MỞ
-========================================================= */
-
 .menu-overlay.active {
     opacity: 1;
 
@@ -378,13 +346,13 @@ body {
     pointer-events: auto;
 }
 
+
 /* =========================================================
    HEADER ACTIONS
 ========================================================= */
 
 .header-actions {
     display: flex;
-
     align-items: center;
 
     gap: 16px;
@@ -395,6 +363,7 @@ body {
 
     z-index: 300;
 }
+
 
 /* =========================================================
    SỐ ĐIỆN THOẠI
@@ -410,13 +379,13 @@ body {
     font-size: 14px;
 }
 
+
 /* =========================================================
-   ĐĂNG NHẬP / ĐĂNG KÝ
+   ĐĂNG NHẬP
 ========================================================= */
 
 .auth-links {
     display: flex;
-
     align-items: center;
 
     gap: 8px;
@@ -442,8 +411,9 @@ body {
     font-size: 12px;
 }
 
+
 /* =========================================================
-   GIỎ HÀNG
+   CART
 ========================================================= */
 
 .cart {
@@ -458,7 +428,6 @@ body {
     font-size: 22px;
 
     display: flex;
-
     align-items: center;
 }
 
@@ -474,7 +443,6 @@ body {
     position: absolute;
 
     top: -8px;
-
     right: -10px;
 
     background: #d32f2f;
@@ -484,7 +452,6 @@ body {
     font-size: 11px;
 
     min-width: 17px;
-
     height: 17px;
 
     padding: 1px 4px;
@@ -492,11 +459,10 @@ body {
     border-radius: 999px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 }
+
 
 /* =========================================================
    MAIN
@@ -504,13 +470,8 @@ body {
 
 main {
     position: relative;
-
     z-index: 1;
 }
-
-/* =========================================================
-   TIÊU ĐỀ
-========================================================= */
 
 h1 {
     font-family: Arial, Helvetica, sans-serif;
@@ -518,96 +479,30 @@ h1 {
     font-weight: bold;
 }
 
-/* =========================================================
-   RESPONSIVE HEADER
-========================================================= */
-
-@media (max-width: 768px) {
-
-    .header-top {
-        font-size: 11px;
-    }
-
-    .header-contact {
-        gap: 10px;
-
-        padding: 0 10px;
-
-        justify-content: center;
-    }
-
-    .header-contact span:nth-child(3) {
-        display: none;
-    }
-
-    .header-inner {
-        height: 65px;
-
-        padding: 0 10px;
-    }
-
-    .logo img {
-        height: 40px;
-    }
-
-    .menu > ul {
-        width: 280px;
-    }
-
-    .contact-phone {
-        display: none;
-    }
-
-    .auth-links {
-        display: none;
-    }
-
-    .header-actions {
-        gap: 8px;
-    }
-}
 
 /* =========================================================
-   MOBILE NHỎ
-========================================================= */
-
-@media (max-width: 480px) {
-
-    .menu > ul {
-        width: 260px;
-    }
-
-    .logo img {
-        height: 36px;
-    }
-
-    .menu-toggle {
-        font-size: 23px;
-
-        width: 38px;
-
-        height: 38px;
-    }
-}
-
-/* =========================================================
-   FOOTER - TĂNG KÍCH THƯỚC ~30%
+   FOOTER
 ========================================================= */
 
 .footer {
     width: 100%;
+
     background: #f5f5f7;
+
     font-family: Arial, Helvetica, sans-serif;
 }
 
 .footer-container {
     width: 100%;
+
     max-width: 1020px;
+
     margin: 0 auto;
 }
 
+
 /* =========================================================
-   ĐĂNG KÝ NHẬN THÔNG TIN
+   FOOTER REGISTER
 ========================================================= */
 
 .footer-register {
@@ -616,11 +511,15 @@ h1 {
 
 .footer-register-content {
     min-height: 115px;
+
     background: #4b00c9;
+
     border-radius: 14px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
 
     padding: 25px 30px;
@@ -628,8 +527,11 @@ h1 {
 
 .footer-register-title {
     color: #fff;
+
     font-size: 19px;
+
     font-weight: bold;
+
     line-height: 1.45;
 }
 
@@ -637,11 +539,15 @@ h1 {
     width: 550px;
 
     display: flex;
+
     align-items: center;
+
     gap: 10px;
 
     background: #fff;
+
     padding: 9px;
+
     border-radius: 12px;
 }
 
@@ -651,11 +557,13 @@ h1 {
     height: 48px;
 
     border: 1px solid #ccc;
+
     border-radius: 7px;
 
     padding: 0 18px;
 
     font-family: Arial, Helvetica, sans-serif;
+
     font-size: 14px;
 
     outline: none;
@@ -671,13 +579,17 @@ h1 {
     padding: 0 22px;
 
     border: none;
+
     border-radius: 7px;
 
     background: #4b00c9;
+
     color: #fff;
 
     font-family: Arial, Helvetica, sans-serif;
+
     font-size: 14px;
+
     font-weight: bold;
 
     cursor: pointer;
@@ -687,8 +599,9 @@ h1 {
     background: #3b009c;
 }
 
+
 /* =========================================================
-   MENU FOOTER
+   FOOTER MENU
 ========================================================= */
 
 .footer-menu {
@@ -699,13 +612,17 @@ h1 {
     min-height: 85px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
 }
 
 .footer-nav {
     display: flex;
+
     align-items: center;
+
     gap: 35px;
 }
 
@@ -715,6 +632,7 @@ h1 {
     color: #222;
 
     font-family: Arial, Helvetica, sans-serif;
+
     font-size: 14px;
 }
 
@@ -722,13 +640,16 @@ h1 {
     color: #4b00c9;
 }
 
+
 /* =========================================================
-   SOCIAL
+   FOOTER SOCIAL
 ========================================================= */
 
 .footer-social {
     display: flex;
+
     align-items: center;
+
     gap: 30px;
 }
 
@@ -737,7 +658,9 @@ h1 {
     height: 28px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     text-decoration: none;
@@ -751,6 +674,7 @@ h1 {
     color: #4b00c9;
 }
 
+
 /* =========================================================
    FOOTER BOTTOM
 ========================================================= */
@@ -763,33 +687,31 @@ h1 {
     min-height: 105px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
 }
-
-/* =========================================================
-   COPYRIGHT
-========================================================= */
 
 .footer-copyright {
     color: #888;
 
     font-family: Arial, Helvetica, sans-serif;
+
     font-size: 12px;
 }
 
-/* =========================================================
-   LOGO FOOTER
-========================================================= */
-
 .footer-logo {
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 }
 
 .footer-logo img {
     width: 190px;
+
     height: auto;
 
     display: block;
@@ -797,13 +719,11 @@ h1 {
     object-fit: contain;
 }
 
-/* =========================================================
-   LINK CUỐI FOOTER
-========================================================= */
-
 .footer-links {
     display: flex;
+
     align-items: center;
+
     gap: 30px;
 }
 
@@ -813,6 +733,7 @@ h1 {
     color: #888;
 
     font-family: Arial, Helvetica, sans-serif;
+
     font-size: 12px;
 }
 
@@ -820,101 +741,9 @@ h1 {
     color: #4b00c9;
 }
 
-/* =========================================================
-   RESPONSIVE FOOTER
-========================================================= */
-
-@media (max-width: 768px) {
-
-    .footer-container {
-        padding-left: 15px;
-        padding-right: 15px;
-    }
-
-    .footer-register-content {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 20px;
-    }
-
-    .footer-register-form {
-        width: 100%;
-    }
-
-    .footer-menu .footer-container {
-        flex-direction: column;
-        gap: 25px;
-        padding-top: 25px;
-        padding-bottom: 25px;
-    }
-
-    .footer-nav {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 18px;
-    }
-
-    .footer-social {
-        gap: 25px;
-    }
-
-    .footer-bottom .footer-container {
-        flex-direction: column;
-        gap: 20px;
-        padding-top: 25px;
-        padding-bottom: 25px;
-    }
-
-    .footer-logo {
-        order: -1;
-    }
-
-    .footer-links {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-}
-
-@media (max-width: 480px) {
-
-    .footer-register {
-        padding: 25px 10px;
-    }
-
-    .footer-register-content {
-        padding: 22px;
-    }
-
-    .footer-register-title {
-        font-size: 16px;
-    }
-
-    .footer-register-form {
-        flex-direction: column;
-        background: transparent;
-        padding: 0;
-    }
-
-    .footer-register-form input,
-    .footer-register-form button {
-        width: 100%;
-    }
-
-    .footer-nav {
-        gap: 15px;
-    }
-
-    .footer-nav a {
-        font-size: 12px;
-    }
-
-    .footer-logo img {
-        width: 160px;
-    }
-}
 
 /* =========================================================
-   BOX CONTACT - THANH LIÊN HỆ BÊN PHẢI
+   BOX CONTACT
 ========================================================= */
 
 .box-contact {
@@ -930,6 +759,7 @@ h1 {
 
 .box-contact ul {
     margin: 0;
+
     padding: 8px 5px;
 
     list-style: none;
@@ -939,7 +769,9 @@ h1 {
     border-radius: 10px 0 0 10px;
 
     display: flex;
+
     flex-direction: column;
+
     align-items: center;
 
     gap: 4px;
@@ -955,6 +787,7 @@ h1 {
     height: 34px;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 }
@@ -964,6 +797,7 @@ h1 {
     height: 34px;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
@@ -990,28 +824,6 @@ h1 {
     font-size: 17px;
 }
 
-/* =========================================================
-   MOBILE BOX CONTACT
-========================================================= */
-
-@media (max-width: 768px) {
-
-    .box-contact ul {
-        padding: 6px 4px;
-
-        border-radius: 8px 0 0 8px;
-    }
-
-    .box-contact li,
-    .box-contact li a {
-        width: 30px;
-        height: 30px;
-    }
-
-    .box-contact i {
-        font-size: 15px;
-    }
-}
 
 /* =========================================================
    SECTION 1
@@ -1021,6 +833,7 @@ h1 {
     position: relative;
 
     width: 100%;
+
     min-height: 600px;
 
     overflow: hidden;
@@ -1028,13 +841,15 @@ h1 {
     font-family: Arial, Helvetica, sans-serif;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 }
 
 
 /* =========================================================
-   ẢNH NỀN
+   SECTION 1 - BACKGROUND
 ========================================================= */
 
 .section-1-background {
@@ -1056,12 +871,13 @@ h1 {
     height: 100%;
 
     object-fit: cover;
+
     object-position: center;
 }
 
 
 /* =========================================================
-   NỘI DUNG
+   SECTION 1 - CONTENT
 ========================================================= */
 
 .section-1-content {
@@ -1070,6 +886,7 @@ h1 {
     z-index: 2;
 
     width: 100%;
+
     max-width: 1000px;
 
     margin: 0 auto;
@@ -1078,11 +895,6 @@ h1 {
 
     text-align: center;
 }
-
-
-/* =========================================================
-   TIÊU ĐỀ
-========================================================= */
 
 .section-1-title {
     width: 100%;
@@ -1102,11 +914,6 @@ h1 {
     font-weight: bold;
 }
 
-
-/* =========================================================
-   MÔ TẢ
-========================================================= */
-
 .section-1-description {
     width: 100%;
 }
@@ -1125,7 +932,7 @@ h1 {
 
 
 /* =========================================================
-   KHUNG TÌM KIẾM
+   SEARCH
 ========================================================= */
 
 .section-1-search {
@@ -1134,6 +941,7 @@ h1 {
     z-index: 3;
 
     width: 730px;
+
     max-width: 100%;
 
     margin: 0 auto;
@@ -1145,16 +953,13 @@ h1 {
     border-radius: 12px;
 }
 
-
-/* =========================================================
-   Ô ĐỊA ĐIỂM
-========================================================= */
-
 .search-location {
     width: 100%;
+
     height: 52px;
 
     display: flex;
+
     align-items: center;
 
     gap: 12px;
@@ -1178,27 +983,39 @@ h1 {
     font-size: 19px;
 }
 
-.search-location span {
-    flex: 1;
-
-    text-align: left;
-}
-
 .search-location i:last-child {
     color: #6b25d9;
 
     font-size: 11px;
 }
 
+.search-location select {
+    flex: 1;
 
-/* =========================================================
-   HÀNG TÌM KIẾM
-========================================================= */
+    width: 100%;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    color: #121111;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+    appearance: none;
+}
 
 .search-row {
     width: 100%;
 
     display: flex;
+
     align-items: center;
 
     gap: 17px;
@@ -1206,17 +1023,13 @@ h1 {
     margin-top: 20px;
 }
 
-
-/* =========================================================
-   Ô SỐ LƯỢNG + NGÀY
-========================================================= */
-
 .search-item {
     height: 52px;
 
     flex: 1;
 
     display: flex;
+
     align-items: center;
 
     gap: 12px;
@@ -1240,22 +1053,25 @@ h1 {
     font-size: 18px;
 }
 
-.search-item span {
+.search-item input {
     flex: 1;
 
-    text-align: left;
+    width: 100%;
+
+    min-width: 0;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    color: #121111;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-size: 15px;
 }
-
-.search-item i:last-child {
-    color: #6b25d9;
-
-    font-size: 11px;
-}
-
-
-/* =========================================================
-   NÚT TÌM KIẾM
-========================================================= */
 
 .search-button {
     height: 52px;
@@ -1299,183 +1115,7 @@ h1 {
 
 
 /* =========================================================
-   TABLET / MOBILE
-========================================================= */
-
-@media (max-width: 768px) {
-
-    .section-1 {
-        min-height: 560px;
-    }
-
-    .section-1-content {
-        padding: 45px 15px;
-    }
-
-    .section-1-content h1 {
-        font-size: 32px;
-    }
-
-    .section-1-description p {
-        font-size: 14px;
-    }
-
-    .section-1-search {
-        width: 600px;
-
-        padding: 28px;
-    }
-
-    .search-row {
-        flex-direction: column;
-    }
-
-    .search-item,
-    .search-button {
-        width: 100%;
-    }
-
-    .search-button {
-        height: 52px;
-    }
-}
-
-
-/* =========================================================
-   MOBILE NHỎ
-========================================================= */
-
-@media (max-width: 480px) {
-
-    .section-1 {
-        min-height: 600px;
-    }
-
-    .section-1-content {
-        padding: 40px 12px;
-    }
-
-    .section-1-content h1 {
-        font-size: 27px;
-    }
-
-    .section-1-description p {
-        font-size: 13px;
-    }
-
-    .section-1-search {
-        width: 100%;
-
-        padding: 22px;
-    }
-
-    .search-location,
-    .search-item,
-    .search-button {
-        height: 48px;
-    }
-
-    .search-location,
-    .search-item {
-        font-size: 14px;
-    }
-
-    .search-button {
-        font-size: 14px;
-    }
-}
-
-
-/* =========================================================
-   SELECT ĐIỂM ĐẾN
-========================================================= */
-
-.search-location select {
-    flex: 1;
-
-    width: 100%;
-
-    border: none;
-    outline: none;
-
-    background: transparent;
-
-    color: #121111;
-
-    font-family: Arial, Helvetica, sans-serif;
-
-    font-size: 15px;
-
-    cursor: pointer;
-
-    appearance: none;
-}
-
-.search-location select:focus {
-    outline: none;
-}
-
-
-/* =========================================================
-   INPUT SỐ LƯỢNG + NGÀY
-========================================================= */
-
-.search-item input {
-    flex: 1;
-
-    width: 100%;
-
-    min-width: 0;
-
-    border: none;
-    outline: none;
-
-    background: transparent;
-
-    color: #121111;
-
-    font-family: Arial, Helvetica, sans-serif;
-
-    font-size: 15px;
-}
-
-.search-item input:focus {
-    outline: none;
-}
-
-
-/* =========================================================
-   INPUT DATE
-========================================================= */
-
-.search-item input[type="date"] {
-    cursor: pointer;
-}
-
-
-/* =========================================================
-   INPUT NUMBER
-========================================================= */
-
-.search-item input[type="number"] {
-    cursor: pointer;
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 768px) {
-
-    .search-location select,
-    .search-item input {
-        font-size: 14px;
-    }
-}
-
-/* =========================================================
-   SECTION 2 - TOUR GIỜ CHÓT
+   SECTION 2
 ========================================================= */
 
 .section-2 {
@@ -1490,13 +1130,14 @@ h1 {
 
 
 /* =========================================================
-   KHUNG CHÍNH
+   SECTION 2 CONTAINER
 ========================================================= */
 
 .section-2-container {
     position: relative;
 
     width: calc(100% - 10px);
+
     max-width: 1500px;
 
     min-height: 455px;
@@ -1510,6 +1151,7 @@ h1 {
     border-radius: 10px;
 
     display: flex;
+
     align-items: stretch;
 
     gap: 23px;
@@ -1521,7 +1163,7 @@ h1 {
 
 
 /* =========================================================
-   CỘT ƯU ĐÃI BÊN TRÁI
+   SECTION 2 - SALE
 ========================================================= */
 
 .section-2-sale {
@@ -1530,6 +1172,7 @@ h1 {
     flex-shrink: 0;
 
     display: flex;
+
     flex-direction: column;
 
     align-items: center;
@@ -1540,11 +1183,6 @@ h1 {
 
     padding: 25px 0 13px;
 }
-
-
-/* =========================================================
-   TIÊU ĐỀ ƯU ĐÃI
-========================================================= */
 
 .section-2-sale h2 {
     margin: 0;
@@ -1560,11 +1198,6 @@ h1 {
     text-transform: uppercase;
 }
 
-
-/* =========================================================
-   MÔ TẢ
-========================================================= */
-
 .section-2-sale > p {
     margin: 15px 0 28px;
 
@@ -1576,11 +1209,6 @@ h1 {
 
     max-width: 220px;
 }
-
-
-/* =========================================================
-   KẾT THÚC SAU
-========================================================= */
 
 .section-2-sale h3 {
     margin: 0 0 13px;
@@ -1601,6 +1229,7 @@ h1 {
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     gap: 10px;
@@ -1610,10 +1239,13 @@ h1 {
 
 .countdown-item {
     width: 56px;
+
     height: 54px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     background: #fff;
@@ -1633,7 +1265,7 @@ h1 {
 
 
 /* =========================================================
-   GIẢM ĐẾN
+   DISCOUNT
 ========================================================= */
 
 .section-2-discount-title {
@@ -1645,11 +1277,6 @@ h1 {
 
     margin-bottom: 3px;
 }
-
-
-/* =========================================================
-   GIÁ GIẢM
-========================================================= */
 
 .section-2-discount-price {
     color: #fff200;
@@ -1663,7 +1290,7 @@ h1 {
 
 
 /* =========================================================
-   DANH SÁCH TOUR
+   SECTION 2 - SWIPER CONTAINER
 ========================================================= */
 
 .section-2-tours {
@@ -1673,11 +1300,47 @@ h1 {
 
     min-width: 0;
 
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   SWIPER
+========================================================= */
+
+.section-2-swiper {
+    width: 100%;
+
+    height: 100%;
+
+    overflow: hidden;
+}
+
+.section-2-swiper .swiper-wrapper {
     display: flex;
 
     align-items: stretch;
+}
 
-    gap: 18px;
+.section-2-swiper .swiper-slide {
+    height: auto;
+
+    display: flex;
+
+    box-sizing: border-box;
+}
+
+
+/*
+    3 CARD / 1 LẦN HIỂN THỊ
+
+    Quan trọng:
+    KHÔNG đặt width: auto cho slide.
+    Swiper sẽ tự tính width theo slidesPerView.
+*/
+
+.section-2-swiper .swiper-slide {
+    min-width: 0;
 }
 
 
@@ -1688,9 +1351,11 @@ h1 {
 .section-2-tour-card {
     position: relative;
 
-    flex: 1;
+    width: 100%;
 
     min-width: 0;
+
+    height: 100%;
 
     background: #fff;
 
@@ -1699,6 +1364,7 @@ h1 {
     overflow: hidden;
 
     display: flex;
+
     flex-direction: column;
 
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
@@ -1727,6 +1393,7 @@ h1 {
     display: block;
 
     width: 100%;
+
     height: 100%;
 
     object-fit: cover;
@@ -1736,13 +1403,14 @@ h1 {
 
 
 /* =========================================================
-   NHÃN GIẢM GIÁ
+   SALE LABEL
 ========================================================= */
 
 .section-2-sale-label {
     position: absolute;
 
     left: 0;
+
     bottom: 0;
 
     height: 24px;
@@ -1750,6 +1418,7 @@ h1 {
     padding: 0 10px;
 
     display: flex;
+
     align-items: center;
 
     background: #e31b23;
@@ -1775,13 +1444,16 @@ h1 {
 
 
 /* =========================================================
-   NỘI DUNG CARD
+   TOUR CONTENT
 ========================================================= */
 
 .section-2-tour-content {
     flex: 1;
 
+    min-height: 0;
+
     display: flex;
+
     flex-direction: column;
 
     padding: 13px 13px 10px;
@@ -1789,7 +1461,7 @@ h1 {
 
 
 /* =========================================================
-   TÊN TOUR
+   TOUR NAME
 ========================================================= */
 
 .section-2-tour-content h3 {
@@ -1806,9 +1478,15 @@ h1 {
     font-weight: bold;
 }
 
+.section-2-tour-content h3 a {
+    color: inherit;
+
+    text-decoration: none;
+}
+
 
 /* =========================================================
-   GIÁ
+   PRICE
 ========================================================= */
 
 .section-2-tour-price {
@@ -1847,7 +1525,7 @@ h1 {
 
 
 /* =========================================================
-   THÔNG TIN TOUR
+   TOUR INFO
 ========================================================= */
 
 .section-2-tour-content > p {
@@ -1875,6 +1553,8 @@ h1 {
     align-items: center;
 
     justify-content: space-between;
+
+    gap: 8px;
 }
 
 
@@ -1888,11 +1568,13 @@ h1 {
     align-items: center;
 
     gap: 5px;
+
+    min-width: 0;
 }
 
 
 /* =========================================================
-   5 NGÔI SAO
+   STARS
 ========================================================= */
 
 .section-2-stars {
@@ -1905,29 +1587,70 @@ h1 {
     font-size: 16px;
 
     line-height: 1;
+
+    flex-shrink: 0;
 }
-
-
-/* =========================================================
-   TỪNG NGÔI SAO
-========================================================= */
 
 .section-2-stars span {
     position: relative;
 
     display: inline-block;
 
+    width: 16px;
+
+    height: 16px;
+
     color: #ddd;
 
     font-size: 16px;
 
-    line-height: 1;
+    line-height: 16px;
+
+    overflow: hidden;
 }
 
 
-/* =========================================================
-   PHẦN SAO ĐƯỢC TÔ
-========================================================= */
+/*
+    SAO NỀN
+*/
+
+.section-2-stars span::after {
+    content: "★";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    color: #ddd;
+
+    width: 100%;
+
+    height: 100%;
+}
+
+
+/*
+    SAO ĐƯỢC TÔ
+
+    clamp():
+
+    0  -> không tô
+    0.5 -> tô 50%
+    1  -> tô 100%
+
+    Ví dụ:
+
+    rating = 3.2
+
+    sao 1 = 100%
+    sao 2 = 100%
+    sao 3 = 100%
+    sao 4 = 20%
+    sao 5 = 0%
+*/
+
 
 .section-2-stars span::before {
     content: "★";
@@ -1935,51 +1658,88 @@ h1 {
     position: absolute;
 
     top: 0;
+
     left: 0;
 
     color: #ffd000;
 
     width: 0;
 
+    height: 100%;
+
     overflow: hidden;
 
     white-space: nowrap;
+
+    z-index: 2;
 }
 
 
-/* =========================================================
-   TÍNH % TỪ rating
-========================================================= */
+/* SAO 1 */
 
 .section-2-stars span:nth-child(1)::before {
-    width: min(100%, calc(var(--rating) * 100%));
+    width: clamp(
+        0%,
+        calc(var(--rating) * 100%),
+        100%
+    );
 }
+
+
+/* SAO 2 */
 
 .section-2-stars span:nth-child(2)::before {
-    width: min(100%, calc((var(--rating) - 1) * 100%));
+    width: clamp(
+        0%,
+        calc((var(--rating) - 1) * 100%),
+        100%
+    );
 }
+
+
+/* SAO 3 */
 
 .section-2-stars span:nth-child(3)::before {
-    width: min(100%, calc((var(--rating) - 2) * 100%));
+    width: clamp(
+        0%,
+        calc((var(--rating) - 2) * 100%),
+        100%
+    );
 }
+
+
+/* SAO 4 */
 
 .section-2-stars span:nth-child(4)::before {
-    width: min(100%, calc((var(--rating) - 3) * 100%));
+    width: clamp(
+        0%,
+        calc((var(--rating) - 3) * 100%),
+        100%
+    );
 }
 
+
+/* SAO 5 */
+
 .section-2-stars span:nth-child(5)::before {
-    width: min(100%, calc((var(--rating) - 4) * 100%));
+    width: clamp(
+        0%,
+        calc((var(--rating) - 4) * 100%),
+        100%
+    );
 }
 
 
 /* =========================================================
-   SỐ LƯỢNG ĐÁNH GIÁ
+   SỐ LƯỢNG REVIEW
 ========================================================= */
 
 .section-2-rating small {
     color: #999;
 
     font-size: 9px;
+
+    white-space: nowrap;
 }
 
 
@@ -1999,14 +1759,19 @@ h1 {
     font-size: 10px;
 
     white-space: nowrap;
+
+    flex-shrink: 0;
 }
 
 .section-2-remaining b {
     width: 31px;
+
     height: 31px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     background: #e31b23;
@@ -2022,7 +1787,7 @@ h1 {
 
 
 /* =========================================================
-   NÚT MŨI TÊN
+   NÚT SWIPER
 ========================================================= */
 
 .section-2-arrow {
@@ -2033,6 +1798,7 @@ h1 {
     transform: translateY(-50%);
 
     width: 35px;
+
     height: 35px;
 
     border: none;
@@ -2044,12 +1810,14 @@ h1 {
     color: #fff;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     cursor: pointer;
 
-    z-index: 10;
+    z-index: 20;
 
     transition:
         background 0.2s ease,
@@ -2067,11 +1835,205 @@ h1 {
 }
 
 .section-2-arrow-prev {
-    left: -17px;
+    left: 5px;
 }
 
 .section-2-arrow-next {
-    right: -17px;
+    right: 5px;
+}
+
+
+/* =========================================================
+   SECTION 3
+========================================================= */
+
+.section-3 {
+    width: 100%;
+
+    padding: 25px 0;
+
+    background: #fff;
+
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.section-3-container {
+    width: calc(100% - 55px);
+
+    max-width: 1200px;
+
+    margin: 0 auto;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   SECTION 3 TITLE
+========================================================= */
+
+.section-3-title {
+    width: 100%;
+
+    text-align: center;
+
+    margin-bottom: 18px;
+}
+
+.section-3-title h2 {
+    margin: 0;
+
+    color: #4b00c9;
+
+    font-size: 27px;
+
+    line-height: 1.2;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   SECTION 3 SWIPER
+========================================================= */
+
+.section-3-swiper {
+    width: 100%;
+
+    padding-bottom: 32px !important;
+
+    overflow: hidden;
+}
+
+.section-3-swiper .swiper-slide {
+    width: auto;
+
+    box-sizing: border-box;
+}
+
+.section-3-swiper .swiper-slide a {
+    display: block;
+
+    width: 100%;
+
+    overflow: hidden;
+
+    border-radius: 7px;
+}
+
+.section-3-swiper .swiper-slide img {
+    display: block;
+
+    width: 100%;
+
+    height: 180px;
+
+    object-fit: cover;
+
+    object-position: center;
+
+    border-radius: 7px;
+
+    transition: transform 0.3s ease;
+}
+
+.section-3-swiper .swiper-slide img:hover {
+    transform: scale(1.03);
+}
+
+
+/* =========================================================
+   SECTION 3 PAGINATION
+========================================================= */
+
+.section-3-swiper .swiper-pagination {
+    bottom: 0 !important;
+}
+
+.section-3-swiper .swiper-pagination-bullet {
+    width: 10px;
+
+    height: 10px;
+
+    opacity: 1;
+
+    background: #ddd;
+}
+
+.section-3-swiper .swiper-pagination-bullet-active {
+    background: #4b00c9;
+
+    width: 10px;
+
+    height: 10px;
+}
+
+
+/* =========================================================
+   SECTION 4
+========================================================= */
+
+.section-4 {
+    width: 100%;
+
+    padding: 25px 0;
+
+    background: #fff;
+
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.section-4-container {
+    width: calc(100% - 55px);
+
+    max-width: 1200px;
+
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   SECTION 4 TITLE
+========================================================= */
+
+.section-4-title {
+    text-align: center;
+
+    margin-bottom: 15px;
+}
+
+.section-4-title h2 {
+    margin: 0;
+
+    color: #4b00c9;
+
+    font-size: 27px;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   SECTION 4 LIST
+========================================================= */
+
+.section-4-list {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 14px;
+}
+
+
+/* =========================================================
+   SECTION 4 CARD
+========================================================= */
+
+.section-4-list .section-2-tour-card {
+    width: 100%;
+
+    min-width: 0;
 }
 
 
@@ -2117,10 +2079,117 @@ h1 {
 
 
 /* =========================================================
+   SECTION 3 TABLET
+========================================================= */
+
+@media (max-width: 1000px) {
+
+    .section-3-container {
+        width: calc(100% - 30px);
+    }
+
+    .section-3-title h2 {
+        font-size: 24px;
+    }
+
+    .section-3-swiper .swiper-slide img {
+        height: 160px;
+    }
+
+    .section-4-container {
+        width: calc(100% - 30px);
+    }
+
+    .section-4-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+
+/* =========================================================
    MOBILE
 ========================================================= */
 
 @media (max-width: 768px) {
+
+    .header-top {
+        font-size: 11px;
+    }
+
+    .header-contact {
+        gap: 10px;
+
+        padding: 0 10px;
+
+        justify-content: center;
+    }
+
+    .header-contact span:nth-child(3) {
+        display: none;
+    }
+
+    .header-inner {
+        height: 65px;
+
+        padding: 0 10px;
+    }
+
+    .logo img {
+        height: 40px;
+    }
+
+    .menu > ul {
+        width: 280px;
+    }
+
+    .contact-phone {
+        display: none;
+    }
+
+    .auth-links {
+        display: none;
+    }
+
+    .header-actions {
+        gap: 8px;
+    }
+
+
+    /* SECTION 1 */
+
+    .section-1 {
+        min-height: 560px;
+    }
+
+    .section-1-content {
+        padding: 45px 15px;
+    }
+
+    .section-1-content h1 {
+        font-size: 32px;
+    }
+
+    .section-1-description p {
+        font-size: 14px;
+    }
+
+    .section-1-search {
+        width: 600px;
+
+        padding: 28px;
+    }
+
+    .search-row {
+        flex-direction: column;
+    }
+
+    .search-item,
+    .search-button {
+        width: 100%;
+    }
+
+
+    /* SECTION 2 */
 
     .section-2 {
         padding: 8px 0;
@@ -2156,22 +2225,20 @@ h1 {
         margin-bottom: 18px;
     }
 
+
+    /*
+        MOBILE:
+        Cho swiper hiện 1 card
+    */
+
     .section-2-tours {
         width: 100%;
 
-        overflow-x: auto;
-
-        padding-bottom: 5px;
-
-        scrollbar-width: none;
-    }
-
-    .section-2-tours::-webkit-scrollbar {
-        display: none;
+        overflow: hidden;
     }
 
     .section-2-tour-card {
-        flex: 0 0 275px;
+        width: 100%;
     }
 
     .section-2-tour-image {
@@ -2181,256 +2248,9 @@ h1 {
     .section-2-arrow {
         display: none;
     }
-}
 
 
-/* =========================================================
-   MOBILE NHỎ
-========================================================= */
-
-@media (max-width: 480px) {
-
-    .section-2-container {
-        width: calc(100% - 10px);
-
-        padding: 18px 10px;
-
-        border-radius: 7px;
-    }
-
-    .section-2-sale h2 {
-        font-size: 23px;
-    }
-
-    .section-2-discount-price {
-        font-size: 32px;
-    }
-
-    .section-2-tour-card {
-        flex-basis: 250px;
-    }
-
-    .section-2-tour-image {
-        height: 175px;
-    }
-}
-
-/* =========================================================
-   SECTION 2 - SWIPER
-========================================================= */
-
-.section-2-tours {
-    position: relative;
-
-    flex: 1;
-    min-width: 0;
-
-    overflow: hidden;
-}
-
-
-/* SWIPER */
-
-.section-2-swiper {
-    width: 100%;
-    overflow: hidden;
-}
-
-
-/* WRAPPER */
-
-.section-2-swiper .swiper-wrapper {
-    display: flex;
-}
-
-
-/* SLIDE */
-
-.section-2-swiper .swiper-slide {
-    height: auto;
-
-    display: flex;
-
-    box-sizing: border-box;
-}
-
-
-/* CARD */
-
-.section-2-swiper .section-2-tour-card {
-    width: 100%;
-
-    min-width: 0;
-
-    flex: none;
-}
-
-/* =========================================================
-   SECTION 3 - KHUYẾN MÃI
-========================================================= */
-
-.section-3 {
-    width: 100%;
-
-    padding: 25px 0;
-
-    background: #fff;
-
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-
-/* =========================================================
-   KHUNG CHÍNH
-========================================================= */
-
-.section-3-container {
-    width: calc(100% - 55px);
-
-    max-width: 1200px;
-
-    margin: 0 auto;
-
-    overflow: hidden;
-}
-
-
-/* =========================================================
-   TIÊU ĐỀ
-========================================================= */
-
-.section-3-title {
-    width: 100%;
-
-    text-align: center;
-
-    margin-bottom: 18px;
-}
-
-.section-3-title h2 {
-    margin: 0;
-
-    color: #4b00c9;
-
-    font-size: 27px;
-
-    line-height: 1.2;
-
-    font-weight: 800;
-}
-
-
-/* =========================================================
-   SWIPER
-========================================================= */
-
-.section-3-swiper {
-    width: 100%;
-
-    padding-bottom: 32px !important;
-
-    overflow: hidden;
-}
-
-
-/* =========================================================
-   SLIDE
-========================================================= */
-
-.section-3-swiper .swiper-slide {
-    width: auto;
-
-    box-sizing: border-box;
-}
-
-
-/* =========================================================
-   ẢNH
-========================================================= */
-
-.section-3-swiper .swiper-slide a {
-    display: block;
-
-    width: 100%;
-
-    overflow: hidden;
-
-    border-radius: 7px;
-}
-
-.section-3-swiper .swiper-slide img {
-    display: block;
-
-    width: 100%;
-
-    height: 180px;
-
-    object-fit: cover;
-
-    object-position: center;
-
-    border-radius: 7px;
-
-    transition: transform 0.3s ease;
-}
-
-.section-3-swiper .swiper-slide img:hover {
-    transform: scale(1.03);
-}
-
-
-/* =========================================================
-   PAGINATION
-========================================================= */
-
-.section-3-swiper .swiper-pagination {
-    bottom: 0 !important;
-}
-
-.section-3-swiper .swiper-pagination-bullet {
-    width: 10px;
-
-    height: 10px;
-
-    opacity: 1;
-
-    background: #ddd;
-}
-
-.section-3-swiper .swiper-pagination-bullet-active {
-    background: #4b00c9;
-
-    width: 10px;
-
-    height: 10px;
-}
-
-
-/* =========================================================
-   TABLET
-========================================================= */
-
-@media (max-width: 1000px) {
-
-    .section-3-container {
-        width: calc(100% - 30px);
-    }
-
-    .section-3-title h2 {
-        font-size: 24px;
-    }
-
-    .section-3-swiper .swiper-slide img {
-        height: 160px;
-    }
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 768px) {
+    /* SECTION 3 */
 
     .section-3 {
         padding: 20px 0;
@@ -2451,6 +2271,102 @@ h1 {
     .section-3-swiper .swiper-slide img {
         height: 150px;
     }
+
+
+    /* SECTION 4 */
+
+    .section-4-container {
+        width: calc(100% - 20px);
+    }
+
+    .section-4-list {
+        grid-template-columns: repeat(2, 1fr);
+
+        gap: 10px;
+    }
+
+
+    /* FOOTER */
+
+    .footer-container {
+        padding-left: 15px;
+
+        padding-right: 15px;
+    }
+
+    .footer-register-content {
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 20px;
+    }
+
+    .footer-register-form {
+        width: 100%;
+    }
+
+    .footer-menu .footer-container {
+        flex-direction: column;
+
+        gap: 25px;
+
+        padding-top: 25px;
+
+        padding-bottom: 25px;
+    }
+
+    .footer-nav {
+        flex-wrap: wrap;
+
+        justify-content: center;
+
+        gap: 18px;
+    }
+
+    .footer-social {
+        gap: 25px;
+    }
+
+    .footer-bottom .footer-container {
+        flex-direction: column;
+
+        gap: 20px;
+
+        padding-top: 25px;
+
+        padding-bottom: 25px;
+    }
+
+    .footer-logo {
+        order: -1;
+    }
+
+    .footer-links {
+        justify-content: center;
+
+        flex-wrap: wrap;
+    }
+
+
+    /* BOX CONTACT */
+
+    .box-contact ul {
+        padding: 6px 4px;
+
+        border-radius: 8px 0 0 8px;
+    }
+
+    .box-contact li,
+    .box-contact li a {
+        width: 30px;
+
+        height: 30px;
+    }
+
+    .box-contact i {
+        font-size: 15px;
+    }
 }
 
 
@@ -2460,11 +2376,140 @@ h1 {
 
 @media (max-width: 480px) {
 
+    .menu > ul {
+        width: 260px;
+    }
+
+    .logo img {
+        height: 36px;
+    }
+
+    .menu-toggle {
+        font-size: 23px;
+
+        width: 38px;
+
+        height: 38px;
+    }
+
+
+    /* SECTION 1 */
+
+    .section-1 {
+        min-height: 600px;
+    }
+
+    .section-1-content {
+        padding: 40px 12px;
+    }
+
+    .section-1-content h1 {
+        font-size: 27px;
+    }
+
+    .section-1-description p {
+        font-size: 13px;
+    }
+
+    .section-1-search {
+        width: 100%;
+
+        padding: 22px;
+    }
+
+    .search-location,
+    .search-item,
+    .search-button {
+        height: 48px;
+    }
+
+    .search-location,
+    .search-item {
+        font-size: 14px;
+    }
+
+    .search-button {
+        font-size: 14px;
+    }
+
+
+    /* SECTION 2 */
+
+    .section-2-container {
+        width: calc(100% - 10px);
+
+        padding: 18px 10px;
+
+        border-radius: 7px;
+    }
+
+    .section-2-sale h2 {
+        font-size: 23px;
+    }
+
+    .section-2-discount-price {
+        font-size: 32px;
+    }
+
+    .section-2-tour-image {
+        height: 175px;
+    }
+
+
+    /* SECTION 3 */
+
     .section-3-title h2 {
         font-size: 18px;
     }
 
     .section-3-swiper .swiper-slide img {
         height: 130px;
+    }
+
+
+    /* SECTION 4 */
+
+    .section-4-list {
+        grid-template-columns: 1fr;
+    }
+
+
+    /* FOOTER */
+
+    .footer-register {
+        padding: 25px 10px;
+    }
+
+    .footer-register-content {
+        padding: 22px;
+    }
+
+    .footer-register-title {
+        font-size: 16px;
+    }
+
+    .footer-register-form {
+        flex-direction: column;
+
+        background: transparent;
+
+        padding: 0;
+    }
+
+    .footer-register-form input,
+    .footer-register-form button {
+        width: 100%;
+    }
+
+    .footer-nav {
+        gap: 15px;
+    }
+
+    .footer-nav a {
+        font-size: 12px;
+    }
+
+    .footer-logo img {
+        width: 160px;
     }
 }
