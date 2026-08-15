@@ -4,4 +4,11 @@ include ../mixins/box-breadcrumb.pug
 include ../mixins/product-item.pug
 
 block main
- h1 Chi tiết tour
+  // Breadcrumb
+  +box-breadcrumb('/assets/image/banner-7.jpg', 'Tour Hà Nội - Ninh Bình - Hạ Long - Yên Tử - Sapa | 6N5Đ', [
+    { name: 'Trang Chủ', link: '/' },
+    { name: 'Tour Trong Nước', link: '/tours' },
+    { name: 'Tour Miền Bắc', link: '/tours' },
+    { name: 'Tour Hà Nội - Ninh Bình - Hạ Long - Yên Tử - Sapa | 6N5Đ' }
+  ])
+  // End Breadcrumb
