@@ -1,7 +1,578 @@
 extends ../../layouts/default
 
 block main
-  h1= pageTitle
-  ul
-    each tour in tourList
-      li #{tour.name} (Phương tiện: #{tour.vehicle})
+
+  // =========================================================
+  // TOUR LIST PAGE
+  // =========================================================
+
+  // =========================================================
+  // BANNER
+  // =========================================================
+
+  section.tour-banner
+
+    .tour-banner-background
+      img(
+        src="/assets/image/banner6.png"
+        alt="Tour du lịch"
+      )
+
+    .tour-banner-overlay
+
+    .tour-banner-content
+      h1 Tour Nước Ngoài
+
+      .tour-breadcrumb
+        a(href="/") Trang chủ
+        i.fas.fa-chevron-right
+        span Tour Nước Ngoài
+
+
+  // =========================================================
+  // DỮ LIỆU TOUR NƯỚC NGOÀI
+  // LẤY THEO SECTION 6 TRONG HOME
+  // =========================================================
+
+  -
+    var productListSection6 = [
+      {
+        avatar: "/assets/image/sec6-1.jpg",
+        slug: "#",
+        discount: 30,
+        name: "Hà Nội - Bangkok - Pattaya 5N4Đ",
+        priceOld: 12500000,
+        priceNew: 8750000,
+        code: "TOUR000041",
+        departureDate: "05/02/2027",
+        time: "5 Ngày 4 Đêm",
+        ratingStars: 4.8,
+        ratingTotal: 35,
+        stock: 10
+      },
+      {
+        avatar: "/assets/image/sec6-2.jpg",
+        slug: "#",
+        discount: 25,
+        name: "Singapore - Sentosa - Universal Studios 4N3Đ",
+        priceOld: 16800000,
+        priceNew: 12600000,
+        code: "TOUR000042",
+        departureDate: "08/02/2027",
+        time: "4 Ngày 3 Đêm",
+        ratingStars: 4.9,
+        ratingTotal: 42,
+        stock: 8
+      },
+      {
+        avatar: "/assets/image/sec6-3.jpg",
+        slug: "#",
+        discount: 20,
+        name: "Malaysia - Kuala Lumpur - Genting 4N3Đ",
+        priceOld: 14200000,
+        priceNew: 11360000,
+        code: "TOUR000043",
+        departureDate: "11/02/2027",
+        time: "4 Ngày 3 Đêm",
+        ratingStars: 4.7,
+        ratingTotal: 28,
+        stock: 12
+      },
+      {
+        avatar: "/assets/image/sec6-4.jpg",
+        slug: "#",
+        discount: 30,
+        name: "Hàn Quốc - Seoul - Nami - Everland 6N5Đ",
+        priceOld: 23900000,
+        priceNew: 16730000,
+        code: "TOUR000044",
+        departureDate: "14/02/2027",
+        time: "6 Ngày 5 Đêm",
+        ratingStars: 4.9,
+        ratingTotal: 51,
+        stock: 7
+      },
+      {
+        avatar: "/assets/image/sec6-5.jpg",
+        slug: "#",
+        discount: 25,
+        name: "Nhật Bản - Tokyo - Núi Phú Sĩ - Kyoto 6N5Đ",
+        priceOld: 28900000,
+        priceNew: 21675000,
+        code: "TOUR000045",
+        departureDate: "17/02/2027",
+        time: "6 Ngày 5 Đêm",
+        ratingStars: 4.9,
+        ratingTotal: 47,
+        stock: 6
+      },
+      {
+        avatar: "/assets/image/sec6-6.jpg",
+        slug: "#",
+        discount: 20,
+        name: "Trung Quốc - Bắc Kinh - Vạn Lý Trường Thành 5N4Đ",
+        priceOld: 19800000,
+        priceNew: 15840000,
+        code: "TOUR000046",
+        departureDate: "20/02/2027",
+        time: "5 Ngày 4 Đêm",
+        ratingStars: 4.8,
+        ratingTotal: 33,
+        stock: 11
+      },
+      {
+        avatar: "/assets/image/sec6-7.jpg",
+        slug: "#",
+        discount: 30,
+        name: "Đài Loan - Đài Bắc - Đài Trung - Cao Hùng 5N4Đ",
+        priceOld: 17500000,
+        priceNew: 12250000,
+        code: "TOUR000047",
+        departureDate: "23/02/2027",
+        time: "5 Ngày 4 Đêm",
+        ratingStars: 4.7,
+        ratingTotal: 29,
+        stock: 13
+      },
+      {
+        avatar: "/assets/image/sec6-8.jpg",
+        slug: "#",
+        discount: 25,
+        name: "Thái Lan - Chiang Mai - Chiang Rai 5N4Đ",
+        priceOld: 13500000,
+        priceNew: 10125000,
+        code: "TOUR000048",
+        departureDate: "26/02/2027",
+        time: "5 Ngày 4 Đêm",
+        ratingStars: 4.6,
+        ratingTotal: 24,
+        stock: 15
+      },
+      {
+        avatar: "/assets/image/sec6-9.jpg",
+        slug: "#",
+        discount: 30,
+        name: "Pháp - Paris - Versailles 6N5Đ",
+        priceOld: 45900000,
+        priceNew: 32130000,
+        code: "TOUR000049",
+        departureDate: "01/03/2027",
+        time: "6 Ngày 5 Đêm",
+        ratingStars: 4.9,
+        ratingTotal: 38,
+        stock: 5
+      },
+      {
+        avatar: "/assets/image/sec6-10.jpg",
+        slug: "#",
+        discount: 20,
+        name: "Pháp - Thụy Sĩ - Ý 9N8Đ",
+        priceOld: 58900000,
+        priceNew: 47120000,
+        code: "TOUR000050",
+        departureDate: "04/03/2027",
+        time: "9 Ngày 8 Đêm",
+        ratingStars: 4.9,
+        ratingTotal: 45,
+        stock: 4
+      },
+      {
+        avatar: "/assets/image/sec6-11.jpg",
+        slug: "#",
+        discount: 25,
+        name: "Đức - Áo - Séc 8N7Đ",
+        priceOld: 52500000,
+        priceNew: 39375000,
+        code: "TOUR000051",
+        departureDate: "07/03/2027",
+        time: "8 Ngày 7 Đêm",
+        ratingStars: 4.8,
+        ratingTotal: 31,
+        stock: 6
+      },
+      {
+        avatar: "/assets/image/sec6-12.jpg",
+        slug: "#",
+        discount: 30,
+        name: "Anh - London - Oxford - Manchester 7N6Đ",
+        priceOld: 48900000,
+        priceNew: 34230000,
+        code: "TOUR000052",
+        departureDate: "10/03/2027",
+        time: "7 Ngày 6 Đêm",
+        ratingStars: 4.8,
+        ratingTotal: 36,
+        stock: 5
+      },
+      {
+        avatar: "/assets/image/sec6-13.jpg",
+        slug: "#",
+        discount: 15,
+        name: "Dubai - Abu Dhabi - Sa Mạc Safari 5N4Đ",
+        priceOld: 31900000,
+        priceNew: 27115000,
+        code: "TOUR000053",
+        departureDate: "13/03/2027",
+        time: "5 Ngày 4 Đêm",
+        ratingStars: 4.7,
+        ratingTotal: 27,
+        stock: 8
+      },
+      {
+        avatar: "/assets/image/sec6-14.jpg",
+        slug: "#",
+        discount: 20,
+        name: "Úc - Sydney - Blue Mountains 6N5Đ",
+        priceOld: 42900000,
+        priceNew: 34320000,
+        code: "TOUR000054",
+        departureDate: "16/03/2027",
+        time: "6 Ngày 5 Đêm",
+        ratingStars: 4.8,
+        ratingTotal: 34,
+        stock: 6
+      },
+      {
+        avatar: "/assets/image/sec6-15.jpg",
+        slug: "#",
+        discount: 25,
+        name: "Mỹ - New York - Washington D.C. 7N6Đ",
+        priceOld: 62900000,
+        priceNew: 47175000,
+        code: "TOUR000055",
+        departureDate: "19/03/2027",
+        time: "7 Ngày 6 Đêm",
+        ratingStars: 4.9,
+        ratingTotal: 40,
+        stock: 4
+      },
+      {
+        avatar: "/assets/image/sec6-16.jpg",
+        slug: "#",
+        discount: 30,
+        name: "Canada - Toronto - Niagara Falls 6N5Đ",
+        priceOld: 55900000,
+        priceNew: 39130000,
+        code: "TOUR000056",
+        departureDate: "22/03/2027",
+        time: "6 Ngày 5 Đêm",
+        ratingStars: 4.8,
+        ratingTotal: 26,
+        stock: 5
+      },
+      {
+        avatar: "/assets/image/sec6-17.jpg",
+        slug: "#",
+        discount: 20,
+        name: "Hy Lạp - Athens - Santorini 6N5Đ",
+        priceOld: 51900000,
+        priceNew: 41520000,
+        code: "TOUR000057",
+        departureDate: "25/03/2027",
+        time: "6 Ngày 5 Đêm",
+        ratingStars: 4.9,
+        ratingTotal: 37,
+        stock: 5
+      },
+      {
+        avatar: "/assets/image/sec6-18.jpg",
+        slug: "#",
+        discount: 25,
+        name: "Thổ Nhĩ Kỳ - Istanbul - Cappadocia 6N5Đ",
+        priceOld: 43900000,
+        priceNew: 32925000,
+        code: "TOUR000058",
+        departureDate: "28/03/2027",
+        time: "6 Ngày 5 Đêm",
+        ratingStars: 4.8,
+        ratingTotal: 30,
+        stock: 7
+      },
+      {
+        avatar: "/assets/image/sec6-19.jpg",
+        slug: "#",
+        discount: 30,
+        name: "Ai Cập - Cairo - Kim Tự Tháp Giza 6N5Đ",
+        priceOld: 47900000,
+        priceNew: 33530000,
+        code: "TOUR000059",
+        departureDate: "31/03/2027",
+        time: "6 Ngày 5 Đêm",
+        ratingStars: 4.7,
+        ratingTotal: 22,
+        stock: 6
+      },
+      {
+        avatar: "/assets/image/sec6-20.jpg",
+        slug: "#",
+        discount: 20,
+        name: "Thụy Sĩ - Pháp - Ý 9N8Đ",
+        priceOld: 61900000,
+        priceNew: 49520000,
+        code: "TOUR000060",
+        departureDate: "03/04/2027",
+        time: "9 Ngày 8 Đêm",
+        ratingStars: 4.9,
+        ratingTotal: 43,
+        stock: 4
+      }
+    ]
+
+
+  // =========================================================
+  // DANH SÁCH TOUR
+  // KHÔNG PHÂN TRANG
+  // =========================================================
+
+  section.tour-page
+
+    .tour-page-container
+
+
+      // =======================================================
+      // BỘ LỌC
+      // =======================================================
+
+      aside.tour-filter
+
+        .tour-filter-title
+          h2 Bộ Lọc
+          i.fas.fa-filter
+
+
+        //- ĐIỂM ĐI
+        .tour-filter-group
+          label(for="tour-from") Điểm đi
+
+          .tour-select
+            select#tour-from(name="from")
+              option(value="") -- Chọn điểm đi --
+              option(value="ha-noi") Hà Nội
+              option(value="tp-hcm") TP. Hồ Chí Minh
+              option(value="da-nang") Đà Nẵng
+
+
+        //- ĐIỂM ĐẾN
+        .tour-filter-group
+          label(for="tour-to") Điểm đến
+
+          .tour-select
+            select#tour-to(name="to")
+              option(value="") -- Chọn điểm đến --
+              option(value="thai-lan") Thái Lan
+              option(value="singapore") Singapore
+              option(value="han-quoc") Hàn Quốc
+              option(value="nhat-ban") Nhật Bản
+              option(value="trung-quoc") Trung Quốc
+              option(value="dai-loan") Đài Loan
+              option(value="chau-au") Châu Âu
+              option(value="dubai") Dubai
+              option(value="uc") Úc
+              option(value="my") Mỹ
+              option(value="canada") Canada
+
+
+        //- NGÀY KHỞI HÀNH
+        .tour-filter-group
+          label(for="tour-date") Ngày khởi hành
+
+          .tour-input
+            input#tour-date(
+              type="date"
+              name="date"
+            )
+
+
+        //- SỐ LƯỢNG HÀNH KHÁCH
+        .tour-filter-group
+          label Số lượng hành khách
+
+          .tour-passenger
+            input(
+              type="number"
+              min="1"
+              value="1"
+              placeholder="Người lớn"
+              name="adult"
+            )
+
+          .tour-passenger
+            input(
+              type="number"
+              min="0"
+              value="0"
+              placeholder="Trẻ em"
+              name="child"
+            )
+
+          .tour-passenger
+            input(
+              type="number"
+              min="0"
+              value="0"
+              placeholder="Em bé"
+              name="baby"
+            )
+
+
+        //- MỨC GIÁ
+        .tour-filter-group
+          label(for="tour-price") Mức giá
+
+          .tour-select
+            select#tour-price(name="price")
+              option(value="") -- Chọn mức giá --
+              option(value="under-10") Dưới 10 triệu
+              option(value="10-20") 10 - 20 triệu
+              option(value="20-40") 20 - 40 triệu
+              option(value="40-60") 40 - 60 triệu
+              option(value="over-60") Trên 60 triệu
+
+
+        button.tour-filter-button(type="button")
+          i.fas.fa-search
+          |  Áp dụng
+
+
+      // =======================================================
+      // KẾT QUẢ TOUR
+      // =======================================================
+
+      .tour-result
+
+        .tour-result-header
+
+          h2 Tour Nước Ngoài
+
+          p
+            | Du lịch Châu Á: là châu lục lớn và đông dân nhất thế giới. Châu Á cũng có nhiều danh lam thắng cảnh
+            | đẹp tại một số quốc gia như Hàn Quốc, Nhật Bản, Trung Quốc, Việt Nam,... và VK Travel là nhà tổ chức
+            | du lịch chuyên nghiệp hàng đầu Châu Á, đô 5 lần liên tiếp nhận giải TTG Travel Awards. Hãy cùng
+            | 28. Travel du lịch Châu Á để tận hưởng những dịch vụ tốt nhất.
+
+
+        //- SẮP XẾP
+        .tour-sort
+
+          .tour-sort-left
+            span Sắp xếp:
+
+            button(type="button")
+              | Phổ biến
+
+            button(type="button")
+              | Giá thấp
+              i.fas.fa-arrow-down
+
+            button(type="button")
+              | Giá cao
+              i.fas.fa-arrow-up
+
+          .tour-total
+            | Có
+            strong  20
+            |  tour
+
+
+        // =====================================================
+        // CARD TOUR
+        // =====================================================
+
+        .tour-list
+
+          each tour in productListSection6
+
+            article.tour-card
+
+              //- ẢNH TOUR
+              .tour-card-image
+
+                a(href=tour.slug)
+
+                  img(
+                    src=tour.avatar
+                    alt=tour.name
+                    loading="lazy"
+                  )
+
+                //- GIẢM GIÁ
+                if tour.discount > 0
+                  .tour-discount
+                    | Giảm #{tour.discount}%
+
+
+              //- NỘI DUNG
+              .tour-card-content
+
+                //- TÊN TOUR
+                h3.tour-card-name
+
+                  a(href=tour.slug)
+                    = tour.name
+
+
+                //- GIÁ
+                .tour-price
+
+                  if tour.priceOld > tour.priceNew
+                    span.tour-price-old
+                      = tour.priceOld.toLocaleString('vi-VN')
+                      | ₫
+
+                  span.tour-price-new
+                    = tour.priceNew.toLocaleString('vi-VN')
+                    | ₫
+
+
+                //- MÃ TOUR
+                .tour-info
+                  i.fas.fa-ticket-alt
+                  span Mã tour:
+                  strong= tour.code
+
+
+                //- NGÀY KHỞI HÀNH
+                .tour-info
+                  i.fas.fa-calendar-alt
+                  span Khởi hành:
+                  strong= tour.departureDate
+
+
+                //- THỜI GIAN
+                .tour-info
+                  i.fas.fa-clock
+                  span Thời gian:
+                  strong= tour.time
+
+
+                //- RATING
+                .tour-rating
+
+                  .tour-stars
+
+                    - var fullStars = Math.floor(tour.ratingStars)
+
+                    - for (var star = 1; star <= 5; star++)
+
+                      if star <= fullStars
+                        i.fas.fa-star
+                      else
+                        i.far.fa-star
+
+                  span
+                    | #{tour.ratingStars}/5
+                    |  (#{tour.ratingTotal} đánh giá)
+
+
+                //- SỐ CHỖ
+                if tour.stock <= 5
+
+                  .tour-stock
+                    i.fas.fa-fire
+                    |  Chỉ còn #{tour.stock} chỗ
+
+                else
+
+                  .tour-stock
+                    i.fas.fa-check-circle
+                    | Còn #{tour.stock} chỗ
