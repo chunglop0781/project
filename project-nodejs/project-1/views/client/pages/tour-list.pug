@@ -1,5 +1,8 @@
 extends ../../layouts/default
 
+include ../mixins/box-breadcrumb.pug
+include ../mixins/product-item.pug
+
 block main
 
   // =========================================================
@@ -7,26 +10,13 @@ block main
   // =========================================================
 
   // =========================================================
-  // BANNER
+  // BANNER + BREADCRUMB
   // =========================================================
 
-  section.tour-banner
-
-    .tour-banner-background
-      img(
-        src="/assets/image/banner6.png"
-        alt="Tour du lịch"
-      )
-
-    .tour-banner-overlay
-
-    .tour-banner-content
-      h1 Tour Nước Ngoài
-
-      .tour-breadcrumb
-        a(href="/") Trang chủ
-        i.fas.fa-chevron-right
-        span Tour Nước Ngoài
+  +box-breadcrumb('/assets/image/banner6.png', 'Tour Nước Ngoài', [
+    { name: 'Trang chủ', link: '/' },
+    { name: 'Tour Nước Ngoài' }
+  ])
 
 
   // =========================================================
@@ -494,101 +484,7 @@ block main
         .tour-list
 
           each tour in productListSection6
-
-            article.tour-card(data-price=tour.priceNew data-discount=tour.discount)
-
-              //- ẢNH TOUR
-              .tour-card-image
-
-                a(href=tour.slug)
-
-                  img(
-                    src=tour.avatar
-                    alt=tour.name
-                    loading="lazy"
-                  )
-
-                //- GIẢM GIÁ
-                if tour.discount > 0
-                  .tour-discount
-                    | Giảm #{tour.discount}%
-
-
-              //- NỘI DUNG
-              .tour-card-content
-
-                //- TÊN TOUR
-                h3.tour-card-name
-
-                  a(href=tour.slug)
-                    = tour.name
-
-
-                //- GIÁ
-                .tour-price
-
-                  if tour.priceOld > tour.priceNew
-                    span.tour-price-old
-                      = tour.priceOld.toLocaleString('vi-VN')
-                      | ₫
-
-                  span.tour-price-new
-                    = tour.priceNew.toLocaleString('vi-VN')
-                    | ₫
-
-
-                //- MÃ TOUR
-                .tour-info
-                  i.fas.fa-ticket-alt
-                  span Mã tour:
-                  strong= tour.code
-
-
-                //- NGÀY KHỞI HÀNH
-                .tour-info
-                  i.fas.fa-calendar-alt
-                  span Khởi hành:
-                  strong= tour.departureDate
-
-
-                //- THỜI GIAN
-                .tour-info
-                  i.fas.fa-clock
-                  span Thời gian:
-                  strong= tour.time
-
-
-                //- RATING
-                .tour-rating
-
-                  .tour-stars
-
-                    - var fullStars = Math.floor(tour.ratingStars)
-
-                    - for (var star = 1; star <= 5; star++)
-
-                      if star <= fullStars
-                        i.fas.fa-star
-                      else
-                        i.far.fa-star
-
-                  span
-                    | #{tour.ratingStars}/5
-                    |  (#{tour.ratingTotal} đánh giá)
-
-
-                //- SỐ CHỖ
-                if tour.stock <= 5
-
-                  .tour-stock
-                    i.fas.fa-fire
-                    |  Chỉ còn #{tour.stock} chỗ
-
-                else
-
-                  .tour-stock
-                    i.fas.fa-check-circle
-                    | Còn #{tour.stock} chỗ
+            +product-item(tour)
 
 
   // =========================================================

@@ -1,0 +1,35 @@
+//- =========================================================
+//- MIXIN: BOX BREADCRUMB
+//- Dùng cho banner đầu trang + breadcrumb điều hướng
+//- @param bgImage  - đường dẫn ảnh nền banner
+//- @param title    - tiêu đề hiển thị (h1)
+//- @param items    - mảng breadcrumb, dạng:
+//-                    [{ name: 'Trang chủ', link: '/' }, { name: 'Tour Nước Ngoài' }]
+//-                    (item không có "link" sẽ hiển thị dạng span, không phải link)
+//- =========================================================
+
+mixin box-breadcrumb(bgImage, title, items)
+
+  section.tour-banner
+
+    .tour-banner-background
+      img(
+        src=bgImage
+        alt=title
+      )
+
+    .tour-banner-overlay
+
+    .tour-banner-content
+      h1= title
+
+      .tour-breadcrumb
+        each item, index in items
+
+          if item.link
+            a(href=item.link)= item.name
+          else
+            span= item.name
+
+          if index < items.length - 1
+            i.fas.fa-chevron-right
