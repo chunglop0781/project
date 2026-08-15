@@ -1,5 +1,9 @@
 //- =========================================================
 //- MIXIN: PRODUCT ITEM (CARD TOUR)
+//- Hỗ trợ:
+//-   +productItem(item)
+//-   +product-item(tour)
+//-
 //- @param tour - object chứa dữ liệu 1 tour, dạng:
 //-   {
 //-     avatar, slug, discount, name,
@@ -9,11 +13,22 @@
 //-   }
 //- =========================================================
 
-mixin product-item(tour)
 
-  article.tour-card(data-price=tour.priceNew data-discount=tour.discount)
+//- =========================================================
+//- MIXIN: PRODUCT ITEM - CAMEL CASE
+//- =========================================================
 
+mixin productItem(tour)
+
+  article.tour-card(
+    data-price=tour.priceNew
+    data-discount=tour.discount
+  )
+
+    //- =====================================================
     //- ẢNH TOUR
+    //- =====================================================
+
     .tour-card-image
 
       a(href=tour.slug)
@@ -26,24 +41,39 @@ mixin product-item(tour)
 
       //- GIẢM GIÁ
       if tour.discount > 0
+
         .tour-discount
-          | Giảm #{tour.discount}%
+          i.fas.fa-bolt
+          |  Giảm #{tour.discount}%
 
 
+    //- =====================================================
     //- NỘI DUNG
+    //- =====================================================
+
     .tour-card-content
 
+      //- ===================================================
       //- TÊN TOUR
+      //- ===================================================
+
       h3.tour-card-name
 
-        a(href=tour.slug)
+        a(
+          href=tour.slug
+          style="text-decoration: none; color: inherit;"
+        )
           = tour.name
 
 
+      //- ===================================================
       //- GIÁ
+      //- ===================================================
+
       .tour-price
 
         if tour.priceOld > tour.priceNew
+
           span.tour-price-old
             = tour.priceOld.toLocaleString('vi-VN')
             | ₫
@@ -53,28 +83,49 @@ mixin product-item(tour)
           | ₫
 
 
+      //- ===================================================
       //- MÃ TOUR
+      //- ===================================================
+
       .tour-info
+
         i.fas.fa-ticket-alt
+
         span Mã tour:
+
         strong= tour.code
 
 
+      //- ===================================================
       //- NGÀY KHỞI HÀNH
+      //- ===================================================
+
       .tour-info
+
         i.fas.fa-calendar-alt
+
         span Khởi hành:
+
         strong= tour.departureDate
 
 
+      //- ===================================================
       //- THỜI GIAN
+      //- ===================================================
+
       .tour-info
+
         i.fas.fa-clock
+
         span Thời gian:
+
         strong= tour.time
 
 
+      //- ===================================================
       //- RATING
+      //- ===================================================
+
       .tour-rating
 
         .tour-stars
@@ -84,8 +135,11 @@ mixin product-item(tour)
           - for (var star = 1; star <= 5; star++)
 
             if star <= fullStars
+
               i.fas.fa-star
+
             else
+
               i.far.fa-star
 
         span
@@ -93,15 +147,34 @@ mixin product-item(tour)
           |  (#{tour.ratingTotal} đánh giá)
 
 
+      //- ===================================================
       //- SỐ CHỖ
+      //- ===================================================
+
       if tour.stock <= 5
 
         .tour-stock
+
           i.fas.fa-fire
+
           |  Chỉ còn #{tour.stock} chỗ
 
       else
 
         .tour-stock
+
           i.fas.fa-check-circle
-          | Còn #{tour.stock} chỗ
+
+          |  Còn #{tour.stock} chỗ
+
+
+
+//- =========================================================
+//- MIXIN: PRODUCT ITEM - KEBAB CASE
+//- Dùng cho:
+//-   +product-item(tour)
+//- =========================================================
+
+mixin product-item(tour)
+
+  +productItem(tour)
