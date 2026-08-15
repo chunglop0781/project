@@ -1,14 +1,744 @@
 extends ../../layouts/default
 
 include ../mixins/box-breadcrumb.pug
-include ../mixins/product-item.pug
 
 block main
-  // Breadcrumb
-  +box-breadcrumb('/assets/image/banner-7.jpg', 'Tour Hà Nội - Ninh Bình - Hạ Long - Yên Tử - Sapa | 6N5Đ', [
-    { name: 'Trang Chủ', link: '/' },
-    { name: 'Tour Trong Nước', link: '/tours' },
-    { name: 'Tour Miền Bắc', link: '/tours' },
-    { name: 'Tour Hà Nội - Ninh Bình - Hạ Long - Yên Tử - Sapa | 6N5Đ' }
-  ])
-  // End Breadcrumb
+
+  //- =========================================================
+  //- BREADCRUMB
+  //- =========================================================
+
+  +box-breadcrumb(
+    '/assets/image/banner-7.jpg',
+    'Tour Hà Nội - Ninh Bình - Hạ Long - Yên Tử - Sapa | 6N5Đ',
+    [
+      { name: 'Trang Chủ', link: '/' },
+      { name: 'Tour Trong Nước', link: '/tours' },
+      { name: 'Tour Miền Bắc', link: '/tours' },
+      { name: 'Tour Hà Nội - Ninh Bình - Hạ Long - Yên Tử - Sapa | 6N5Đ' }
+    ]
+  )
+
+
+  //- =========================================================
+  //- SECTION 11
+  //- CHI TIẾT TOUR
+  //- =========================================================
+
+  section.sec-11
+
+    .sec-11-container
+
+
+      //- =======================================================
+      //- PHẦN NỘI DUNG CHÍNH
+      //- =======================================================
+
+      .sec-11-introduction
+
+
+        //- =====================================================
+        //- TIÊU ĐỀ
+        //- =====================================================
+
+        h1.sec-11-title
+          | Tour Hà Nội - Ninh Bình - Hạ Long - Yên Tử - Sapa | 6N5Đ
+
+
+        p.sec-11-intro-short
+          | Hành trình 6 ngày 5 đêm đưa du khách khám phá những điểm đến
+          | nổi bật nhất của miền Bắc Việt Nam, từ thủ đô Hà Nội,
+          | non nước Ninh Bình, kỳ quan Vịnh Hạ Long, núi thiêng Yên Tử
+          | cho đến thị trấn vùng cao Sa Pa và đỉnh Fansipan.
+
+
+          //- =====================================================
+          //- GALLERY ẢNH
+          //- =====================================================
+
+          .sec-11-gallery
+
+            //- ===================================================
+            //- ẢNH CHÍNH
+            //- ===================================================
+
+            .sec-11-gallery-main
+
+              img(
+                src="/assets/image/sec11-1.jpg"
+                alt="Hồ Hoàn Kiếm Hà Nội"
+              )
+
+
+            //- ===================================================
+            //- THANH THUMBNAIL
+            //- ===================================================
+
+            .sec-11-gallery-bottom
+
+              //- NÚT TRÁI
+              button.sec-11-gallery-prev(
+                type="button"
+                aria-label="Ảnh trước"
+              )
+                i.fas.fa-chevron-left
+
+
+              //- DANH SÁCH ẢNH NHỎ
+              .sec-11-gallery-list
+
+                .sec-11-gallery-item.active
+                  img(
+                    src="/assets/image/sec11-1.jpg"
+                    alt="Hà Nội"
+                  )
+
+                .sec-11-gallery-item
+                  img(
+                    src="/assets/image/sec11-2.jpg"
+                    alt="Vịnh Hạ Long"
+                  )
+
+                .sec-11-gallery-item
+                  img(
+                    src="/assets/image/sec11-3.jpg"
+                    alt="Ninh Bình"
+                  )
+
+                .sec-11-gallery-item
+                  img(
+                    src="/assets/image/sec11-4.jpg"
+                    alt="Sa Pa"
+                  )
+
+
+              //- NÚT PHẢI
+              button.sec-11-gallery-next(
+                type="button"
+                aria-label="Ảnh tiếp theo"
+              )
+                i.fas.fa-chevron-right
+
+
+        //- =====================================================
+        //- THÔNG TIN TOUR
+        //- =====================================================
+
+        .sec-11-description
+
+          h3 Thông tin Tour
+
+          p
+            | Nói về dịch vụ, chăm sóc rồi, với một hành trình được thiết kế
+            | dành cho những du khách muốn khám phá tương đối đầy đủ vẻ đẹp
+            | miền Bắc Việt Nam trong một chuyến đi. Tour kết hợp giữa
+            | tham quan văn hóa, khám phá thiên nhiên, trải nghiệm tâm linh,
+            | thưởng thức ẩm thực và nghỉ ngơi tại những điểm đến nổi tiếng.
+
+          p
+            | Hành trình bắt đầu tại Hà Nội - thủ đô nghìn năm văn hiến,
+            | nơi du khách có thể tìm hiểu về lịch sử, văn hóa và nhịp sống
+            | hiện đại của Việt Nam. Sau đó đoàn di chuyển đến Ninh Bình,
+            | nơi nổi bật với hệ thống núi đá vôi, sông nước và các công trình
+            | tâm linh có giá trị đặc biệt.
+
+          p
+            | Tiếp tục hành trình là Vịnh Hạ Long, một trong những điểm đến
+            | nổi tiếng nhất của miền Bắc. Du khách có cơ hội ngồi trên tàu,
+            | ngắm nhìn những đảo đá vôi giữa biển và tận hưởng không gian
+            | thiên nhiên rộng lớn.
+
+          p
+            | Sau Hạ Long, hành trình đưa du khách đến Yên Tử - vùng đất gắn
+            | liền với lịch sử Phật giáo Việt Nam và thiền phái Trúc Lâm.
+            | Không gian núi rừng, chùa chiền và khí hậu trong lành tạo nên
+            | một chặng nghỉ mang tính thư giãn và tâm linh.
+
+          p
+            | Điểm cuối của hành trình là Sa Pa. Đây là nơi du khách có thể
+            | tận hưởng khí hậu vùng cao, khám phá bản làng, ruộng bậc thang,
+            | tìm hiểu văn hóa của đồng bào dân tộc và nếu điều kiện thời tiết
+            | thuận lợi có thể chinh phục Fansipan - nóc nhà Đông Dương.
+
+
+          //- =================================================
+          //- TỔNG QUAN LỘ TRÌNH
+          //- =================================================
+
+          h3 Tổng quan hành trình
+
+          p
+            | Lộ trình được xây dựng theo hướng kết hợp giữa thành phố,
+            | đồng bằng, núi đá, biển đảo và vùng núi cao. Chính sự thay đổi
+            | liên tục về cảnh quan giúp chuyến đi không bị đơn điệu và mỗi
+            | ngày đều mang đến một trải nghiệm khác nhau.
+
+          .sec-11-route
+
+            .sec-11-route-item
+
+              span.route-number 01
+
+              .route-content
+
+                strong Hà Nội
+
+                p
+                  | Khám phá thủ đô với Hồ Gươm, khu phố cổ, các công trình
+                  | văn hóa - lịch sử và thưởng thức những món ăn đặc trưng
+                  | của Hà Nội.
+
+
+            .sec-11-route-item
+
+              span.route-number 02
+
+              .route-content
+
+                strong Ninh Bình
+
+                p
+                  | Trải nghiệm Tràng An bằng thuyền, khám phá hệ thống hang
+                  | động và núi đá vôi, kết hợp tham quan chùa Bái Đính.
+
+
+            .sec-11-route-item
+
+              span.route-number 03
+
+              .route-content
+
+                strong Hạ Long
+
+                p
+                  | Du ngoạn trên vịnh, ngắm các đảo đá vôi, tận hưởng cảnh
+                  | biển và tham gia những hoạt động tùy theo chương trình tour.
+
+
+            .sec-11-route-item
+
+              span.route-number 04
+
+              .route-content
+
+                strong Yên Tử
+
+                p
+                  | Tham quan khu danh thắng Yên Tử, tìm hiểu không gian
+                  | văn hóa Phật giáo và tận hưởng sự yên tĩnh giữa núi rừng.
+
+
+            .sec-11-route-item
+
+              span.route-number 05
+
+              .route-content
+
+                strong Sa Pa
+
+                p
+                  | Khám phá thị trấn vùng cao, bản Cát Cát, ruộng bậc thang,
+                  | văn hóa bản địa và trải nghiệm Fansipan.
+
+
+          //- =================================================
+          //- HÀ NỘI
+          //- =================================================
+
+          .sec-11-place
+
+            h3
+
+              span 01
+
+              | Hà Nội - Tinh hoa nghìn năm văn hiến
+
+
+            p
+              | Hà Nội là điểm bắt đầu của hành trình. Đây là thành phố
+              | mang trong mình sự kết hợp giữa những giá trị lịch sử lâu đời
+              | và nhịp sống hiện đại.
+
+            p
+              | Du khách có thể khám phá Hồ Hoàn Kiếm, Tháp Rùa,
+              | cầu Thê Húc và khu phố cổ. Những con phố nhỏ, các hàng quán
+              | truyền thống và những công trình kiến trúc lâu đời tạo nên
+              | một không gian rất đặc trưng của thủ đô.
+
+            p
+              | Ẩm thực cũng là một phần không thể thiếu trong trải nghiệm
+              | Hà Nội. Bún chả, bánh cốm, phở, các món ăn đường phố
+              | và kem Tràng Tiền là những lựa chọn được nhiều du khách
+              | quan tâm khi khám phá thành phố.
+
+
+          //- =================================================
+          //- NINH BÌNH
+          //- =================================================
+
+          .sec-11-place
+
+            h3
+
+              span 02
+
+              | Ninh Bình - Non nước hữu tình
+
+
+            p
+              | Rời Hà Nội, đoàn tiếp tục đến Ninh Bình - vùng đất nổi tiếng
+              | với hệ thống núi đá vôi, sông nước và cảnh quan thiên nhiên
+              | đặc trưng của miền Bắc.
+
+            p
+              | Trải nghiệm nổi bật là ngồi thuyền khám phá Tràng An.
+              | Những chiếc thuyền nhỏ di chuyển giữa các dãy núi,
+              | xuyên qua những hang động và mở ra những khung cảnh
+              | thiên nhiên yên bình.
+
+            p
+              | Bên cạnh Tràng An, chùa Bái Đính mang đến một trải nghiệm
+              | hoàn toàn khác với không gian rộng lớn và kiến trúc
+              | tâm linh đặc trưng.
+
+            p
+              | Khi đến Ninh Bình, du khách cũng có thể thưởng thức
+              | những món ăn địa phương như cơm cháy và các món từ dê núi.
+
+
+          //- =================================================
+          //- HẠ LONG
+          //- =================================================
+
+          .sec-11-place
+
+            h3
+
+              span 03
+
+              | Hạ Long - Kỳ quan giữa biển khơi
+
+
+            p
+              | Vịnh Hạ Long mang đến một sự thay đổi rõ rệt về cảnh quan.
+              | Từ núi đá và sông nước trên đất liền, hành trình chuyển sang
+              | không gian biển đảo rộng lớn.
+
+            p
+              | Du khách có cơ hội ngồi trên tàu và ngắm nhìn những đảo đá
+              | vôi với nhiều hình dáng khác nhau. Những dãy núi đá nổi bật
+              | giữa mặt nước tạo nên khung cảnh đặc trưng của Vịnh Hạ Long.
+
+            p
+              | Tùy theo chương trình, du khách có thể tham gia chèo kayak,
+              | tham quan hang động hoặc thưởng thức các món hải sản
+              | trong không gian trên vịnh.
+
+
+          //- =================================================
+          //- YÊN TỬ
+          //- =================================================
+
+          .sec-11-place
+
+            h3
+
+              span 04
+
+              | Yên Tử - Không gian tâm linh giữa núi rừng
+
+
+            p
+              | Yên Tử là điểm đến mang màu sắc tâm linh rõ nét
+              | trong hành trình. Nơi đây gắn liền với lịch sử Phật giáo
+              | Việt Nam và sự hình thành của thiền phái Trúc Lâm.
+
+            p
+              | Không gian núi rừng kết hợp cùng hệ thống chùa và các
+              | công trình tâm linh tạo nên một khung cảnh thanh tịnh,
+              | phù hợp để du khách nghỉ ngơi và tìm lại sự thư thái.
+
+            p
+              | Hệ thống cáp treo giúp du khách thuận tiện hơn trong việc
+              | di chuyển lên các khu vực cao. Khi thời tiết thuận lợi,
+              | cảnh quan từ trên cao mang lại một góc nhìn rất rộng
+              | về núi rừng xung quanh.
+
+
+          //- =================================================
+          //- SA PA
+          //- =================================================
+
+          .sec-11-place
+
+            h3
+
+              span 05
+
+              | Sa Pa - Thị trấn trong mây
+
+
+            p
+              | Sa Pa là chặng cuối nổi bật của hành trình. Khí hậu
+              | vùng cao mát mẻ, cảnh quan núi rừng và những bản làng
+              | dân tộc tạo nên một không gian hoàn toàn khác với Hà Nội,
+              | Ninh Bình hay Hạ Long.
+
+            p
+              | Du khách có thể khám phá bản Cát Cát, tìm hiểu đời sống
+              | của người dân địa phương và ngắm những thửa ruộng bậc thang
+              | trải dài trên sườn núi.
+
+            p
+              | Nếu điều kiện thời tiết thuận lợi, hành trình có thể tiếp tục
+              | đến Fansipan. Với độ cao 3.143m, Fansipan thường được biết
+              | đến với tên gọi "Nóc nhà Đông Dương".
+
+            p
+              | Không khí se lạnh, những đám mây bao phủ trên núi cùng
+              | khung cảnh vùng cao tạo nên một trải nghiệm rất khác biệt
+              | so với những ngày đầu của chuyến đi.
+
+
+          //- =================================================
+          //- ẨM THỰC
+          //- =================================================
+
+          .sec-11-place
+
+            h3
+
+              span 06
+
+              | Ẩm thực xuyên suốt hành trình
+
+
+            p
+              | Một điểm thú vị của hành trình 6N5Đ là sự thay đổi
+              | về phong cách ẩm thực theo từng địa phương.
+
+            ul
+
+              li
+                strong Hà Nội:
+                |  Bún chả, phở, bánh cốm, kem Tràng Tiền
+                |  và các món ăn truyền thống trong khu phố cổ.
+
+              li
+                strong Ninh Bình:
+                |  Cơm cháy, thịt dê núi và những món ăn đặc trưng địa phương.
+
+              li
+                strong Hạ Long:
+                |  Hải sản và các món ăn đặc trưng vùng biển.
+
+              li
+                strong Sa Pa:
+                |  Lẩu cá hồi, đồ nướng vùng cao và những món ăn
+                |  phù hợp với khí hậu se lạnh.
+
+
+          //- =================================================
+          //- AI NÊN ĐI TOUR
+          //- =================================================
+
+          .sec-11-place
+
+            h3
+
+              span 07
+
+              | Ai phù hợp với hành trình này?
+
+
+            p
+              | Đây là hành trình phù hợp với những du khách muốn
+              | trải nghiệm nhiều loại hình du lịch trong cùng một chuyến đi.
+
+            ul
+
+              li
+                | Người lần đầu muốn khám phá các điểm du lịch nổi tiếng
+                | của miền Bắc.
+
+              li
+                | Gia đình muốn kết hợp tham quan, nghỉ ngơi
+                | và trải nghiệm văn hóa.
+
+              li
+                | Người yêu thiên nhiên, thích núi, sông nước
+                | và cảnh quan vùng cao.
+
+              li
+                | Người quan tâm đến các điểm đến tâm linh
+                | như Bái Đính và Yên Tử.
+
+              li
+                | Du khách muốn trải nghiệm Sa Pa và Fansipan.
+
+
+          //- =================================================
+          //- TỔNG KẾT
+          //- =================================================
+
+          .sec-11-conclusion
+
+            h3 Một hành trình - Nhiều trải nghiệm
+
+            p
+              | Điểm hấp dẫn của hành trình Hà Nội - Ninh Bình - Hạ Long -
+              | Yên Tử - Sapa 6N5Đ nằm ở sự đa dạng của các điểm đến.
+              | Mỗi địa phương mang một màu sắc riêng, từ văn hóa,
+              | thiên nhiên, biển đảo cho đến tâm linh và vùng cao.
+
+            p
+              | Hà Nội mang đến nhịp sống đô thị và văn hóa lâu đời.
+              | Ninh Bình mang đến núi đá và sông nước.
+              | Hạ Long mở ra không gian biển đảo.
+              | Yên Tử đem lại cảm giác thanh tịnh giữa núi rừng.
+              | Sa Pa khép lại hành trình bằng khí hậu vùng cao,
+              | bản làng, ruộng bậc thang và Fansipan.
+
+            p
+              | Đây là một hành trình tương đối đầy đủ dành cho những ai
+              | muốn khám phá nhiều khía cạnh của miền Bắc Việt Nam
+              | trong một chuyến đi kéo dài 6 ngày 5 đêm.
+
+
+      //- =====================================================
+      //- CARD CHUYẾN ĐI CỦA BẠN
+      //- =====================================================
+
+      aside.sec-11-booking
+
+        .sec-11-booking-title
+
+          h2 Chuyến Đi Của Bạn
+
+
+        //- TOUR MINI
+
+        .sec-11-tour-mini
+
+          .sec-11-tour-image
+
+            img(
+              src="/assets/image/sec11-tour.jpg"
+              alt="Tour Hà Nội - Ninh Bình - Hạ Long - Yên Tử - Sapa"
+            )
+
+
+          .sec-11-tour-name
+            | Hà Nội - Ninh Bình - Hạ Long -
+            | Yên Tử - Sapa | 6N5Đ
+
+
+          .sec-11-tour-rating
+
+            .sec-11-stars
+
+              i.fas.fa-star
+              i.fas.fa-star
+              i.fas.fa-star
+              i.fas.fa-star
+              i.fas.fa-star
+
+            span 500 lượt đánh giá
+
+
+        //- THÔNG TIN
+
+        .sec-11-tour-info
+
+          .sec-11-info-row
+
+            i.fas.fa-ticket-alt
+
+            span Mã Tour:
+
+            strong 28TO00001
+
+
+          .sec-11-info-row
+
+            i.fas.fa-calendar-alt
+
+            span Thời Gian:
+
+            strong 6 Ngày 5 Đêm
+
+
+          .sec-11-info-row
+
+            i.fas.fa-bus
+
+            span Phương Tiện:
+
+            strong Ô tô 45 chỗ
+
+
+          .sec-11-info-row
+
+            i.fas.fa-calendar-check
+
+            span Ngày Khởi Hành:
+
+            strong 20/10/2024
+
+
+
+          //- =====================================================
+              HÀNH KHÁCH
+          //- =====================================================
+
+          .sec-11-passengers
+
+            .sec-11-passenger-title
+              | Số Lượng Hành Khách
+
+
+            //- NGƯỜI LỚN
+            .sec-11-passenger-row
+
+              span.sec-11-passenger-label
+                | Người lớn:
+
+              .sec-11-quantity
+
+                button(
+                  type="button"
+                  class="sec-11-quantity-minus"
+                  aria-label="Giảm người lớn"
+                )
+                  | −
+
+                input(
+                  type="number"
+                  value="1"
+                  min="1"
+                  data-price="10000000"
+                  class="sec-11-passenger-input"
+                )
+
+                button(
+                  type="button"
+                  class="sec-11-quantity-plus"
+                  aria-label="Tăng người lớn"
+                )
+                  | +
+
+
+              strong.sec-11-passenger-price
+                | 1x10.000.000 đ
+
+
+            //- TRẺ EM
+            .sec-11-passenger-row
+
+              span.sec-11-passenger-label
+                | Trẻ em:
+
+              .sec-11-quantity
+
+                button(
+                  type="button"
+                  class="sec-11-quantity-minus"
+                  aria-label="Giảm trẻ em"
+                )
+                  | −
+
+                input(
+                  type="number"
+                  value="0"
+                  min="0"
+                  data-price="7990000"
+                  class="sec-11-passenger-input"
+                )
+
+                button(
+                  type="button"
+                  class="sec-11-quantity-plus"
+                  aria-label="Tăng trẻ em"
+                )
+                  | +
+
+
+              strong.sec-11-passenger-price
+                | 0x7.990.000 đ
+
+
+            //- =====================================================
+                EM BÉ
+            //- =====================================================
+
+            .sec-11-passenger-row
+
+              span.sec-11-passenger-label
+                | Em bé:
+
+              .sec-11-quantity
+
+                button(
+                  type="button"
+                  class="sec-11-quantity-minus"
+                  aria-label="Giảm em bé"
+                )
+                  | −
+
+                input(
+                  type="number"
+                  value="0"
+                  min="0"
+                  max="99"
+                  step="1"
+                  data-price="5990000"
+                  class="sec-11-passenger-input"
+                )
+
+                button(
+                  type="button"
+                  class="sec-11-quantity-plus"
+                  aria-label="Tăng em bé"
+                )
+                  | +
+
+              strong.sec-11-passenger-price
+                | 0x5.990.000 đ
+
+
+          //- =====================================================
+              TỔNG
+          //- =====================================================
+
+          .sec-11-total
+
+            span
+              | Tổng cộng:
+
+            strong#sec-11-total-price
+              | 10.000.000 đ
+
+
+        //- BUTTON
+
+        button.sec-11-add-cart(type="button")
+
+          i.fas.fa-shopping-cart
+
+          | Thêm Vào Giỏ Hàng
+
+
+      //- =====================================================
+      //- HÌNH TỔNG KẾT CUỐI TOUR
+      //- =====================================================
+
+      .sec-11-bottom-summary
+
+        img(
+          src="/assets/image/sec11-final.jpg"
+          alt="Tổng kết hành trình Hà Nội - Ninh Bình - Hạ Long - Yên Tử - Sapa"
+        )
+
+        .sec-11-bottom-summary-overlay
+
+        .sec-11-bottom-summary-content
