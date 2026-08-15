@@ -457,16 +457,29 @@ block main
           .tour-sort-left
             span Sắp xếp:
 
-            button(type="button")
-              | Phổ biến
+            .tour-sort-dropdown
 
-            button(type="button")
-              | Giá thấp
-              i.fas.fa-arrow-down
+              button.tour-sort-toggle(type="button")
+                span.tour-sort-toggle-text Phổ biến
+                i.fas.fa-chevron-down
 
-            button(type="button")
-              | Giá cao
-              i.fas.fa-arrow-up
+              ul.tour-sort-menu
+
+                li.tour-sort-item.is-active(data-sort="popular")
+                  span Phổ biến
+                  i.fas.fa-check
+
+                li.tour-sort-item(data-sort="price-asc")
+                  span Giá tăng dần
+                  i.fas.fa-check
+
+                li.tour-sort-item(data-sort="price-desc")
+                  span Giá giảm dần
+                  i.fas.fa-check
+
+                li.tour-sort-item(data-sort="hot-discount")
+                  span Khuyến Mại Hot
+                  i.fas.fa-check
 
           .tour-total
             | Có
@@ -482,7 +495,7 @@ block main
 
           each tour in productListSection6
 
-            article.tour-card
+            article.tour-card(data-price=tour.priceNew data-discount=tour.discount)
 
               //- ẢNH TOUR
               .tour-card-image
@@ -576,3 +589,157 @@ block main
                   .tour-stock
                     i.fas.fa-check-circle
                     | Còn #{tour.stock} chỗ
+
+
+  // =========================================================
+  // STYLE: DROPDOWN SẮP XẾP
+  // =========================================================
+
+  style.
+    .tour-sort-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tour-sort-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .tour-sort-toggle i {
+      font-size: 11px;
+      transition: transform 0.2s ease;
+    }
+
+    .tour-sort-dropdown.is-open .tour-sort-toggle i {
+      transform: rotate(180deg);
+    }
+
+    .tour-sort-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      min-width: 180px;
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      list-style: none;
+      margin: 0;
+      padding: 6px 0;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-6px);
+      transition: all 0.15s ease;
+      z-index: 20;
+    }
+
+    .tour-sort-dropdown.is-open .tour-sort-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .tour-sort-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 14px;
+      font-size: 14px;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .tour-sort-item:hover {
+      background: #f5f5f5;
+    }
+
+    .tour-sort-item i {
+      font-size: 12px;
+      color: #e6383f;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .tour-sort-item.is-active {
+      color: #e6383f;
+      font-weight: 600;
+    }
+
+    .tour-sort-item.is-active i {
+      opacity: 1;
+      visibility: visible;
+    }
+
+
+  // =========================================================
+  // SCRIPT: XỬ LÝ DROPDOWN SẮP XẾP
+  // =========================================================
+
+  script.
+    document.addEventListener('DOMContentLoaded', function () {
+      var dropdown = document.querySelector('.tour-sort-dropdown')
+      if (!dropdown) return
+
+      var toggle = dropdown.querySelector('.tour-sort-toggle')
+      var toggleText = dropdown.querySelector('.tour-sort-toggle-text')
+      var items = dropdown.querySelectorAll('.tour-sort-item')
+      var tourList = document.querySelector('.tour-list')
+
+      // Mở / đóng dropdown khi bấm nút
+      toggle.addEventListener('click', function (e) {
+        e.stopPropagation()
+        dropdown.classList.toggle('is-open')
+      })
+
+      // Đóng dropdown khi bấm ra ngoài
+      document.addEventListener('click', function (e) {
+        if (!dropdown.contains(e.target)) {
+          dropdown.classList.remove('is-open')
+        }
+      })
+
+      // Chọn 1 lựa chọn sắp xếp
+      items.forEach(function (item) {
+        item.addEventListener('click', function () {
+          items.forEach(function (i) { i.classList.remove('is-active') })
+          item.classList.add('is-active')
+
+          toggleText.textContent = item.querySelector('span').textContent
+          dropdown.classList.remove('is-open')
+
+          sortTours(item.dataset.sort)
+        })
+      })
+
+      function sortTours (type) {
+        if (!tourList) return
+        var cards = Array.prototype.slice.call(tourList.querySelectorAll('.tour-card'))
+
+        cards.sort(function (a, b) {
+          if (type === 'price-asc') {
+            return Number(a.dataset.price) - Number(b.dataset.price)
+          }
+          if (type === 'price-desc') {
+            return Number(b.dataset.price) - Number(a.dataset.price)
+          }
+          if (type === 'hot-discount') {
+            return Number(b.dataset.discount) - Number(a.dataset.discount)
+          }
+          return 0 // "popular" giữ nguyên thứ tự gốc
+        })
+
+        cards.forEach(function (card) {
+          tourList.appendChild(card)
+        })
+      }
+    })
