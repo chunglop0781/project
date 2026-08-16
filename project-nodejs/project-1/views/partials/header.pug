@@ -1,64 +1,262 @@
 header.header
+
+  // =========================================================
+  // HEADER TOP
+  // =========================================================
+
   .header-top
+
     .container
+
       .header-contact
-        a.contact-item(href="tel:0123456789")
+
+        a.contact-item(
+          href="tel:0123456789"
+        )
           i.fas.fa-phone
           span 0123.456.789
-        a.contact-item(href="mailto:contact@28travel.com")
+
+
+        a.contact-item(
+          href="mailto:contact@28travel.com"
+        )
           i.fas.fa-envelope
           span contact@28travel.com
+
+
         span.contact-item
+
           i.fas.fa-map-marker-alt
+
           span Số 123, đường ABC, thành phố XYZ
 
+
+  // =========================================================
+  // HEADER MAIN
+  // =========================================================
+
   .header-main
+
     .container.header-inner
-      button.menu-toggle(type="button", aria-label="Menu")
+
+
+      // =======================================================
+      // NÚT 3 SỌC
+      // =======================================================
+
+      button.menu-toggle(
+        type="button"
+        aria-label="Menu"
+      )
+
         i.fas.fa-bars
 
-      a.logo(href="/")
-        img(src="/assets/image/logo.png", alt=header)
+
+      // =======================================================
+      // LOGO
+      // =======================================================
+
+      a.logo(
+        href="/"
+      )
+
+        img(
+          src="/assets/image/logo.png"
+          alt="Website Du Lịch"
+        )
+
+
+      // =======================================================
+      // MENU
+      // =======================================================
 
       nav.menu
+
         ul
+
+          // ---------------------------------------------------
+          // TRANG CHỦ
+          // ---------------------------------------------------
+
           li
-            a(href="/", class=(pageTitle === "Trang chủ" ? "active" : "")) Trang Chủ
+
+            a(
+              href="/"
+              class=(pageTitle === "Trang chủ" ? "active" : "")
+            )
+              | Trang Chủ
+
+
+          // ---------------------------------------------------
+          // TOUR TRONG NƯỚC
+          // ---------------------------------------------------
 
           li.has-dropdown
-            a(href="/tours")
-              span Tour Trong Nước
+
+            a(
+              href="/tours"
+            )
+
+              span
+                | Tour Trong Nước
+
               i.fas.fa-caret-down.arrow
+
+
             ul.dropdown
-              li: a(href="/tours/mien-bac") Tour Miền Bắc
-              li: a(href="/tours/mien-trung") Tour Miền Trung
-              li: a(href="/tours/mien-nam") Tour Miền Nam
-              li: a(href="/tours/xuyen-viet") Tour Xuyên Việt
+
+              li
+
+                a(
+                  href="/tours/mien-bac"
+                )
+                  | Tour Miền Bắc
+
+
+              li
+
+                a(
+                  href="/tours/mien-trung"
+                )
+                  | Tour Miền Trung
+
+
+              li
+
+                a(
+                  href="/tours/mien-nam"
+                )
+                  | Tour Miền Nam
+
+
+              li
+
+                a(
+                  href="/tours/xuyen-viet"
+                )
+                  | Tour Xuyên Việt
+
+
+          // ---------------------------------------------------
+          // TOUR NƯỚC NGOÀI
+          // ---------------------------------------------------
 
           li.has-dropdown
-            a(href="/tours/foreign")
-              span Tour Nước Ngoài
+
+            a(
+              href="/tours/foreign"
+            )
+
+              span
+                | Tour Nước Ngoài
+
               i.fas.fa-caret-down.arrow
+
+
             ul.dropdown
-              li: a(href="/tours/foreign/asia") Tour Châu Á
-              li: a(href="/tours/foreign/europe") Tour Châu Âu
-              li: a(href="/tours/foreign/america") Tour Châu Mỹ
-              li: a(href="/tours/foreign/australia") Tour Châu Úc
+
+              li
+
+                a(
+                  href="/tours/foreign/asia"
+                )
+                  | Tour Châu Á
+
+
+              li
+
+                a(
+                  href="/tours/foreign/europe"
+                )
+                  | Tour Châu Âu
+
+
+              li
+
+                a(
+                  href="/tours/foreign/america"
+                )
+                  | Tour Châu Mỹ
+
+
+              li
+
+                a(
+                  href="/tours/foreign/australia"
+                )
+                  | Tour Châu Úc
+
+
+          // ---------------------------------------------------
+          // TIN TỨC
+          // ---------------------------------------------------
 
           li
-            a(href="/news") Tin Tức
+
+            a(
+              href="/news"
+            )
+              | Tin Tức
+
+
+          // ---------------------------------------------------
+          // LIÊN HỆ
+          // ---------------------------------------------------
 
           li
-            a(href="/contact") Liên Hệ
+
+            a(
+              href="/contact"
+            )
+              | Liên Hệ
+
+
+      // =======================================================
+      // HEADER ACTIONS
+      // =======================================================
 
       .header-actions
-        .auth-links
-          a.login-link(href="/login") Đăng nhập
-          span.divider |
-          a.register-link(href="/register") Đăng ký
 
-        a.cart(href="/cart")
+        // -----------------------------------------------------
+        // ĐĂNG NHẬP / ĐĂNG KÝ
+        // -----------------------------------------------------
+
+        .auth-links
+
+          a.login-link(
+            href="/login"
+          )
+            | Đăng nhập
+
+
+          span.divider
+            | |
+
+
+          a.register-link(
+            href="/register"
+          )
+            | Đăng ký
+
+
+        // -----------------------------------------------------
+        // GIỎ HÀNG
+        // -----------------------------------------------------
+
+        a.cart(
+          href="/cart"
+          aria-label="Giỏ hàng"
+        )
+
           i.fas.fa-shopping-cart
-          span.cart-count= cartCount || 0
+
+
+          span.cart-count#header-cart-count
+            = cartCount || 0
+
+
+  // =========================================================
+  // MENU OVERLAY
+  // =========================================================
 
   .menu-overlay

@@ -1,5 +1,6 @@
 /* =========================================================
    RESET
+   CHỈ RESET CƠ BẢN - KHÔNG STYLE RIÊNG CHO SECTION 12
 ========================================================= */
 
 * {
@@ -14,84 +15,211 @@ body {
 
 
 /* =========================================================
-   TOP BAR
+   HEADER ROOT
+   KHÓA HEADER KHÔNG CHO SECTION 12 PHÁ
 ========================================================= */
 
-.header-top {
+header.header {
     width: 100%;
-    background: #4b0082;
-    color: #fff;
-    font-size: 13px;
-    padding: 6px 0;
-    font-weight: bold;
-}
+    position: relative;
+    display: block;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
 
-.header-contact {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-}
-
-.header-contact a,
-.header-contact span {
-    color: #fff;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+    /* Header tạo 1 stacking context riêng.
+       Overlay nằm trong header và menu phải nằm trên overlay. */
+    z-index: 10000;
+    isolation: isolate;
 }
 
 
 /* =========================================================
-   HEADER CHÍNH
+   TOP BAR
 ========================================================= */
 
-.header-inner {
+header.header .header-top {
+    width: 100%;
+    height: auto;
+    min-height: 37px;
+
+    margin: 0;
+    padding: 6px 0;
+
+    background: #4b0082;
+    color: #fff;
+
+    font-size: 13px;
+    font-weight: bold;
+
+    position: relative;
+    z-index: 1001;
+}
+
+
+header.header .header-top .container {
+    width: 100%;
+    max-width: none;
+
+    margin: 0;
+    padding: 0 20px;
+
+    display: block;
+
+    box-sizing: border-box;
+}
+
+
+header.header .header-contact {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 20px;
+
+    margin: 0;
+    padding: 0;
+}
+
+
+header.header .header-contact a,
+header.header .header-contact span {
+    color: #fff;
+
+    text-decoration: none;
+
+    display: inline-flex;
+    align-items: center;
+
+    gap: 6px;
+
+    margin: 0;
+    padding: 0;
+
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+
+header.header .header-contact i {
+    display: inline-block;
+
+    margin: 0;
+    padding: 0;
+
+    font-size: 13px;
+    line-height: 1;
+}
+
+
+/* =========================================================
+   HEADER MAIN
+========================================================= */
+
+header.header .header-main {
     width: 100%;
     height: 70px;
+
+    margin: 0;
+    padding: 0;
+
+    background: #fff;
+
+    /* Không đặt z-index ở đây: nếu có, header-main sẽ tạo 1 stacking
+       context riêng và "nhốt" toggle/logo/cart bên trong nó, khiến
+       chúng LUÔN nổi trên .menu-overlay (dù overlay có z-index cao
+       hơn) — tức là khi mở menu, cả thanh header vẫn sáng, không bị
+       tối theo overlay. Giữ position: relative để làm containing
+       block cho các phần tử con nếu cần, nhưng để z-index: auto để
+       toggle/logo/cart so sánh trực tiếp với overlay ở context của
+       header.header (xem .menu-overlay bên dưới). */
+    position: relative;
+}
+
+
+header.header .header-main .container.header-inner {
+    width: 100%;
+    max-width: none;
+
+    height: 70px;
+
+    margin: 0;
+    padding: 0 20px;
 
     display: flex;
     align-items: center;
 
-    padding: 0 20px;
     gap: 10px;
 
     background: #fff;
 
+    /* Tương tự .header-main: không set z-index để tránh tạo stacking
+       context con, cho phép menu-toggle/logo/cart bên trong so sánh
+       trực tiếp với .menu-overlay. */
     position: relative;
-    z-index: auto;
+
+    box-sizing: border-box;
 }
 
 
 /* =========================================================
-   NÚT 3 SỌC
+   MENU TOGGLE
 ========================================================= */
 
-.menu-toggle {
+header.header .menu-toggle {
     width: 42px;
     height: 42px;
+
+    min-width: 42px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    background: transparent;
+    margin: 0;
+    padding: 0;
+
     border: none;
+    outline: none;
+
+    background: transparent;
 
     color: #4b0082;
+
     font-size: 25px;
+    line-height: 1;
 
     cursor: pointer;
-    padding: 0;
 
     flex-shrink: 0;
 
     position: relative;
-    z-index: 110;
+    z-index: 1100;
 }
 
-.menu-toggle:hover {
+
+header.header .menu-toggle i {
+    margin: 0;
+    padding: 0;
+
+    line-height: 1;
+}
+
+
+/* Ẩn nút 3 sọc khi menu đang mở, tránh bị chồng/mờ lên chữ
+   "Trang Chủ" ở đầu danh sách menu. Đóng menu vẫn dùng được
+   qua: bấm ra ngoài overlay, bấm 1 link trong menu, hoặc phím
+   Esc (đã xử lý sẵn trong script.js). */
+header.header .header-inner:has(.menu.open) .menu-toggle {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+
+header.header .menu-toggle:hover {
     color: #0d930d;
 }
 
@@ -100,24 +228,44 @@ body {
    LOGO
 ========================================================= */
 
-.logo {
+header.header .logo {
+    width: auto;
+    height: 70px;
+
     display: flex;
     align-items: center;
 
+    margin: 0;
+    padding: 0;
+
     text-decoration: none;
+
+    background: transparent;
 
     flex-shrink: 0;
 
     position: relative;
-    z-index: 110;
+    z-index: 1100;
 }
 
-.logo img {
-    height: 45px;
+
+header.header .logo img {
     width: auto;
+    height: 45px;
+
+    max-width: none;
+    min-width: 0;
 
     display: block;
+
+    margin: 0;
+    padding: 0;
+
+    border: 0;
+
     object-fit: contain;
+
+    vertical-align: middle;
 }
 
 
@@ -125,11 +273,16 @@ body {
    MENU
 ========================================================= */
 
-.menu {
+header.header .menu {
     margin: 0;
     padding: 0;
 
     position: static;
+
+    flex-shrink: 0;
+
+    /* Không tạo lớp phủ riêng cho menu */
+    z-index: 10002;
 }
 
 
@@ -137,7 +290,10 @@ body {
    MENU DỌC
 ========================================================= */
 
-.menu > ul {
+header.header .menu > ul {
+    width: 300px;
+    height: 100vh;
+
     display: flex;
     flex-direction: column;
 
@@ -151,18 +307,17 @@ body {
     top: 0;
     left: 0;
 
-    width: 300px;
-    height: 100vh;
-
-    background: #ffffff;
+    background: #fff;
 
     transform: translateX(-100%);
 
     transition: transform 0.3s ease;
 
+    overflow-x: hidden;
     overflow-y: auto;
 
-    z-index: 200;
+    /* Menu luôn nổi trên lớp phủ */
+    z-index: 10002;
 
     box-shadow: 5px 0 20px rgba(0, 0, 0, 0.2);
 
@@ -173,31 +328,31 @@ body {
 }
 
 
-/* =========================================================
-   MENU MỞ
-========================================================= */
-
-.menu.open > ul {
+header.header .menu.open > ul {
     transform: translateX(0);
-    pointer-events: auto;
 }
 
 
 /* =========================================================
-   ITEM MENU
+   MENU ITEM
 ========================================================= */
 
-.menu li {
+header.header .menu li {
     width: 100%;
+
     list-style: none;
+
+    margin: 0;
+    padding: 0;
 }
 
 
 /* =========================================================
-   LINK MENU
+   MENU LINK
 ========================================================= */
 
-.menu a {
+header.header .menu > ul > li > a,
+header.header .menu a {
     width: 100%;
     min-height: 52px;
 
@@ -205,35 +360,43 @@ body {
     align-items: center;
     justify-content: space-between;
 
+    margin: 0;
     padding: 14px 24px;
+
+    border: 0;
 
     text-decoration: none;
 
     color: #031b03;
 
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 16px;
     font-weight: 500;
+    line-height: 1.4;
 
-    background: #ffffff;
+    background: #fff;
 
     transition:
         background 0.2s ease,
         color 0.2s ease;
 
     pointer-events: auto;
+
+    box-sizing: border-box;
 }
 
-.menu a:hover {
+
+header.header .menu a:hover {
     background: #f1f8f1;
     color: #0d930d;
 }
 
 
 /* =========================================================
-   MENU ACTIVE
+   ACTIVE
 ========================================================= */
 
-.menu a.active {
+header.header .menu a.active {
     background: #e8f5e9;
     color: #0d930d;
 
@@ -251,15 +414,21 @@ body {
    ARROW
 ========================================================= */
 
-.arrow {
-    font-size: 11px;
+header.header .arrow {
+    width: auto;
+    height: auto;
 
-    margin-left: 10px;
+    margin: 0 0 0 10px;
+    padding: 0;
+
+    font-size: 11px;
+    line-height: 1;
 
     transition: transform 0.2s ease;
 }
 
-.has-dropdown.open > a .arrow {
+
+header.header .has-dropdown.open > a .arrow {
     transform: rotate(180deg);
 }
 
@@ -268,24 +437,34 @@ body {
    DROPDOWN
 ========================================================= */
 
-.dropdown {
+header.header .dropdown {
     display: none;
 
     width: 100%;
 
     list-style: none;
 
-    padding: 0;
     margin: 0;
+    padding: 0;
 
     background: #f7f7f7;
 }
 
-.has-dropdown.open > .dropdown {
+
+header.header .has-dropdown.open > .dropdown {
     display: block;
 }
 
-.dropdown a {
+
+header.header .dropdown a {
+    width: 100%;
+
+    min-height: auto;
+
+    display: flex;
+    align-items: center;
+
+    margin: 0;
     padding: 12px 24px 12px 45px;
 
     font-size: 14px;
@@ -295,12 +474,14 @@ body {
     background: #f7f7f7;
 }
 
-.dropdown a:hover {
-    background: #eeeeee;
+
+header.header .dropdown a:hover {
+    background: #eee;
     color: #0d930d;
 }
 
-.dropdown a.active {
+
+header.header .dropdown a.active {
     background: #e8f5e9;
 
     color: #0d930d;
@@ -312,10 +493,217 @@ body {
 
 
 /* =========================================================
-   OVERLAY
+   HEADER ACTIONS
+   ĐẨY ĐĂNG NHẬP / ĐĂNG KÝ / GIỎ HÀNG SANG HẾT PHẢI
 ========================================================= */
 
-.menu-overlay {
+header.header .header-inner > .header-actions {
+    width: auto;
+    height: 70px;
+
+    margin: 0 0 0 auto;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 18px;
+
+    flex-shrink: 0;
+
+    position: relative;
+    z-index: 1100;
+}
+
+
+/* =========================================================
+   AUTH
+========================================================= */
+
+header.header .header-actions .auth-links {
+    width: auto;
+    height: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 8px;
+
+    margin: 0;
+    padding: 0;
+
+    white-space: nowrap;
+
+    flex-shrink: 0;
+}
+
+
+header.header .header-actions .login-link,
+header.header .header-actions .register-link {
+    width: auto;
+    min-width: auto;
+    height: auto;
+
+    display: inline-flex;
+    align-items: center;
+
+    margin: 0;
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #333;
+
+    text-decoration: none;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+
+    white-space: nowrap;
+
+    transition: color 0.2s ease;
+}
+
+
+header.header .header-actions .login-link:hover,
+header.header .header-actions .register-link:hover {
+    color: #5200c9;
+}
+
+
+header.header .header-actions .divider {
+    width: auto;
+    height: auto;
+
+    display: inline-block;
+
+    margin: 0;
+    padding: 0;
+
+    color: #aaa;
+
+    font-size: 13px;
+    line-height: 1;
+}
+
+
+/* =========================================================
+   CART
+   CỰC KỲ QUAN TRỌNG:
+   CHỈ TÁC ĐỘNG CART TRONG HEADER
+========================================================= */
+
+header.header .header-actions > a.cart {
+    width: 40px;
+    height: 40px;
+
+    min-width: 40px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+
+    margin: 0;
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #333;
+
+    text-decoration: none;
+
+    flex-shrink: 0;
+
+    box-sizing: border-box;
+
+    z-index: 1101;
+}
+
+
+header.header .header-actions > a.cart i {
+    width: auto;
+    height: auto;
+
+    display: block;
+
+    margin: 0;
+    padding: 0;
+
+    color: inherit;
+
+    font-size: 20px;
+    line-height: 1;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+header.header .header-actions > a.cart:hover i {
+    color: #5200c9;
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   CART COUNT
+========================================================= */
+
+header.header .header-actions > a.cart > .cart-count {
+    position: absolute;
+
+    top: 0;
+    right: -4px;
+
+    width: auto;
+    min-width: 18px;
+    height: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0;
+    padding: 0 5px;
+
+    border: 2px solid #fff;
+    border-radius: 999px;
+
+    background: #e53935;
+    color: #fff;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+
+    box-sizing: border-box;
+
+    z-index: 1200;
+}
+
+
+header.header .header-actions > a.cart > .cart-count.is-empty {
+    display: none;
+}
+
+
+/* =========================================================
+   MENU OVERLAY
+========================================================= */
+
+header.header .menu-overlay {
     position: fixed;
 
     top: 0;
@@ -323,6 +711,9 @@ body {
 
     width: 100%;
     height: 100vh;
+
+    margin: 0;
+    padding: 0;
 
     background: rgba(0, 0, 0, 0.55);
 
@@ -335,10 +726,19 @@ body {
         opacity 0.3s ease,
         visibility 0.3s ease;
 
-    z-index: 150;
+    /* Cao hơn header-top (1001), menu-toggle/logo (1100) và
+       header-actions/cart (1100) — những phần tử này giờ so sánh
+       trực tiếp với overlay trong context của header.header (vì
+       .header-main/.header-inner không còn tạo stacking context
+       riêng nữa). Nhờ vậy khi mở menu, cả thanh header (logo, nút
+       3 sọc, giỏ hàng, đăng nhập, top bar) đều bị tối/nằm phía sau
+       overlay — chỉ có panel menu (<ul>, z-index 10002) là vẫn nổi
+       lên trên vì nó cao hơn overlay. */
+    z-index: 1500;
 }
 
-.menu-overlay.active {
+
+header.header .menu-overlay.active {
     opacity: 1;
 
     visibility: visible;
@@ -348,20 +748,315 @@ body {
 
 
 /* =========================================================
-   HEADER ACTIONS
+   KHI MENU MỞ
+   MENU PHẢI NẰM TRÊN OVERLAY
 ========================================================= */
 
-.header-actions {
-    display: flex;
-    align-items: center;
+header.header .menu.open > ul {
+    z-index: 10002;
+}
 
-    gap: 16px;
 
-    margin-left: auto;
+header.header .menu-toggle {
+    z-index: 10003;
+}
 
-    position: relative;
 
-    z-index: 300;
+/* =========================================================
+   KHÓA HEADER KHỎI CÁC CSS CHUNG CỦA SECTION 12
+========================================================= */
+
+/*
+   Nếu CSS Section 12 có các selector kiểu:
+
+   img {}
+   a {}
+   button {}
+   .container {}
+   .header {}
+   input {}
+   * {}
+
+   thì các selector cụ thể bên trên sẽ ưu tiên header.
+
+   Đặc biệt KHÔNG cho Section 12 dùng lại:
+   .container
+   .header-inner
+   .header-actions
+   .cart
+   .cart-count
+*/
+
+
+header.header img {
+    max-width: none;
+}
+
+
+header.header a {
+    box-sizing: border-box;
+}
+
+
+header.header button {
+    box-sizing: border-box;
+}
+
+
+header.header input,
+header.header textarea,
+header.header select {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    header.header .header-contact {
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    header.header .header-contact a,
+    header.header .header-contact span {
+        font-size: 11px;
+    }
+
+    header.header .header-inner {
+        padding: 0 12px;
+    }
+
+    header.header .logo img {
+        height: 40px;
+    }
+
+    header.header .header-actions {
+        gap: 10px;
+    }
+
+    header.header .header-actions .auth-links {
+        gap: 5px;
+    }
+
+    header.header .header-actions .login-link,
+    header.header .header-actions .register-link {
+        font-size: 12px;
+    }
+
+}
+
+
+@media (max-width: 520px) {
+
+    header.header .header-contact {
+        justify-content: center;
+        gap: 8px;
+    }
+
+    header.header .header-contact .contact-item:last-child {
+        display: none;
+    }
+
+    header.header .header-inner {
+        height: 60px;
+    }
+
+    header.header .header-main {
+        height: 60px;
+    }
+
+    header.header .logo {
+        height: 60px;
+    }
+
+    header.header .logo img {
+        height: 36px;
+    }
+
+    header.header .header-actions {
+        height: 60px;
+        gap: 6px;
+    }
+
+    header.header .header-actions .auth-links {
+        display: none;
+    }
+
+    header.header .header-actions > a.cart {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+    }
+
+}
+
+/* =========================================================
+   KHÓA SECTION 12 KHÔNG ĐƯỢC ĐỤNG HEADER
+========================================================= */
+
+/*
+   Section 12 dùng class riêng hoàn toàn.
+   Không sử dụng:
+   .cart
+   .cart-count
+   .header-actions
+   .logo
+   .menu
+   cho phần tử bên trong Section 12.
+*/
+
+.sec-12 .cart,
+.sec-12 .cart-count,
+.sec-12 .header-actions,
+.sec-12 .logo,
+.sec-12 .menu {
+
+    all: revert;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE HEADER
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .header-inner {
+        height: 65px;
+
+        padding: 0 15px;
+    }
+
+
+    .logo img {
+        height: 40px;
+    }
+
+
+    .header-inner > .header-actions {
+
+        gap: 10px;
+    }
+
+
+    .header-inner > .header-actions > .auth-links {
+
+        gap: 5px;
+    }
+
+
+    .header-inner > .header-actions .login-link,
+    .header-inner > .header-actions .register-link {
+
+        font-size: 12px;
+    }
+
+
+    .header-inner > .header-actions > .cart {
+
+        width: 38px;
+
+        height: 38px;
+    }
+
+
+    .header-inner > .header-actions > .cart i {
+
+        font-size: 19px;
+    }
+
+}
+
+
+@media (max-width: 576px) {
+
+    .header-contact {
+
+        gap: 10px;
+
+        font-size: 11px;
+    }
+
+
+    .header-inner {
+
+        padding: 0 12px;
+
+        gap: 6px;
+    }
+
+
+    .menu-toggle {
+
+        width: 38px;
+
+        height: 38px;
+
+        font-size: 22px;
+    }
+
+
+    .logo img {
+
+        height: 36px;
+    }
+
+
+    .header-inner > .header-actions {
+
+        gap: 6px;
+    }
+
+
+    .header-inner > .header-actions > .auth-links {
+
+        gap: 4px;
+    }
+
+
+    .header-inner > .header-actions .login-link,
+    .header-inner > .header-actions .register-link {
+
+        font-size: 11px;
+    }
+
+
+    .header-inner > .header-actions > .cart {
+
+        width: 34px;
+
+        height: 34px;
+    }
+
+
+    .header-inner > .header-actions > .cart i {
+
+        font-size: 18px;
+    }
+
+}
+
+
+@media (max-width: 430px) {
+
+    .header-inner > .header-actions > .auth-links {
+
+        display: none;
+    }
+
+
+    .header-inner > .header-actions > .cart {
+
+        width: 38px;
+
+        height: 38px;
+    }
+
 }
 
 
@@ -5101,6 +5796,11 @@ h1 {
 }
 
 
+.sec-11-add-cart.sec-11-add-cart-success {
+    background: #1e9e50;
+}
+
+
 /* =========================================================
    BANNER CUỐI
 ========================================================= */
@@ -6014,3 +6714,1348 @@ h1 {
         font-size: 13px;
     }
 }
+
+
+/* =========================================================
+   SECTION 12
+========================================================= */
+
+.sec-12 {
+
+    width: 100%;
+
+    padding: 55px 0 70px;
+
+    background: #f7f7f9;
+
+    color: #333;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    box-sizing: border-box;
+
+}
+
+
+.sec-12 *,
+.sec-12 *::before,
+.sec-12 *::after {
+
+    box-sizing: border-box;
+
+}
+
+
+/* =========================================================
+   CONTAINER
+========================================================= */
+
+.sec-12-container {
+
+    width: calc(100% - 80px);
+
+    max-width: 1400px;
+
+    margin: 0 auto;
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.sec-12-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 30px;
+
+}
+
+
+.sec-12-title {
+
+    margin: 0;
+
+    color: #4b0bbd;
+
+    font-size: 30px;
+
+    font-weight: 700;
+
+    line-height: 1.3;
+
+}
+
+
+.sec-12-title i {
+
+    margin-right: 10px;
+
+}
+
+
+.sec-12-subtitle {
+
+    margin: 7px 0 0;
+
+    color: #777;
+
+    font-size: 14px;
+
+}
+
+
+.sec-12-continue {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    min-height: 40px;
+
+    padding: 0 17px;
+
+    border: 1px solid #5200c9;
+
+    border-radius: 6px;
+
+    background: #fff;
+
+    color: #5200c9;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    transition: .2s ease;
+
+}
+
+
+.sec-12-continue:hover {
+
+    background: #5200c9;
+
+    color: #fff;
+
+}
+
+
+/* =========================================================
+   LAYOUT
+========================================================= */
+
+.sec-12-cart-layout {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        340px;
+
+    gap: 25px;
+
+    align-items: start;
+
+}
+
+
+/* =========================================================
+   CART LIST
+========================================================= */
+
+.sec-12-cart-list {
+
+    min-width: 0;
+
+}
+
+
+.sec-12 #sec-12-cart-items {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+
+}
+
+
+/* =========================================================
+   CART ITEM
+========================================================= */
+
+.sec-12 .sec-12-cart-item {
+
+    display: grid;
+
+    grid-template-columns:
+        190px
+        minmax(0, 1fr);
+
+    gap: 20px;
+
+    width: 100%;
+
+    padding: 18px;
+
+    background: #fff;
+
+    border: 1px solid #e8e8e8;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 3px 15px rgba(0, 0, 0, .05);
+
+    transition: .2s ease;
+
+}
+
+
+.sec-12 .sec-12-cart-item:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, .08);
+
+}
+
+
+/* =========================================================
+   IMAGE
+========================================================= */
+
+.sec-12 .sec-12-cart-item-image {
+
+    width: 190px;
+
+    height: 145px;
+
+    overflow: hidden;
+
+    border-radius: 8px;
+
+    background: #eee;
+
+}
+
+
+.sec-12 .sec-12-cart-item-image img {
+
+    display: block;
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+}
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.sec-12 .sec-12-cart-item-content {
+
+    min-width: 0;
+
+}
+
+
+.sec-12 .sec-12-cart-item-content h3 {
+
+    margin: 0 0 11px;
+
+    color: #4b0bbd;
+
+    font-size: 19px;
+
+    line-height: 1.4;
+
+}
+
+
+/* =========================================================
+   INFO
+========================================================= */
+
+.sec-12 .sec-12-cart-item-info {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 7px 18px;
+
+    margin-bottom: 12px;
+
+}
+
+
+.sec-12 .sec-12-cart-item-info span {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color: #777;
+
+    font-size: 13px;
+
+}
+
+
+.sec-12 .sec-12-cart-item-info i {
+
+    color: #5200c9;
+
+}
+
+
+/* =========================================================
+   PASSENGER
+========================================================= */
+
+.sec-12 .sec-12-passenger-list {
+
+    padding: 10px 0;
+
+    border-top: 1px solid #eee;
+
+    border-bottom: 1px solid #eee;
+
+}
+
+
+.sec-12 .sec-12-passenger-item {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    min-height: 28px;
+
+    color: #777;
+
+    font-size: 13px;
+
+}
+
+
+.sec-12 .sec-12-passenger-item strong {
+
+    color: #555;
+
+}
+
+
+/* =========================================================
+   BOTTOM
+========================================================= */
+
+.sec-12 .sec-12-cart-item-bottom {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-top: 13px;
+
+}
+
+
+.sec-12 .sec-12-cart-item-price {
+
+    color: #4b0bbd;
+
+    font-size: 19px;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   REMOVE
+========================================================= */
+
+.sec-12 .sec-12-remove-item {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    height: 34px;
+
+    padding: 0 11px;
+
+    border: 1px solid #e2e2e2;
+
+    border-radius: 5px;
+
+    background: #fff;
+
+    color: #888;
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+
+}
+
+
+.sec-12 .sec-12-remove-item:hover {
+
+    color: #e53935;
+
+    background: #fff5f5;
+
+    border-color: #ffc5c5;
+
+}
+
+
+/* =========================================================
+   SUMMARY
+========================================================= */
+
+.sec-12-summary {
+
+    position: sticky;
+
+    top: 25px;
+
+    padding: 22px;
+
+    background: #fff;
+
+    border: 1px solid #e7e7e7;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 4px 18px rgba(0, 0, 0, .07);
+
+}
+
+
+.sec-12-summary-title {
+
+    margin-bottom: 18px;
+
+    padding-bottom: 13px;
+
+    border-bottom: 1px solid #eee;
+
+    color: #4b0bbd;
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+}
+
+
+.sec-12-summary-row {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 12px;
+
+}
+
+
+.sec-12-summary-row span {
+
+    color: #777;
+
+    font-size: 13px;
+
+}
+
+
+.sec-12-summary-row strong {
+
+    color: #555;
+
+}
+
+
+.sec-12-summary-line {
+
+    height: 1px;
+
+    margin: 15px 0;
+
+    background: #eee;
+
+}
+
+
+.sec-12-summary-total {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    margin-bottom: 18px;
+
+}
+
+
+.sec-12-summary-total span {
+
+    color: #555;
+
+    font-size: 14px;
+
+}
+
+
+.sec-12-summary-total strong {
+
+    color: #4b0bbd;
+
+    font-size: 22px;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.sec-12-checkout-button,
+.sec-12-submit {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: #5200c9;
+
+    color: #fff;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+
+}
+
+
+.sec-12-checkout-button {
+
+    width: 100%;
+
+    height: 43px;
+
+}
+
+
+.sec-12-checkout-button:hover,
+.sec-12-submit:hover {
+
+    background: #4100a2;
+
+    transform: translateY(-1px);
+
+}
+
+
+.sec-12-checkout-button:disabled {
+
+    opacity: .45;
+
+    cursor: not-allowed;
+
+    transform: none;
+
+}
+
+
+.sec-12-clear-button {
+
+    width: 100%;
+
+    height: 38px;
+
+    margin-top: 9px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 6px;
+
+    background: #fff;
+
+    color: #888;
+
+    cursor: pointer;
+
+}
+
+
+.sec-12-clear-button:disabled {
+
+    opacity: .45;
+
+    cursor: not-allowed;
+
+}
+
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.sec-12-empty-cart {
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-direction: column;
+
+    min-height: 330px;
+
+    padding: 30px;
+
+    background: #fff;
+
+    border: 1px solid #eee;
+
+    border-radius: 10px;
+
+    text-align: center;
+
+}
+
+
+.sec-12-empty-cart.show {
+
+    display: flex;
+
+}
+
+
+.sec-12-empty-icon {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 75px;
+
+    height: 75px;
+
+    margin-bottom: 15px;
+
+    border-radius: 50%;
+
+    background: #f2ebff;
+
+    color: #5200c9;
+
+    font-size: 30px;
+
+}
+
+
+.sec-12-empty-cart h2 {
+
+    margin: 0 0 7px;
+
+    color: #4b0bbd;
+
+}
+
+
+.sec-12-empty-cart p {
+
+    margin: 0 0 20px;
+
+    color: #888;
+
+}
+
+
+.sec-12-empty-button {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    min-height: 40px;
+
+    padding: 0 17px;
+
+    border-radius: 6px;
+
+    background: #5200c9;
+
+    color: #fff;
+
+    text-decoration: none;
+
+}
+
+
+/* =========================================================
+   PAYMENT
+========================================================= */
+
+.sec-12-payment {
+
+    display: none;
+
+    max-width: 1100px;
+
+    margin: 35px auto 0;
+
+    padding: 30px;
+
+    background: #fff;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, .06);
+
+}
+
+
+.sec-12-payment.show {
+
+    display: block;
+
+}
+
+
+.sec-12-payment-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 25px;
+
+}
+
+
+.sec-12-payment-icon {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 48px;
+
+    height: 48px;
+
+    border-radius: 10px;
+
+    background: #f2ebff;
+
+    color: #5200c9;
+
+}
+
+
+.sec-12-payment-header h2 {
+
+    margin: 0 0 5px;
+
+    color: #4b0bbd;
+
+}
+
+
+.sec-12-payment-header p {
+
+    margin: 0;
+
+    color: #888;
+
+    font-size: 13px;
+
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.sec-12-form-section {
+
+    margin-bottom: 25px;
+
+}
+
+
+.sec-12-form-section h3 {
+
+    margin: 0 0 15px;
+
+    color: #4b0bbd;
+
+}
+
+
+.sec-12-form-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
+
+}
+
+
+.sec-12-form-full {
+
+    grid-column: 1 / -1;
+
+}
+
+
+.sec-12-form-group label {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #555;
+
+    font-size: 12px;
+
+}
+
+
+.sec-12-form-group label span {
+
+    color: #e53935;
+
+}
+
+
+.sec-12-form-group input,
+.sec-12-form-group textarea {
+
+    display: block;
+
+    width: 100%;
+
+    border: 1px solid #dedede;
+
+    border-radius: 5px;
+
+    outline: none;
+
+    background: #fff;
+
+    color: #444;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-size: 13px;
+
+}
+
+
+.sec-12-form-group input {
+
+    height: 40px;
+
+    padding: 0 11px;
+
+}
+
+
+.sec-12-form-group textarea {
+
+    min-height: 75px;
+
+    padding: 10px 11px;
+
+    resize: vertical;
+
+}
+
+
+.sec-12-form-group input:focus,
+.sec-12-form-group textarea:focus {
+
+    border-color: #5700c8;
+
+    box-shadow:
+        0 0 0 2px rgba(87, 0, 200, .08);
+
+}
+
+
+/* =========================================================
+   PAYMENT METHODS
+========================================================= */
+
+.sec-12-payment-methods {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+}
+
+
+.sec-12-payment-option {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    cursor: pointer;
+
+}
+
+
+.sec-12-payment-option input {
+
+    position: absolute;
+
+    opacity: 0;
+
+}
+
+
+.sec-12-custom-radio {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 16px;
+
+    height: 16px;
+
+    border: 1px solid #d8d8d8;
+
+    border-radius: 3px;
+
+}
+
+
+.sec-12-payment-option input:checked
+~ .sec-12-custom-radio {
+
+    background: #5200c9;
+
+    border-color: #5200c9;
+
+}
+
+
+.sec-12-payment-option input:checked
+~ .sec-12-custom-radio::after {
+
+    content: "✓";
+
+    color: #fff;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+}
+
+
+.sec-12-payment-text {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: #666;
+
+    font-size: 13px;
+
+}
+
+
+/* =========================================================
+   BANK
+========================================================= */
+
+.sec-12-bank-info {
+
+    display: none;
+
+    margin-top: 15px;
+
+    padding: 15px;
+
+    background: #f2f2f2;
+
+    border-radius: 6px;
+
+}
+
+
+.sec-12-bank-info.show {
+
+    display: block;
+
+}
+
+
+.sec-12-bank-title {
+
+    margin-bottom: 10px;
+
+    color: #4b0bbd;
+
+    font-weight: 700;
+
+}
+
+
+.sec-12-bank-row {
+
+    display: flex;
+
+    gap: 5px;
+
+    margin-bottom: 5px;
+
+    color: #666;
+
+    font-size: 12px;
+
+}
+
+
+/* =========================================================
+   PAYMENT TOTAL
+========================================================= */
+
+.sec-12-payment-total {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-top: 25px;
+
+    padding-top: 17px;
+
+    border-top: 1px solid #eee;
+
+}
+
+
+.sec-12-payment-total strong {
+
+    color: #4b0bbd;
+
+    font-size: 23px;
+
+}
+
+
+/* =========================================================
+   SUBMIT
+========================================================= */
+
+.sec-12-submit {
+
+    width: 55%;
+
+    height: 43px;
+
+    margin: 18px auto 0;
+
+}
+
+
+/* =========================================================
+   SUCCESS
+========================================================= */
+
+.sec-12-success {
+
+    display: none;
+
+    max-width: 700px;
+
+    margin: 35px auto 0;
+
+    padding: 35px;
+
+    background: #fff;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 12px;
+
+    text-align: center;
+
+}
+
+
+.sec-12-success.show {
+
+    display: block;
+
+}
+
+
+.sec-12-success-icon {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 65px;
+
+    height: 65px;
+
+    margin: 0 auto 15px;
+
+    border-radius: 50%;
+
+    background: #e9f8ef;
+
+    color: #25a55b;
+
+    font-size: 28px;
+
+}
+
+
+.sec-12-success h2 {
+
+    margin: 0 0 10px;
+
+    color: #4b0bbd;
+
+}
+
+
+.sec-12-success p {
+
+    color: #777;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 992px) {
+
+    .sec-12-container {
+
+        width: calc(100% - 40px);
+
+    }
+
+    .sec-12-cart-layout {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .sec-12-summary {
+
+        position: relative;
+
+        top: auto;
+
+    }
+
+}
+
+
+@media (max-width: 768px) {
+
+    .sec-12-container {
+
+        width: calc(100% - 30px);
+
+    }
+
+    .sec-12-header {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+    }
+
+    .sec-12-title {
+
+        font-size: 25px;
+
+    }
+
+    .sec-12 .sec-12-cart-item {
+
+        grid-template-columns:
+            130px
+            minmax(0, 1fr);
+
+    }
+
+    .sec-12 .sec-12-cart-item-image {
+
+        width: 130px;
+
+        height: 110px;
+
+    }
+
+    .sec-12-submit {
+
+        width: 70%;
+
+    }
+
+}
+
+
+@media (max-width: 576px) {
+
+    .sec-12-container {
+
+        width: calc(100% - 24px);
+
+    }
+
+    .sec-12 .sec-12-cart-item {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .sec-12 .sec-12-cart-item-image {
+
+        width: 100%;
+
+        height: 190px;
+
+    }
+
+    .sec-12-form-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .sec-12-form-full {
+
+        grid-column: auto;
+
+    }
+
+    .sec-12-submit {
+
+        width: 100%;
+
+    }
+
+}
+
+/* =========================================================
+   MENU FIX - đã gỡ bỏ.
+   Lý do: khối vá này set .menu-overlay lên z-index 9998
+   !important, cao hơn cả .header-main (1000) — khiến overlay
+   lại đè lên toàn bộ menu (mất hover, mất click), tức là gây
+   lại đúng bug đang cố sửa. Ngoài ra các selector .menu,
+   .menu a, .menu-toggle ở đây không có tiền tố "header.header"
+   nên có thể ảnh hưởng tới các phần tử trùng tên class ở nơi
+   khác (ví dụ .sec-12 .menu). Fix đúng gốc đã nằm ở khối
+   "MENU OVERLAY" phía trên (giảm z-index overlay xuống 900,
+   thấp hơn .header-main).
+========================================================= */

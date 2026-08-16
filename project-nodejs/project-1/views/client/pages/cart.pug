@@ -1,4 +1,423 @@
 extends ../../layouts/default
 
 block main
-  h1 Trang giỏ hàng
+
+  //- =========================================================
+  //- SECTION 12
+  //- GIỎ HÀNG + THANH TOÁN
+  //- =========================================================
+
+  section.sec-12
+
+    .sec-12-container
+
+      //- =======================================================
+      //- HEADER
+      //- =======================================================
+
+      .sec-12-header
+
+        div
+
+          h1.sec-12-title
+
+            i.fas.fa-shopping-cart
+
+            | Giỏ Hàng
+
+          p.sec-12-subtitle
+            | Kiểm tra chuyến đi và thông tin hành khách trước khi thanh toán.
+
+        a.sec-12-continue(
+          href="/"
+        )
+
+          i.fas.fa-arrow-left
+
+          | Tiếp tục chọn tour
+
+
+      //- =======================================================
+      //- CART LAYOUT
+      //- =======================================================
+
+      .sec-12-cart-layout
+
+
+        //- =====================================================
+        //- CART LIST
+        //- =====================================================
+
+        .sec-12-cart-list
+
+          #sec-12-cart-items
+
+
+          //- ===================================================
+          //- EMPTY CART
+          //- ===================================================
+
+          .sec-12-empty-cart#sec-12-empty-cart
+
+            .sec-12-empty-icon
+
+              i.fas.fa-shopping-basket
+
+
+            h2
+              | Giỏ hàng đang trống
+
+
+            p
+              | Bạn chưa chọn chuyến đi nào.
+
+
+            a.sec-12-empty-button(
+              href="/"
+            )
+
+              i.fas.fa-search
+
+              | Khám phá các chuyến đi
+
+
+        //- =====================================================
+        //- SUMMARY
+        //- =====================================================
+
+        aside.sec-12-summary
+
+          .sec-12-summary-title
+
+            i.fas.fa-receipt
+
+            | Tóm tắt đơn hàng
+
+
+          .sec-12-summary-row
+
+            span
+              | Số chuyến đi
+
+            strong#sec-12-tour-count
+              | 0
+
+
+          .sec-12-summary-row
+
+            span
+              | Hành khách
+
+            strong#sec-12-passenger-count
+              | 0
+
+
+          .sec-12-summary-line
+
+
+          .sec-12-summary-total
+
+            span
+              | Tổng cộng
+
+            strong#sec-12-summary-total
+              | 0 đ
+
+
+          button.sec-12-checkout-button(
+            type="button"
+            disabled
+          )
+
+            i.fas.fa-credit-card
+
+            | Tiến hành thanh toán
+
+
+          button.sec-12-clear-button(
+            type="button"
+            disabled
+          )
+
+            i.fas.fa-trash
+
+            | Xóa toàn bộ giỏ hàng
+
+
+      //- =======================================================
+      //- PAYMENT
+      //- =======================================================
+
+      .sec-12-payment#sec-12-payment
+
+        .sec-12-payment-header
+
+          .sec-12-payment-icon
+
+            i.fas.fa-credit-card
+
+
+          div
+
+            h2
+              | Thông tin thanh toán
+
+            p
+              | Vui lòng nhập chính xác thông tin liên hệ.
+
+
+        //- =====================================================
+        //- THÔNG TIN KHÁCH HÀNG
+        //- =====================================================
+
+        .sec-12-form-section
+
+          h3
+
+            i.fas.fa-user
+
+            | Thông tin khách hàng
+
+
+          .sec-12-form-grid
+
+            .sec-12-form-group
+
+              label(
+                for="sec-12-full-name"
+              )
+
+                | Họ và tên
+
+                span *
+
+
+              input#sec-12-full-name(
+                type="text"
+                name="fullName"
+                autocomplete="name"
+                placeholder="Nhập họ và tên"
+                required
+              )
+
+
+            .sec-12-form-group
+
+              label(
+                for="sec-12-phone"
+              )
+
+                | Số điện thoại
+
+                span *
+
+
+              input#sec-12-phone(
+                type="tel"
+                name="phone"
+                autocomplete="tel"
+                placeholder="Nhập số điện thoại"
+                required
+              )
+
+
+            .sec-12-form-group
+
+              label(
+                for="sec-12-email"
+              )
+
+                | Email
+
+                span *
+
+
+              input#sec-12-email(
+                type="email"
+                name="email"
+                autocomplete="email"
+                placeholder="example@gmail.com"
+                required
+              )
+
+
+            .sec-12-form-group
+
+              label(
+                for="sec-12-address"
+              )
+
+                | Địa chỉ
+
+
+              input#sec-12-address(
+                type="text"
+                name="address"
+                autocomplete="street-address"
+                placeholder="Nhập địa chỉ"
+              )
+
+
+            .sec-12-form-group.sec-12-form-full
+
+              label(
+                for="sec-12-note"
+              )
+
+                | Ghi chú
+
+
+              textarea#sec-12-note(
+                name="note"
+                placeholder="Ghi chú cho chuyến đi..."
+              )
+
+
+        //- =====================================================
+        //- PHƯƠNG THỨC THANH TOÁN
+        //- =====================================================
+
+        .sec-12-form-section
+
+          h3
+
+            i.fas.fa-wallet
+
+            | Phương thức thanh toán
+
+
+          .sec-12-payment-methods
+
+            label.sec-12-payment-option
+
+              input(
+                type="radio"
+                id="sec-12-payment-cod"
+                name="paymentMethod"
+                value="cod"
+                checked
+              )
+
+              span.sec-12-custom-radio
+
+              span.sec-12-payment-text
+
+                i.fas.fa-money-bill-wave
+
+                | Thanh toán khi đi tour
+
+
+            label.sec-12-payment-option
+
+              input(
+                type="radio"
+                id="sec-12-payment-bank"
+                name="paymentMethod"
+                value="bank"
+              )
+
+              span.sec-12-custom-radio
+
+              span.sec-12-payment-text
+
+                i.fas.fa-building-columns
+
+                | Chuyển khoản ngân hàng
+
+
+          .sec-12-bank-info#sec-12-bank-info
+
+            .sec-12-bank-title
+
+              i.fas.fa-building-columns
+
+              | Thông tin chuyển khoản
+
+
+            .sec-12-bank-row
+
+              span
+                | Ngân hàng:
+
+              strong
+                | Vietcombank
+
+
+            .sec-12-bank-row
+
+              span
+                | Số tài khoản:
+
+              strong
+                | 0123456789
+
+
+            .sec-12-bank-row
+
+              span
+                | Chủ tài khoản:
+
+              strong
+                | 28 TRAVEL
+
+
+            .sec-12-bank-note
+
+              i.fas.fa-circle-info
+
+              span
+                | Vui lòng ghi mã đơn hàng vào nội dung chuyển khoản.
+
+
+        //- =====================================================
+        //- PAYMENT TOTAL
+        //- =====================================================
+
+        .sec-12-payment-total
+
+          span
+            | Tổng thanh toán
+
+          strong#sec-12-payment-total
+            | 0 đ
+
+
+        button.sec-12-submit(
+          type="button"
+        )
+
+          i.fas.fa-check
+
+          | Xác nhận đặt tour
+
+
+      //- =======================================================
+      //- SUCCESS
+      //- =======================================================
+
+      .sec-12-success#sec-12-success
+
+        .sec-12-success-icon
+
+          i.fas.fa-check
+
+
+        h2
+          | Đặt tour thành công!
+
+
+        p
+          | Cảm ơn bạn đã lựa chọn dịch vụ của chúng tôi.
+
+
+        p
+          | Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.
+
+
+        a.sec-12-success-button(
+          href="/"
+        )
+
+          i.fas.fa-home
+
+          | Về trang chủ
