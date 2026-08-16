@@ -1,0 +1,57 @@
+header.admin-topbar
+
+  //- =========================================================
+  //- BÊN TRÁI
+  //- =========================================================
+
+  .admin-topbar-left
+
+    button.admin-sidebar-toggle#adminSidebarToggle(type="button" aria-label="Menu")
+      i.fas.fa-bars
+
+    h1.admin-topbar-title= pageTitle || "Tổng Quan"
+
+
+  //- =========================================================
+  //- BÊN PHẢI
+  //- =========================================================
+
+  .admin-topbar-right
+
+    button.admin-topbar-icon(type="button" aria-label="Thông báo")
+
+      i.fas.fa-bell
+
+      if typeof notificationCount !== "undefined" && notificationCount > 0
+        span.admin-topbar-dot
+
+
+    .admin-user-menu
+
+      button.admin-user-trigger#adminUserTrigger(type="button")
+
+        img.admin-user-avatar(
+          src=(typeof adminUser !== "undefined" && adminUser.avatar) ? adminUser.avatar : "/assets/image/avatar-default.png"
+          alt="Admin"
+        )
+
+        span.admin-user-name= (typeof adminUser !== "undefined" && adminUser.name) ? adminUser.name : "Quản Trị Viên"
+
+        i.fas.fa-chevron-down
+
+
+      .admin-user-dropdown#adminUserDropdown
+
+        a(href="/admin/profile")
+          i.fas.fa-user
+          | Hồ sơ cá nhân
+
+        a(href="/admin/settings")
+          i.fas.fa-gear
+          | Cài đặt
+
+        .admin-user-dropdown-divider
+
+        a.admin-logout-link(href="/admin/logout")
+          i.fas.fa-right-from-bracket
+          | Đăng xuất

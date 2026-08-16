@@ -1,0 +1,137 @@
+doctype html
+html(lang="vi")
+
+  head
+
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
+    title= (pageTitle ? pageTitle + " - " : "") + "Đăng Nhập - Website Du Lịch"
+
+    link(rel="icon" href="/assets/image/logo.png" type="image/png")
+
+    link(rel="preconnect" href="https://fonts.googleapis.com")
+    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css")
+
+    link(rel="stylesheet" href="/assets/css/style.css")
+
+
+  body
+
+    include ../../partials/header.pug
+
+
+    // =========================================================
+    // TRANG ĐĂNG NHẬP
+    // =========================================================
+
+    main.auth-page
+
+      .auth-wrapper
+
+        .auth-card
+
+          .auth-card-head
+
+            h1.auth-title Đăng Nhập
+
+            p.auth-subtitle Đăng nhập để đặt tour và quản lý đơn hàng của bạn
+
+
+          // -------------------------------------------------------
+          // THÔNG BÁO LỖI (từ server, sau khi kết nối MongoDB)
+          // -------------------------------------------------------
+
+          if typeof error !== "undefined" && error
+
+            .auth-alert.auth-alert-error
+
+              i.fas.fa-circle-exclamation
+
+              span= error
+
+
+          // -------------------------------------------------------
+          // FORM ĐĂNG NHẬP
+          //
+          // TODO (backend / MongoDB):
+          //   - action="/login" method="POST" gửi lên server
+          //   - Server nhận req.body.email, req.body.password
+          //   - Tìm user trong MongoDB theo email (vd: User.findOne({ email }))
+          //   - So sánh password đã hash (bcrypt.compare)
+          //   - Nếu đúng: tạo session/token, redirect về trang chủ
+          //   - Nếu sai: render lại login.pug kèm biến `error`
+          // -------------------------------------------------------
+
+          form#loginForm.auth-form(action="/login" method="POST" novalidate)
+
+            .auth-form-group
+
+              label(for="login-email") Email
+
+              .auth-input-icon
+
+                i.fas.fa-envelope
+
+                input#login-email(
+                  type="email"
+                  name="email"
+                  placeholder="Nhập email của bạn"
+                  autocomplete="email"
+                  required
+                )
+
+
+            .auth-form-group
+
+              label(for="login-password") Mật khẩu
+
+              .auth-input-icon
+
+                i.fas.fa-lock
+
+                input#login-password(
+                  type="password"
+                  name="password"
+                  placeholder="Nhập mật khẩu"
+                  autocomplete="current-password"
+                  required
+                )
+
+                button.auth-password-toggle(type="button" aria-label="Hiện mật khẩu")
+                  i.fas.fa-eye
+
+
+            .auth-form-row
+
+              label.auth-checkbox
+
+                input(type="checkbox" name="remember")
+
+                span.auth-checkbox-box
+
+                | Ghi nhớ đăng nhập
+
+              a.auth-forgot-link(href="/forgot-password") Quên mật khẩu?
+
+
+            span#loginFormError.auth-form-error
+
+
+            button.auth-submit(type="submit")
+
+              i.fas.fa-right-to-bracket
+
+              | Đăng Nhập
+
+
+          p.auth-switch
+            | Chưa có tài khoản?
+            a(href="/register") Đăng ký ngay
+
+
+    // =========================================================
+    // JS
+    // =========================================================
+
+    script(src="/assets/js/script.js")

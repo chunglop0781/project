@@ -1,0 +1,32 @@
+//- =============================================================
+//- PARTIAL PHÂN TRANG
+//- Biến cần truyền vào khi include:
+//-   currentPage  : trang hiện tại (number)
+//-   totalPages   : tổng số trang (number)
+//-   baseUrl      : đường dẫn gốc, vd "/admin/tours?"
+//- =============================================================
+
+if typeof totalPages !== "undefined" && totalPages > 1
+
+  nav.admin-pagination(aria-label="Phân trang")
+
+    a.admin-pagination-btn(
+      href=currentPage > 1 ? baseUrl + "page=" + (currentPage - 1) : "#"
+      class=currentPage <= 1 ? "disabled" : ""
+    )
+      i.fas.fa-chevron-left
+
+
+    each pageNumber in Array.from({ length: totalPages }, (_, i) => i + 1)
+
+      a.admin-pagination-btn(
+        href=baseUrl + "page=" + pageNumber
+        class=pageNumber === currentPage ? "active" : ""
+      )= pageNumber
+
+
+    a.admin-pagination-btn(
+      href=currentPage < totalPages ? baseUrl + "page=" + (currentPage + 1) : "#"
+      class=currentPage >= totalPages ? "disabled" : ""
+    )
+      i.fas.fa-chevron-right

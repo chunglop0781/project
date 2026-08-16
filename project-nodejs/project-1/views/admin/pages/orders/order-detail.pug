@@ -1,0 +1,197 @@
+extends ../../layouts/admin-layout.pug
+
+block content
+
+  //- =============================================================
+  //- Biến truyền vào:
+  //-   order : {
+  //-     id, code, status, statusLabel, createdAt,
+  //-     customer: { name, phone, email, address, note },
+  //-     tour: { name, image, code, duration, vehicle, departureDate },
+  //-     passengers: [{ label, quantity, price }],
+  //-     totalPrice, paymentMethod
+  //-   }
+  //- =============================================================
+
+  .admin-page-head
+
+    div
+
+      h2.admin-page-title Đơn Hàng #{order.code}
+
+      p.admin-page-subtitle Đặt lúc #{order.createdAt}
+
+    a.admin-btn.admin-btn-outline(href="/admin/orders")
+
+      i.fas.fa-arrow-left
+
+      | Quay lại danh sách
+
+
+  .admin-grid-2
+
+    //- ===============================================================
+    //- CỘT TRÁI
+    //- ===============================================================
+
+    div
+
+      .admin-card
+
+        h3.admin-card-title Thông Tin Tour
+
+        .admin-order-tour
+
+          img(src=order.tour.image alt=order.tour.name)
+
+          div
+
+            h4= order.tour.name
+
+            .admin-order-tour-meta
+
+              span
+                i.fas.fa-ticket
+                | #{order.tour.code}
+
+              span
+                i.fas.fa-clock
+                | #{order.tour.duration}
+
+              span
+                i.fas.fa-bus
+                | #{order.tour.vehicle}
+
+              span
+                i.fas.fa-calendar
+                | #{order.tour.departureDate}
+
+
+      .admin-card
+
+        h3.admin-card-title Danh Sách Hành Khách
+
+        .admin-table-wrap
+
+          table.admin-table
+
+            thead
+
+              tr
+
+                th Loại khách
+
+                th Số lượng
+
+                th Đơn giá
+
+                th Thành tiền
+
+
+            tbody
+
+              each passenger in order.passengers
+
+                tr
+
+                  td= passenger.label
+
+                  td= passenger.quantity
+
+                  td= passenger.price.toLocaleString("vi-VN") + " đ"
+
+                  td= (passenger.price * passenger.quantity).toLocaleString("vi-VN") + " đ"
+
+
+            tfoot
+
+              tr
+
+                td.admin-table-total-label(colspan="3") Tổng cộng
+
+                td.admin-table-total-value= order.totalPrice.toLocaleString("vi-VN") + " đ"
+
+
+    //- ===============================================================
+    //- CỘT PHẢI
+    //- ===============================================================
+
+    div
+
+      .admin-card
+
+        h3.admin-card-title Trạng Thái Đơn Hàng
+
+        .admin-form-group
+
+          label(for="order-status") Cập nhật trạng thái
+
+          form.admin-inline-form(action="/admin/orders/" + order.id + "/status" method="POST")
+
+            select#order-status(name="status")
+
+              option(value="pending" selected=order.status === "pending") Chờ xác nhận
+
+              option(value="confirmed" selected=order.status === "confirmed") Đã xác nhận
+
+              option(value="completed" selected=order.status === "completed") Hoàn thành
+
+              option(value="cancelled" selected=order.status === "cancelled") Đã hủy
+
+            button.admin-btn.admin-btn-primary(type="submit") Cập nhật
+
+
+      .admin-card
+
+        h3.admin-card-title Thông Tin Khách Hàng
+
+        ul.admin-info-list
+
+          li
+
+            span Họ và tên
+
+            strong= order.customer.name
+
+          li
+
+            span Số điện thoại
+
+            strong= order.customer.phone
+
+          li
+
+            span Email
+
+            strong= order.customer.email
+
+          li
+
+            span Địa chỉ
+
+            strong= order.customer.address || "—"
+
+          li
+
+            span Ghi chú
+
+            strong= order.customer.note || "—"
+
+
+      .admin-card
+
+        h3.admin-card-title Thanh Toán
+
+        ul.admin-info-list
+
+          li
+
+            span Phương thức
+
+            strong= order.paymentMethod === "bank" ? "Chuyển khoản ngân hàng" : "Thanh toán khi đi tour"
+
+          li
+
+            span Tổng thanh toán
+
+            strong= order.totalPrice.toLocaleString("vi-VN") + " đ"

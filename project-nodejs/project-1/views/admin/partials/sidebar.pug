@@ -1,0 +1,110 @@
+aside.admin-sidebar#adminSidebar
+
+  //- =========================================================
+  //- LOGO
+  //- =========================================================
+
+  .admin-sidebar-logo
+
+    a(href="/admin/dashboard")
+
+      img(src="/assets/image/logo.png" alt="28 Travel")
+
+      span 28 Travel Admin
+
+    button.admin-sidebar-close#adminSidebarClose(type="button" aria-label="Đóng menu")
+      i.fas.fa-xmark
+
+
+  //- =========================================================
+  //- MENU
+  //- =========================================================
+
+  nav.admin-sidebar-nav
+
+    ul
+
+      li
+
+        a(
+          href="/admin/dashboard"
+          class=(activeMenu === "dashboard" ? "active" : "")
+        )
+
+          i.fas.fa-gauge-high
+
+          span Tổng Quan
+
+
+      li
+
+        a(
+          href="/admin/tours"
+          class=(activeMenu === "tours" ? "active" : "")
+        )
+
+          i.fas.fa-suitcase-rolling
+
+          span Quản Lý Tour
+
+
+      li
+
+        a(
+          href="/admin/orders"
+          class=(activeMenu === "orders" ? "active" : "")
+        )
+
+          i.fas.fa-receipt
+
+          span Đơn Hàng
+
+          if typeof pendingOrderCount !== "undefined" && pendingOrderCount > 0
+            span.admin-sidebar-badge= pendingOrderCount
+
+
+      li
+
+        a(
+          href="/admin/customers"
+          class=(activeMenu === "customers" ? "active" : "")
+        )
+
+          i.fas.fa-users
+
+          span Khách Hàng
+
+
+      li
+
+        a(
+          href="/admin/news"
+          class=(activeMenu === "news" ? "active" : "")
+        )
+
+          i.fas.fa-newspaper
+
+          span Tin Tức
+
+
+    .admin-sidebar-divider
+
+
+    ul
+
+      li
+
+        a(href="/" target="_blank")
+
+          i.fas.fa-arrow-up-right-from-square
+
+          span Xem Website
+
+
+      li
+
+        a.admin-logout-link(href="/admin/logout")
+
+          i.fas.fa-right-from-bracket
+
+          span Đăng Xuất

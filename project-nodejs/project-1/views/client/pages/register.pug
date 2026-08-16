@@ -1,0 +1,193 @@
+doctype html
+html(lang="vi")
+
+  head
+
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
+    title= (pageTitle ? pageTitle + " - " : "") + "Đăng Ký - Website Du Lịch"
+
+    link(rel="icon" href="/assets/image/logo.png" type="image/png")
+
+    link(rel="preconnect" href="https://fonts.googleapis.com")
+    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css")
+
+    link(rel="stylesheet" href="/assets/css/style.css")
+
+
+  body
+
+    include ../../partials/header.pug
+
+
+    // =========================================================
+    // TRANG ĐĂNG KÝ
+    // =========================================================
+
+    main.auth-page
+
+      .auth-wrapper
+
+        .auth-card
+
+          .auth-card-head
+
+            h1.auth-title Đăng Ký Tài Khoản
+
+            p.auth-subtitle Tạo tài khoản để đặt tour nhanh hơn và theo dõi đơn hàng
+
+
+          // -------------------------------------------------------
+          // THÔNG BÁO LỖI (từ server, sau khi kết nối MongoDB)
+          // -------------------------------------------------------
+
+          if typeof error !== "undefined" && error
+
+            .auth-alert.auth-alert-error
+
+              i.fas.fa-circle-exclamation
+
+              span= error
+
+
+          // -------------------------------------------------------
+          // FORM ĐĂNG KÝ
+          //
+          // TODO (backend / MongoDB):
+          //   - action="/register" method="POST" gửi lên server
+          //   - Server nhận req.body.fullName, email, phone, password
+          //   - Kiểm tra email đã tồn tại chưa (User.findOne({ email }))
+          //   - Hash password (bcrypt.hash) trước khi lưu
+          //   - Tạo user mới (User.create({...})) trong MongoDB
+          //   - Đăng nhập luôn hoặc redirect về /login kèm thông báo thành công
+          //   - Nếu lỗi: render lại register.pug kèm biến `error`
+          // -------------------------------------------------------
+
+          form#registerForm.auth-form(action="/register" method="POST" novalidate)
+
+            .auth-form-group
+
+              label(for="register-fullname") Họ và tên
+
+              .auth-input-icon
+
+                i.fas.fa-user
+
+                input#register-fullname(
+                  type="text"
+                  name="fullName"
+                  placeholder="Nhập họ và tên"
+                  autocomplete="name"
+                  required
+                )
+
+
+            .auth-form-group
+
+              label(for="register-email") Email
+
+              .auth-input-icon
+
+                i.fas.fa-envelope
+
+                input#register-email(
+                  type="email"
+                  name="email"
+                  placeholder="Nhập email của bạn"
+                  autocomplete="email"
+                  required
+                )
+
+
+            .auth-form-group
+
+              label(for="register-phone") Số điện thoại
+
+              .auth-input-icon
+
+                i.fas.fa-phone
+
+                input#register-phone(
+                  type="tel"
+                  name="phone"
+                  placeholder="Nhập số điện thoại"
+                  autocomplete="tel"
+                  required
+                )
+
+
+            .auth-form-group
+
+              label(for="register-password") Mật khẩu
+
+              .auth-input-icon
+
+                i.fas.fa-lock
+
+                input#register-password(
+                  type="password"
+                  name="password"
+                  placeholder="Tối thiểu 6 ký tự"
+                  autocomplete="new-password"
+                  minlength="6"
+                  required
+                )
+
+                button.auth-password-toggle(type="button" aria-label="Hiện mật khẩu")
+                  i.fas.fa-eye
+
+
+            .auth-form-group
+
+              label(for="register-confirm-password") Xác nhận mật khẩu
+
+              .auth-input-icon
+
+                i.fas.fa-lock
+
+                input#register-confirm-password(
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Nhập lại mật khẩu"
+                  autocomplete="new-password"
+                  minlength="6"
+                  required
+                )
+
+                button.auth-password-toggle(type="button" aria-label="Hiện mật khẩu")
+                  i.fas.fa-eye
+
+
+            .auth-form-row
+
+              label.auth-checkbox
+
+                input(type="checkbox" name="agreeTerms" required)
+
+                span.auth-checkbox-box
+
+                | Tôi đồng ý với
+                a(href="/terms") điều khoản sử dụng
+
+
+            span#registerFormError.auth-form-error
+
+
+            button.auth-submit(type="submit")
+
+              i.fas.fa-user-plus
+
+              | Đăng Ký
+
+
+          p.auth-switch
+            | Đã có tài khoản?
+            a(href="/login") Đăng nhập ngay
+
+
+    // =========================================================
+    // JS
+    // =========================================================
+
+    script(src="/assets/js/script.js")

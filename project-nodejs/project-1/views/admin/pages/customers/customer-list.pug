@@ -1,0 +1,96 @@
+extends ../../layouts/admin-layout.pug
+
+block content
+
+  //- =============================================================
+  //- Biến truyền vào:
+  //-   customers : [{ id, name, phone, email, totalOrders, totalSpent, joinedAt }]
+  //-   currentPage, totalPages
+  //- =============================================================
+
+  .admin-page-head
+
+    div
+
+      h2.admin-page-title Khách Hàng
+
+      p.admin-page-subtitle Danh sách khách hàng đã đặt tour trên hệ thống.
+
+
+  .admin-card
+
+    .admin-toolbar
+
+      form.admin-search-form(action="/admin/customers" method="GET")
+
+        i.fas.fa-magnifying-glass
+
+        input(
+          type="text"
+          name="keyword"
+          placeholder="Tìm theo tên, SĐT hoặc email..."
+        )
+
+
+    .admin-table-wrap
+
+      table.admin-table
+
+        thead
+
+          tr
+
+            th Khách hàng
+
+            th Số điện thoại
+
+            th Email
+
+            th Số đơn hàng
+
+            th Tổng chi tiêu
+
+            th Ngày tham gia
+
+            th(style="width: 90px") Thao tác
+
+
+        tbody
+
+          if typeof customers !== "undefined" && customers.length
+
+            each customer in customers
+
+              tr
+
+                td
+
+                  .admin-table-item
+
+                    .admin-avatar-fallback= customer.name.charAt(0).toUpperCase()
+
+                    span= customer.name
+
+                td= customer.phone
+
+                td= customer.email
+
+                td= customer.totalOrders
+
+                td= customer.totalSpent.toLocaleString("vi-VN") + " đ"
+
+                td= customer.joinedAt
+
+                td
+
+                  a.admin-icon-btn(href="/admin/customers/" + customer.id title="Xem chi tiết")
+                    i.fas.fa-eye
+
+          else
+
+            tr
+
+              td.admin-table-empty(colspan="7") Chưa có khách hàng nào.
+
+
+    include ../../partials/pagination.pug

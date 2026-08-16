@@ -1,0 +1,122 @@
+extends ../../layouts/admin-layout.pug
+
+block content
+
+  //- =============================================================
+  //- Biến truyền vào:
+  //-   customer : { id, name, phone, email, address, joinedAt, totalOrders, totalSpent }
+  //-   orders   : [{ id, code, tourName, total, status, statusLabel, createdAt }]
+  //- =============================================================
+
+  .admin-page-head
+
+    div
+
+      h2.admin-page-title= customer.name
+
+      p.admin-page-subtitle Khách hàng từ #{customer.joinedAt}
+
+    a.admin-btn.admin-btn-outline(href="/admin/customers")
+
+      i.fas.fa-arrow-left
+
+      | Quay lại danh sách
+
+
+  .admin-grid-2
+
+    div
+
+      .admin-card
+
+        h3.admin-card-title Lịch Sử Đặt Tour
+
+        .admin-table-wrap
+
+          table.admin-table
+
+            thead
+
+              tr
+
+                th Mã đơn
+
+                th Tour
+
+                th Tổng tiền
+
+                th Ngày đặt
+
+                th Trạng thái
+
+
+            tbody
+
+              if typeof orders !== "undefined" && orders.length
+
+                each order in orders
+
+                  tr
+
+                    td
+                      a(href="/admin/orders/" + order.id)= order.code
+
+                    td= order.tourName
+
+                    td= order.total.toLocaleString("vi-VN") + " đ"
+
+                    td= order.createdAt
+
+                    td
+
+                      span.admin-badge(class="is-" + order.status)= order.statusLabel
+
+              else
+
+                tr
+
+                  td.admin-table-empty(colspan="5") Khách hàng chưa có đơn hàng nào.
+
+
+    div
+
+      .admin-card
+
+        .admin-customer-profile
+
+          .admin-avatar-fallback.is-large= customer.name.charAt(0).toUpperCase()
+
+          h3= customer.name
+
+
+        ul.admin-info-list
+
+          li
+
+            span Số điện thoại
+
+            strong= customer.phone
+
+          li
+
+            span Email
+
+            strong= customer.email
+
+          li
+
+            span Địa chỉ
+
+            strong= customer.address || "—"
+
+          li
+
+            span Tổng số đơn
+
+            strong= customer.totalOrders
+
+          li
+
+            span Tổng chi tiêu
+
+            strong= customer.totalSpent.toLocaleString("vi-VN") + " đ"

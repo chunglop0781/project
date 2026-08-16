@@ -1,0 +1,110 @@
+extends ../../layouts/admin-layout.pug
+
+block content
+
+  //- =============================================================
+  //- Biến truyền vào:
+  //-   posts : [{ id, thumbnail, title, category, author, status, statusLabel, publishedAt }]
+  //-   currentPage, totalPages
+  //- =============================================================
+
+  .admin-page-head
+
+    div
+
+      h2.admin-page-title Tin Tức
+
+      p.admin-page-subtitle Quản lý bài viết tin tức trên website.
+
+    a.admin-btn.admin-btn-primary(href="/admin/news/new")
+
+      i.fas.fa-plus
+
+      | Viết Bài Mới
+
+
+  .admin-card
+
+    .admin-toolbar
+
+      form.admin-search-form(action="/admin/news" method="GET")
+
+        i.fas.fa-magnifying-glass
+
+        input(
+          type="text"
+          name="keyword"
+          placeholder="Tìm theo tiêu đề bài viết..."
+        )
+
+
+    .admin-table-wrap
+
+      table.admin-table
+
+        thead
+
+          tr
+
+            th Bài viết
+
+            th Danh mục
+
+            th Tác giả
+
+            th Ngày đăng
+
+            th Trạng thái
+
+            th(style="width: 120px") Thao tác
+
+
+        tbody
+
+          if typeof posts !== "undefined" && posts.length
+
+            each post in posts
+
+              tr
+
+                td
+
+                  .admin-table-item
+
+                    img(src=post.thumbnail alt=post.title)
+
+                    span= post.title
+
+                td= post.category
+
+                td= post.author
+
+                td= post.publishedAt
+
+                td
+
+                  span.admin-badge(class=post.status === "published" ? "is-success" : "is-muted")= post.statusLabel
+
+                td
+
+                  .admin-table-actions
+
+                    a.admin-icon-btn(href="/admin/news/" + post.id + "/edit" title="Sửa")
+                      i.fas.fa-pen
+
+                    button.admin-icon-btn.is-danger(
+                      type="button"
+                      title="Xóa"
+                      data-confirm="Bạn có chắc muốn xóa bài viết này?"
+                      data-delete-url=("/admin/news/" + post.id + "/delete")
+                    )
+                      i.fas.fa-trash
+
+          else
+
+            tr
+
+              td.admin-table-empty(colspan="6") Chưa có bài viết nào.
+
+
+    include ../../partials/pagination.pug

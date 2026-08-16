@@ -1,0 +1,139 @@
+extends ../../layouts/admin-layout.pug
+
+block content
+
+  //- =============================================================
+  //- Biến truyền vào:
+  //-   orders : [{ id, code, customerName, phone, tourName, totalPassengers,
+  //-               total, status, statusLabel, createdAt }]
+  //-   currentPage, totalPages
+  //-   activeStatus : trạng thái tab đang chọn ("all" | "pending" | ...)
+  //- =============================================================
+
+  .admin-page-head
+
+    div
+
+      h2.admin-page-title Đơn Hàng
+
+      p.admin-page-subtitle Quản lý toàn bộ đơn đặt tour từ khách hàng.
+
+
+  .admin-card
+
+    //- ===============================================================
+    //- TAB TRẠNG THÁI
+    //- ===============================================================
+
+    .admin-tabs
+
+      a(
+        href="/admin/orders?status=all"
+        class=(!activeStatus || activeStatus === "all") ? "active" : ""
+      ) Tất cả
+
+      a(
+        href="/admin/orders?status=pending"
+        class=activeStatus === "pending" ? "active" : ""
+      ) Chờ xác nhận
+
+      a(
+        href="/admin/orders?status=confirmed"
+        class=activeStatus === "confirmed" ? "active" : ""
+      ) Đã xác nhận
+
+      a(
+        href="/admin/orders?status=completed"
+        class=activeStatus === "completed" ? "active" : ""
+      ) Hoàn thành
+
+      a(
+        href="/admin/orders?status=cancelled"
+        class=activeStatus === "cancelled" ? "active" : ""
+      ) Đã hủy
+
+
+    .admin-toolbar
+
+      form.admin-search-form(action="/admin/orders" method="GET")
+
+        i.fas.fa-magnifying-glass
+
+        input(
+          type="text"
+          name="keyword"
+          placeholder="Tìm theo mã đơn, tên hoặc SĐT khách hàng..."
+        )
+
+
+    //- ===============================================================
+    //- BẢNG DANH SÁCH
+    //- ===============================================================
+
+    .admin-table-wrap
+
+      table.admin-table
+
+        thead
+
+          tr
+
+            th Mã đơn
+
+            th Khách hàng
+
+            th Tour
+
+            th Số khách
+
+            th Tổng tiền
+
+            th Ngày đặt
+
+            th Trạng thái
+
+            th(style="width: 90px") Thao tác
+
+
+        tbody
+
+          if typeof orders !== "undefined" && orders.length
+
+            each order in orders
+
+              tr
+
+                td
+                  strong= order.code
+
+                td
+
+                  div= order.customerName
+
+                  span.admin-table-sub= order.phone
+
+                td= order.tourName
+
+                td= order.totalPassengers
+
+                td= order.total.toLocaleString("vi-VN") + " đ"
+
+                td= order.createdAt
+
+                td
+
+                  span.admin-badge(class="is-" + order.status)= order.statusLabel
+
+                td
+
+                  a.admin-icon-btn(href="/admin/orders/" + order.id title="Xem chi tiết")
+                    i.fas.fa-eye
+
+          else
+
+            tr
+
+              td.admin-table-empty(colspan="8") Chưa có đơn hàng nào.
+
+
+    include ../../partials/pagination.pug

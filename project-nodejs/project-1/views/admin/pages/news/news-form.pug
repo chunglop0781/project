@@ -1,0 +1,167 @@
+extends ../../layouts/admin-layout.pug
+
+block content
+
+  //- =============================================================
+  //- Biến truyền vào:
+  //-   post : object khi ở chế độ sửa (nếu không có => chế độ thêm mới)
+  //- =============================================================
+
+  - const isEdit = typeof post !== "undefined" && post
+  - const formAction = isEdit ? "/admin/news/" + post.id + "/edit" : "/admin/news/new"
+
+  .admin-page-head
+
+    div
+
+      h2.admin-page-title= isEdit ? "Chỉnh Sửa Bài Viết" : "Viết Bài Mới"
+
+      p.admin-page-subtitle= isEdit ? "Cập nhật nội dung bài viết." : "Nhập nội dung để đăng bài viết mới."
+
+    a.admin-btn.admin-btn-outline(href="/admin/news")
+
+      i.fas.fa-arrow-left
+
+      | Quay lại danh sách
+
+
+  form.admin-form(action=formAction method="POST" enctype="multipart/form-data")
+
+    .admin-grid-2
+
+      .admin-card
+
+        h3.admin-card-title Nội Dung Bài Viết
+
+        .admin-form-group
+
+          label(for="post-title") Tiêu đề
+            span.required *
+
+          input#post-title(
+            type="text"
+            name="title"
+            placeholder="Nhập tiêu đề bài viết"
+            value=isEdit ? post.title : ""
+            required
+          )
+
+
+        .admin-form-group
+
+          label(for="post-slug") Đường dẫn (slug)
+
+          input#post-slug(
+            type="text"
+            name="slug"
+            placeholder="vd: kinh-nghiem-du-lich-sapa"
+            value=isEdit ? post.slug : ""
+          )
+
+
+        .admin-form-group
+
+          label(for="post-excerpt") Mô tả ngắn
+
+          textarea#post-excerpt(
+            name="excerpt"
+            rows="3"
+            placeholder="Tóm tắt ngắn gọn nội dung bài viết..."
+          )= isEdit ? post.excerpt : ""
+
+
+        .admin-form-group
+
+          label(for="post-content") Nội dung chi tiết
+            span.required *
+
+          textarea#post-content(
+            name="content"
+            rows="14"
+            placeholder="Nội dung bài viết..."
+            required
+          )= isEdit ? post.content : ""
+
+
+      div
+
+        .admin-card
+
+          h3.admin-card-title Ảnh Đại Diện
+
+          .admin-upload-box#postThumbnailUpload
+
+            img#postThumbnailPreview(
+              src=(isEdit && post.thumbnail) ? post.thumbnail : "/assets/image/upload-placeholder.png"
+              alt="Ảnh đại diện"
+            )
+
+            label.admin-upload-btn(for="post-thumbnail")
+
+              i.fas.fa-cloud-arrow-up
+
+              | Tải ảnh lên
+
+            input#post-thumbnail(
+              type="file"
+              name="thumbnail"
+              accept="image/*"
+              hidden
+            )
+
+
+        .admin-card
+
+          h3.admin-card-title Phân Loại
+
+          .admin-form-group
+
+            label(for="post-category") Danh mục
+
+            select#post-category(name="category")
+
+              option(value="kinh-nghiem" selected=(isEdit && post.category === "kinh-nghiem")) Kinh nghiệm du lịch
+
+              option(value="khuyen-mai" selected=(isEdit && post.category === "khuyen-mai")) Khuyến mãi
+
+              option(value="tin-tuc" selected=(isEdit && post.category === "tin-tuc")) Tin tức chung
+
+
+          .admin-form-group
+
+            label(for="post-publish-date") Ngày đăng
+
+            input#post-publish-date(
+              type="date"
+              name="publishedAt"
+              value=isEdit ? post.publishedAt : ""
+            )
+
+
+        .admin-card
+
+          h3.admin-card-title Trạng Thái
+
+          label.admin-switch
+
+            input(
+              type="checkbox"
+              name="status"
+              value="published"
+              checked=(!isEdit || post.status === "published")
+            )
+
+            span.admin-switch-track
+
+            span.admin-switch-label Đăng công khai
+
+
+    .admin-form-actions
+
+      button.admin-btn.admin-btn-primary(type="submit")
+
+        i.fas.fa-floppy-disk
+
+        | Lưu Bài Viết
+
+      a.admin-btn.admin-btn-outline(href="/admin/news") Hủy

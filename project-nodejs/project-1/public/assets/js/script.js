@@ -855,3 +855,204 @@ document.addEventListener("DOMContentLoaded", function () {
     updateHeaderCartCount();
 
 });
+
+
+/* =============================================================
+   SECTION 13 - AUTH PAGES (ĐĂNG NHẬP / ĐĂNG KÝ)
+   Áp dụng cho: login.pug (#loginForm), register.pug (#registerForm)
+============================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* -----------------------------------------------------
+       TOGGLE HIỆN/ẨN MẬT KHẨU
+       (Dùng chung cho mọi input trong .auth-input-icon)
+    ----------------------------------------------------- */
+
+    const authPasswordToggles = document.querySelectorAll(".auth-password-toggle");
+
+    authPasswordToggles.forEach(function (toggleButton) {
+
+        const wrapper = toggleButton.closest(".auth-input-icon");
+        const passwordInput = wrapper ? wrapper.querySelector("input") : null;
+        const icon = toggleButton.querySelector("i");
+
+        if (!passwordInput || !icon) {
+            return;
+        }
+
+        toggleButton.addEventListener("click", function () {
+
+            const isVisible = passwordInput.type === "text";
+
+            passwordInput.type = isVisible ? "password" : "text";
+
+            icon.classList.toggle("fa-eye", isVisible);
+            icon.classList.toggle("fa-eye-slash", !isVisible);
+
+        });
+
+    });
+
+
+    /* -----------------------------------------------------
+       FORM ĐĂNG NHẬP
+    ----------------------------------------------------- */
+
+    const loginForm = document.querySelector("#loginForm");
+
+    if (loginForm) {
+
+        const loginError = loginForm.querySelector("#loginFormError");
+
+        loginForm.addEventListener("submit", function (event) {
+
+            const emailInput = loginForm.querySelector("#login-email");
+            const passwordInput = loginForm.querySelector("#login-password");
+
+            if (!emailInput.value.trim() || !passwordInput.value.trim()) {
+
+                event.preventDefault();
+
+                if (loginError) {
+                    loginError.textContent = "Vui lòng nhập đầy đủ email và mật khẩu.";
+                    loginError.classList.add("show");
+                }
+
+                return;
+            }
+
+            if (loginError) {
+                loginError.classList.remove("show");
+            }
+
+            // ---------------------------------------------------
+            // TODO (kết nối MongoDB / backend):
+            // Form đang submit theo kiểu truyền thống (action="/login",
+            // method="POST") nên KHÔNG cần preventDefault ở đây nữa -
+            // trình duyệt sẽ tự gửi dữ liệu lên server.
+            //
+            // Nếu muốn chuyển sang gọi API bằng fetch() (không load
+            // lại trang), thay đoạn dưới vào chỗ này:
+            //
+            //   event.preventDefault();
+            //
+            //   fetch("/api/login", {
+            //       method: "POST",
+            //       headers: { "Content-Type": "application/json" },
+            //       body: JSON.stringify({
+            //           email: emailInput.value.trim(),
+            //           password: passwordInput.value
+            //       })
+            //   })
+            //       .then((res) => res.json())
+            //       .then((data) => {
+            //           if (data.success) {
+            //               window.location.href = "/";
+            //           } else {
+            //               loginError.textContent = data.message || "Email hoặc mật khẩu không đúng.";
+            //               loginError.classList.add("show");
+            //           }
+            //       })
+            //       .catch(() => {
+            //           loginError.textContent = "Có lỗi xảy ra, vui lòng thử lại.";
+            //           loginError.classList.add("show");
+            //       });
+            // ---------------------------------------------------
+
+        });
+
+    }
+
+
+    /* -----------------------------------------------------
+       FORM ĐĂNG KÝ
+    ----------------------------------------------------- */
+
+    const registerForm = document.querySelector("#registerForm");
+
+    if (registerForm) {
+
+        const registerError = registerForm.querySelector("#registerFormError");
+
+        registerForm.addEventListener("submit", function (event) {
+
+            const fullNameInput = registerForm.querySelector("#register-fullname");
+            const emailInput = registerForm.querySelector("#register-email");
+            const phoneInput = registerForm.querySelector("#register-phone");
+            const passwordInput = registerForm.querySelector("#register-password");
+            const confirmPasswordInput = registerForm.querySelector("#register-confirm-password");
+            const agreeTermsInput = registerForm.querySelector('input[name="agreeTerms"]');
+
+            let errorMessage = "";
+
+            if (
+                !fullNameInput.value.trim() ||
+                !emailInput.value.trim() ||
+                !phoneInput.value.trim() ||
+                !passwordInput.value.trim() ||
+                !confirmPasswordInput.value.trim()
+            ) {
+                errorMessage = "Vui lòng nhập đầy đủ thông tin bắt buộc.";
+            } else if (passwordInput.value.length < 6) {
+                errorMessage = "Mật khẩu phải có ít nhất 6 ký tự.";
+            } else if (passwordInput.value !== confirmPasswordInput.value) {
+                errorMessage = "Mật khẩu xác nhận không khớp.";
+            } else if (agreeTermsInput && !agreeTermsInput.checked) {
+                errorMessage = "Vui lòng đồng ý với điều khoản sử dụng.";
+            }
+
+            if (errorMessage) {
+
+                event.preventDefault();
+
+                if (registerError) {
+                    registerError.textContent = errorMessage;
+                    registerError.classList.add("show");
+                }
+
+                return;
+            }
+
+            if (registerError) {
+                registerError.classList.remove("show");
+            }
+
+            // ---------------------------------------------------
+            // TODO (kết nối MongoDB / backend):
+            // Tương tự loginForm - form đang submit truyền thống tới
+            // action="/register". Nếu muốn dùng fetch() thay vì reload
+            // trang, thay đoạn dưới vào chỗ này:
+            //
+            //   event.preventDefault();
+            //
+            //   fetch("/api/register", {
+            //       method: "POST",
+            //       headers: { "Content-Type": "application/json" },
+            //       body: JSON.stringify({
+            //           fullName: fullNameInput.value.trim(),
+            //           email: emailInput.value.trim(),
+            //           phone: phoneInput.value.trim(),
+            //           password: passwordInput.value
+            //       })
+            //   })
+            //       .then((res) => res.json())
+            //       .then((data) => {
+            //           if (data.success) {
+            //               window.location.href = "/login";
+            //           } else {
+            //               registerError.textContent = data.message || "Đăng ký thất bại, vui lòng thử lại.";
+            //               registerError.classList.add("show");
+            //           }
+            //       })
+            //       .catch(() => {
+            //           registerError.textContent = "Có lỗi xảy ra, vui lòng thử lại.";
+            //           registerError.classList.add("show");
+            //       });
+            // ---------------------------------------------------
+
+        });
+
+    }
+
+});

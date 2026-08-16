@@ -1,0 +1,27 @@
+doctype html
+html(lang="vi")
+
+  head
+
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
+    title= (pageTitle ? pageTitle + " - " : "") + "Quản Trị 28 Travel"
+
+    link(rel="icon" href="/assets/image/logo.png" type="image/png")
+
+    link(rel="preconnect" href="https://fonts.googleapis.com")
+    link(href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet")
+    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css")
+
+    link(rel="stylesheet" href="/admin/assets/css/admin.css")
+
+    block styles
+
+  body.admin-body.admin-auth-body
+
+    block content
+
+    script(src="/admin/assets/js/admin.js")
+
+    block scripts

@@ -1,0 +1,174 @@
+extends ../layouts/admin-layout.pug
+
+block content
+
+  //- =============================================================
+  //- Biến truyền vào (ví dụ):
+  //-   stats           : { totalOrders, totalRevenue, totalCustomers, totalTours }
+  //-   recentOrders    : [{ id, code, customerName, tourName, total, status, createdAt }]
+  //-   topTours        : [{ name, image, bookedCount, price }]
+  //- =============================================================
+
+  .admin-page-head
+
+    div
+
+      h2.admin-page-title Tổng Quan Hệ Thống
+
+      p.admin-page-subtitle Xin chào, đây là tình hình kinh doanh hôm nay.
+
+
+  //- ===============================================================
+  //- STAT CARDS
+  //- ===============================================================
+
+  .admin-stat-grid
+
+    .admin-stat-card
+
+      .admin-stat-icon.is-purple
+        i.fas.fa-receipt
+
+      .admin-stat-info
+
+        span Tổng đơn hàng
+
+        strong= (typeof stats !== "undefined" && stats.totalOrders) || 0
+
+
+    .admin-stat-card
+
+      .admin-stat-icon.is-green
+        i.fas.fa-sack-dollar
+
+      .admin-stat-info
+
+        span Doanh thu
+
+        strong= ((typeof stats !== "undefined" && stats.totalRevenue) || 0).toLocaleString("vi-VN") + " đ"
+
+
+    .admin-stat-card
+
+      .admin-stat-icon.is-blue
+        i.fas.fa-users
+
+      .admin-stat-info
+
+        span Khách hàng
+
+        strong= (typeof stats !== "undefined" && stats.totalCustomers) || 0
+
+
+    .admin-stat-card
+
+      .admin-stat-icon.is-orange
+        i.fas.fa-suitcase-rolling
+
+      .admin-stat-info
+
+        span Tour đang mở bán
+
+        strong= (typeof stats !== "undefined" && stats.totalTours) || 0
+
+
+  //- ===============================================================
+  //- NỘI DUNG CHÍNH
+  //- ===============================================================
+
+  .admin-grid-2
+
+    //- =============================================================
+    //- ĐƠN HÀNG GẦN ĐÂY
+    //- =============================================================
+
+    .admin-card
+
+      .admin-card-head
+
+        h3 Đơn Hàng Gần Đây
+
+        a.admin-card-link(href="/admin/orders") Xem tất cả →
+
+
+      .admin-table-wrap
+
+        table.admin-table
+
+          thead
+
+            tr
+
+              th Mã đơn
+
+              th Khách hàng
+
+              th Tour
+
+              th Tổng tiền
+
+              th Trạng thái
+
+
+          tbody
+
+            if typeof recentOrders !== "undefined" && recentOrders.length
+
+              each order in recentOrders
+
+                tr
+
+                  td
+                    a(href="/admin/orders/" + order.id)= order.code
+
+                  td= order.customerName
+
+                  td= order.tourName
+
+                  td= order.total.toLocaleString("vi-VN") + " đ"
+
+                  td
+
+                    span.admin-badge(class="is-" + order.status)= order.statusLabel
+
+            else
+
+              tr
+
+                td.admin-table-empty(colspan="5") Chưa có đơn hàng nào.
+
+
+    //- =============================================================
+    //- TOP TOUR BÁN CHẠY
+    //- =============================================================
+
+    .admin-card
+
+      .admin-card-head
+
+        h3 Tour Bán Chạy
+
+        a.admin-card-link(href="/admin/tours") Xem tất cả →
+
+
+      .admin-top-tour-list
+
+        if typeof topTours !== "undefined" && topTours.length
+
+          each tour in topTours
+
+            .admin-top-tour-item
+
+              img(src=tour.image alt=tour.name)
+
+              .admin-top-tour-info
+
+                h4= tour.name
+
+                span= tour.bookedCount + " lượt đặt"
+
+              strong= tour.price.toLocaleString("vi-VN") + " đ"
+
+        else
+
+          p.admin-table-empty Chưa có dữ liệu.
