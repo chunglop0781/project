@@ -2,6 +2,10 @@ node_modules
 
 .env
 
+1.env
+# Email 12 từ https://github.com/mnha-data/acc-claude/blob/main/free/README.md hãy liên hệ ad để ad gửi 1.env
+# example '1.env': MONGODB_URI_1=mongodb+srv://mthn04112009_db_user:passwork@cluster0.06dyyse.mongodb.net/travel_db?appName=Cluster0
+
 .yarn/*
 !.yarn/patches
 !.yarn/plugins

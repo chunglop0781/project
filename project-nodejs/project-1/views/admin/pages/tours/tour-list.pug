@@ -1,0 +1,72 @@
+extends ../../layouts/admin-layout.pug
+
+block content
+
+  .admin-page-head
+
+    div
+
+      h2.admin-page-title Quản Lý Tour
+
+      p.admin-page-subtitle Danh sách tất cả các tour du lịch hiện có.
+
+    a.admin-btn.admin-btn-primary(href="/admin/tours/new")
+      i.fas.fa-plus
+      |  Thêm Tour Mới
+
+
+  .admin-card
+
+    .admin-table-wrap
+
+      table.admin-table
+
+        thead
+
+          tr
+
+            th Tên Tour
+
+            th Phương Tiện
+
+            th Giá
+
+            th Trạng Thái
+
+            th Hành Động
+
+
+        tbody
+
+          if typeof tours !== "undefined" && tours.length
+
+            each tour in tours
+
+              tr
+
+                td= tour.name
+
+                td= tour.vehicle
+
+                td= (tour.price || 0).toLocaleString("vi-VN") + " đ"
+
+                td
+                  span.admin-badge.is-active Đang bán
+
+                td
+
+                  a.admin-btn.admin-btn-sm(href="/admin/tours/" + tour._id + "/edit")
+                    i.fas.fa-pen
+
+                  button.admin-btn.admin-btn-sm.admin-btn-danger(
+                    type="button"
+                    data-delete-url="/admin/tours/" + tour._id
+                    data-confirm="Bạn có chắc muốn xóa tour này?"
+                  )
+                    i.fas.fa-trash
+
+          else
+
+            tr
+
+              td.admin-table-empty(colspan="5") Chưa có tour nào.

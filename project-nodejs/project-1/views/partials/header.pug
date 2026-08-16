@@ -218,25 +218,39 @@ header.header
       .header-actions
 
         // -----------------------------------------------------
-        // ĐĂNG NHẬP / ĐĂNG KÝ
+        // ĐĂNG NHẬP / ĐĂNG KÝ (hoặc thông tin người dùng nếu đã đăng nhập)
         // -----------------------------------------------------
 
         .auth-links
 
-          a.login-link(
-            href="/login"
-          )
-            | Đăng nhập
+          if currentUser
+
+            a.welcome-text(
+              href=(currentUser.role === "admin" ? "/admin/dashboard" : "/info")
+            )
+              | Xin chào, #{currentUser.fullName}
+
+            a.logout-link(
+              href=(currentUser.role === "admin" ? "/admin/logout" : "/logout")
+            )
+              | Đăng xuất
+
+          else
+
+            a.login-link(
+              href="/login"
+            )
+              | Đăng nhập
 
 
-          span.divider
-            | |
+            span.divider
+              | |
 
 
-          a.register-link(
-            href="/register"
-          )
-            | Đăng ký
+            a.register-link(
+              href="/register"
+            )
+              | Đăng ký
 
 
         // -----------------------------------------------------
