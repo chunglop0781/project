@@ -1938,6 +1938,8 @@ h1 {
 
     display: flex;
 
+    flex-wrap: wrap;
+
     align-items: stretch;
 
     gap: 23px;
@@ -2082,9 +2084,9 @@ h1 {
 .section-2-tours {
     position: relative;
 
-    flex: 1;
+    flex: 1 1 320px;
 
-    min-width: 0;
+    min-width: 320px;
 
     overflow: hidden;
 }
@@ -2098,6 +2100,10 @@ h1 {
     width: 100%;
 
     height: 100%;
+
+    padding: 0 46px;
+
+    box-sizing: border-box;
 
     overflow: hidden;
 }
@@ -3020,7 +3026,13 @@ h1 {
     .section-2-tours {
         width: 100%;
 
+        min-width: 0;
+
         overflow: hidden;
+    }
+
+    .section-2-swiper {
+        padding: 0;
     }
 
     .section-2-tour-card {
@@ -4163,7 +4175,13 @@ h1 {
 .tour-card {
     position: relative;
 
+    width: 100%;
+    height: 100%;
+
     min-width: 0;
+
+    display: flex;
+    flex-direction: column;
 
     overflow: hidden;
 
