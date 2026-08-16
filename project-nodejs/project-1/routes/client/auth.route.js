@@ -12,6 +12,35 @@ router.get('/register', (req, res) => {
     res.render('client/pages/register');
 });
 
+// Trang quên mật khẩu
+router.get('/forgot-password', (req, res) => {
+    res.render('client/pages/forgot-password');
+});
+
+// Xử lý gửi mã OTP
+router.post('/forgot-password', async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.render('client/pages/forgot-password', { error: 'Email không tồn tại trong hệ thống.' });
+        }
+
+        // TODO (kết nối MongoDB / gửi mail):
+        //   - Sinh mã OTP ngẫu nhiên (vd: 6 chữ số)
+        //   - Lưu OTP + thời gian hết hạn vào user (hoặc collection riêng)
+        //   - Gửi email chứa mã OTP cho user (vd: dùng nodemailer)
+        //   - Sau khi gửi thành công, redirect sang trang nhập OTP,
+        //     hoặc render lại kèm biến `success`
+
+        res.render('client/pages/forgot-password', { success: 'Mã OTP đã được gửi tới email của bạn.' });
+    } catch (error) {
+        console.log(error);
+        res.render('client/pages/forgot-password', { error: 'Có lỗi xảy ra, vui lòng thử lại.' });
+    }
+});
+
 // Xử lý đăng nhập
 router.post('/login', async (req, res) => {
     try {
