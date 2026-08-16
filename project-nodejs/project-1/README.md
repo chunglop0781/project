@@ -31,6 +31,7 @@ Project tập trung vào việc thực hành cách xây dựng một website có
 - Gallery ảnh
 - Bộ chọn số lượng hành khách
 - Tính tổng tiền tự động
+- ...
 
 Project được phát triển theo hướng:
 
