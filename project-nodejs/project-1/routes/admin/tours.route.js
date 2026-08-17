@@ -299,9 +299,8 @@ router.post('/new', requireAdmin, upload.single('image'), async (req, res) => {
 
             locations: normalizeLocations(body.locations),
 
-            // TODO: đổi theo cách project bạn lưu admin đang đăng nhập trong session
-            // (kiểm tra middlewares/requireAdmin.js: đang dùng req.session.user)
-            createdBy: (req.session && req.session.user) ? req.session.user._id : undefined
+            // Route đã được bảo vệ bởi requireAdmin nên req.session.user luôn tồn tại
+            createdBy: req.session.user._id
         });
 
         res.redirect('/admin/tours');
@@ -339,7 +338,7 @@ router.post('/bulk', requireAdmin, async (req, res) => {
                     {
                         isDeleted: true,
                         deletedAt: new Date(),
-                        deletedBy: (req.session && req.session.user) ? req.session.user._id : undefined
+                        deletedBy: req.session.user._id
                     }
                 );
             }
@@ -436,7 +435,8 @@ router.post('/:id/edit', requireAdmin, upload.single('image'), async (req, res) 
 
             locations: normalizeLocations(body.locations),
 
-            updatedBy: (req.session && req.session.user) ? req.session.user._id : undefined
+            // Route đã được bảo vệ bởi requireAdmin nên req.session.user luôn tồn tại
+            updatedBy: req.session.user._id
         };
 
         if (req.file) {
@@ -465,7 +465,7 @@ router.delete('/:id', requireAdmin, async (req, res) => {
         await Tour.findByIdAndUpdate(req.params.id, {
             isDeleted: true,
             deletedAt: new Date(),
-            deletedBy: (req.session && req.session.user) ? req.session.user._id : undefined
+            deletedBy: req.session.user._id
         });
         res.json({ success: true });
     } catch (error) {

@@ -152,11 +152,28 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            const form = document.createElement("form");
-            form.method = "POST";
-            form.action = url;
-            document.body.appendChild(form);
-            form.submit();
+            button.disabled = true;
+
+            fetch(url, { method: "DELETE" })
+                .then(function (response) {
+                    return response.json().catch(function () {
+                        return {};
+                    });
+                })
+                .then(function (data) {
+                    if (data && data.success === false) {
+                        alert("Có lỗi xảy ra, vui lòng thử lại.");
+                        button.disabled = false;
+                        return;
+                    }
+                    // Xóa xong -> tải lại trang để danh sách cập nhật
+                    window.location.reload();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    alert("Có lỗi xảy ra, vui lòng thử lại.");
+                    button.disabled = false;
+                });
 
         });
 

@@ -170,8 +170,8 @@ router.post('/new', requireAdmin, upload.single('image'), async (req, res) => {
             description: body.description,
             image: req.file ? '/uploads/categories/' + req.file.filename : undefined,
 
-            // TODO: đổi theo cách project bạn lưu admin đang đăng nhập trong session
-            createdBy: (req.session && req.session.user) ? req.session.user._id : undefined
+            // Route đã được bảo vệ bởi requireAdmin nên req.session.user luôn tồn tại
+            createdBy: req.session.user._id
         });
 
         res.redirect('/admin/categories');
@@ -256,7 +256,9 @@ router.post('/:id/edit', requireAdmin, upload.single('image'), async (req, res) 
             position: body.position || 1,
             status: body.status === 'inactive' ? 'inactive' : 'active',
             description: body.description,
-            updatedBy: (req.session && req.session.user) ? req.session.user._id : undefined
+
+            // Route đã được bảo vệ bởi requireAdmin nên req.session.user luôn tồn tại
+            updatedBy: req.session.user._id
         };
 
         if (req.file) {

@@ -105,7 +105,7 @@ router.post('/login', async (req, res) => {
         // trong index.js, và với `currentUser.fullName` / `currentUser.role`
         // đang được header.pug sử dụng.
         req.session.user = {
-            id: user._id,
+            _id: user._id,
             fullName: user.fullName,
             email: user.email,
             role: user.role
@@ -223,7 +223,7 @@ router.post('/change-password', requireLogin, async (req, res) => {
     try {
         const { currentPassword, newPassword, confirmPassword } = req.body;
 
-        const user = await User.findById(req.session.user.id);
+        const user = await User.findById(req.session.user._id);
         if (!user) {
             return res.redirect('/login');
         }

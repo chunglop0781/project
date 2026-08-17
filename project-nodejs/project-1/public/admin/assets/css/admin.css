@@ -1126,9 +1126,15 @@ textarea {
 
 .admin-badge.is-success,
 .admin-badge.is-confirmed,
-.admin-badge.is-completed {
+.admin-badge.is-completed,
+.admin-badge.is-active {
     background: var(--admin-success-bg);
     color: var(--admin-success);
+}
+
+.admin-badge.is-inactive {
+    background: var(--admin-danger-bg);
+    color: var(--admin-danger);
 }
 
 .admin-badge.is-pending {
