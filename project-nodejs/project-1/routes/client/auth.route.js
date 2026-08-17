@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const User = require('../../models/user.model');
+const { generateOtp, sendOtpEmail } = require('../../utils/mailer');
 
 // Trang đăng nhập
 router.get('/login', (req, res) => {
@@ -27,19 +28,60 @@ router.post('/forgot-password', async (req, res) => {
             return res.render('client/pages/forgot-password', { error: 'Email không tồn tại trong hệ thống.' });
         }
 
-        // TODO (kết nối MongoDB / gửi mail):
-        //   - Sinh mã OTP ngẫu nhiên (vd: 6 chữ số)
-        //   - Lưu OTP + thời gian hết hạn vào user (hoặc collection riêng)
-        //   - Gửi email chứa mã OTP cho user (vd: dùng nodemailer)
-        //   - Sau khi gửi thành công, redirect sang trang nhập OTP,
-        //     hoặc render lại kèm biến `success`
+        const otp = generateOtp();
 
-        res.render('client/pages/forgot-password', { success: 'Mã OTP đã được gửi tới email của bạn.' });
+        // Lưu OTP vào session, hết hạn sau 5 phút
+        req.session.resetEmail = email;
+        req.session.otpCode = otp;
+        req.session.otpExpires = Date.now() + 5 * 60 * 1000;
+        req.session.otpVerified = false;
+
+        await sendOtpEmail(email, otp);
+
+        res.redirect('/verify-otp');
     } catch (error) {
         console.log(error);
         res.render('client/pages/forgot-password', { error: 'Có lỗi xảy ra, vui lòng thử lại.' });
     }
 });
+
+
+// =============================================================
+// XÁC MINH OTP
+// =============================================================
+
+router.get('/verify-otp', (req, res) => {
+    if (!req.session.resetEmail) {
+        return res.redirect('/forgot-password');
+    }
+    res.render('client/pages/verify-otp', { email: req.session.resetEmail });
+});
+
+router.post('/verify-otp', (req, res) => {
+    const { otp } = req.body;
+
+    if (!req.session.resetEmail || !req.session.otpCode) {
+        return res.redirect('/forgot-password');
+    }
+
+    if (Date.now() > req.session.otpExpires) {
+        return res.render('client/pages/verify-otp', {
+            email: req.session.resetEmail,
+            error: 'Mã OTP đã hết hạn.'
+        });
+    }
+
+    if (otp !== req.session.otpCode) {
+        return res.render('client/pages/verify-otp', {
+            email: req.session.resetEmail,
+            error: 'Mã OTP không đúng.'
+        });
+    }
+
+    req.session.otpVerified = true;
+    res.redirect('/otp-password');
+});
+
 
 // Xử lý đăng nhập
 router.post('/login', async (req, res) => {
@@ -122,5 +164,50 @@ router.get('/logout', (req, res) => {
         res.redirect('/login');
     });
 });
+
+
+// =============================================================
+// ĐẶT MẬT KHẨU MỚI (SAU KHI XÁC MINH OTP)
+// =============================================================
+
+router.get('/otp-password', (req, res) => {
+    if (!req.session.resetEmail || !req.session.otpVerified) {
+        return res.redirect('/forgot-password');
+    }
+    res.render('client/pages/otp-password');
+});
+
+router.post('/otp-password', async (req, res) => {
+    try {
+        if (!req.session.resetEmail || !req.session.otpVerified) {
+            return res.redirect('/forgot-password');
+        }
+
+        const { password, confirmPassword } = req.body;
+
+        if (password !== confirmPassword) {
+            return res.render('client/pages/otp-password', { error: 'Mật khẩu xác nhận không khớp.' });
+        }
+
+        if (password.length < 6) {
+            return res.render('client/pages/otp-password', { error: 'Mật khẩu phải có ít nhất 6 ký tự.' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await User.findOneAndUpdate({ email: req.session.resetEmail }, { password: hashedPassword });
+
+        // Xoá sạch session tạm dùng cho quá trình quên mật khẩu
+        delete req.session.resetEmail;
+        delete req.session.otpCode;
+        delete req.session.otpExpires;
+        delete req.session.otpVerified;
+
+        res.redirect('/login');
+    } catch (error) {
+        console.log(error);
+        res.render('client/pages/otp-password', { error: 'Có lỗi xảy ra, vui lòng thử lại.' });
+    }
+});
+
 
 module.exports = router;
