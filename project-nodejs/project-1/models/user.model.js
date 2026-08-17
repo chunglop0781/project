@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     phone: { type: String, required: true },
     password: { type: String, required: true },
+    address: { type: String }, // dùng ở customer-detail.pug và order-detail.pug
     role: {
         type: String,
         enum: ['customer', 'admin'],

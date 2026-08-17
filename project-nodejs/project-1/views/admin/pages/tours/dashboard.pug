@@ -73,6 +73,48 @@ block content
 
 
   //- ===============================================================
+  //- BIỂU ĐỒ DOANH THU
+  //-
+  //- Biến truyền vào (ví dụ):
+  //-   revenueChart : {
+  //-     labels: ["T1", "T2", "T3", ..., "T12"],
+  //-     data: [12000000, 18500000, 9000000, ...]
+  //-   }
+  //- ===============================================================
+
+  .admin-card.admin-chart-card
+
+    .admin-card-head
+
+      h3 Doanh Thu Theo Tháng
+
+      .admin-chart-filter
+
+        select#revenueChartRange
+
+          option(value="today") 1 ngày gần nhất
+
+          option(value="week") 1 tuần gần nhất
+
+          option(value="month") 1 tháng gần nhất (30 ngày)
+
+          option(value="year" selected="selected") 12 tháng gần nhất
+
+          option(value="pickMonth") Chọn tháng cụ thể
+
+          option(value="pickWeek") Chọn tuần cụ thể
+
+        input#revenueChartMonthInput(type="month" style="display:none")
+
+        input#revenueChartWeekInput(type="week" style="display:none")
+
+
+    .admin-chart-wrap
+
+      canvas#revenueChart(height="90")
+
+
+  //- ===============================================================
   //- NỘI DUNG CHÍNH
   //- ===============================================================
 
@@ -172,3 +214,148 @@ block content
         else
 
           p.admin-table-empty Chưa có dữ liệu.
+
+
+block scripts
+
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js")
+
+  script.
+
+    (function () {
+
+      const canvas = document.querySelector('#revenueChart');
+
+      if (!canvas) return;
+
+      const rangeSelect = document.querySelector('#revenueChartRange');
+      const monthInput = document.querySelector('#revenueChartMonthInput');
+      const weekInput = document.querySelector('#revenueChartWeekInput');
+
+      // TODO (backend): route dashboard render nhớ truyền JSON.stringify(revenueChart)
+      // vào đây, ví dụ trong controller:
+      //   res.render('admin/pages/dashboard', {
+      //     stats, recentOrders, topTours,
+      //     revenueChart: { labels: [...], data: [...] }
+      //   })
+      const initialRevenueChart = !{typeof revenueChart !== "undefined" ? JSON.stringify(revenueChart) : "{ labels: [], data: [] }"};
+
+      const chart = new Chart(canvas.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: initialRevenueChart.labels,
+          datasets: [{
+            label: 'Doanh thu (đ)',
+            data: initialRevenueChart.data,
+            borderColor: '#6c5ce7',
+            backgroundColor: 'rgba(108, 92, 231, 0.12)',
+            borderWidth: 2,
+            tension: 0.35,
+            fill: true,
+            pointRadius: 3,
+            pointBackgroundColor: '#6c5ce7'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  return context.parsed.y.toLocaleString('vi-VN') + ' đ';
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function (value) {
+                  return (value / 1000000) + 'tr';
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // ---------------------------------------------------------------
+      // TODO (backend): tạo route API trả về dữ liệu biểu đồ theo query,
+      // ví dụ GET /admin/api/dashboard/revenue-chart
+      //   - ?range=today      -> doanh thu theo giờ trong hôm nay
+      //   - ?range=week       -> doanh thu theo ngày, 7 ngày gần nhất
+      //   - ?range=month      -> doanh thu theo ngày, 30 ngày gần nhất
+      //   - ?range=year       -> doanh thu theo tháng, 12 tháng gần nhất
+      //   - ?range=pickMonth&month=YYYY-MM  -> doanh thu theo ngày trong tháng đó
+      //   - ?range=pickWeek&week=YYYY-Www   -> doanh thu theo ngày trong tuần đó
+      // Response JSON dạng: { labels: [...], data: [...] }
+      // ---------------------------------------------------------------
+
+      let isLoading = false;
+
+      function setLoading(state) {
+        isLoading = state;
+        canvas.style.opacity = state ? '0.4' : '1';
+      }
+
+      function fetchRevenueData(params) {
+        const query = new URLSearchParams(params).toString();
+
+        setLoading(true);
+
+        return fetch('/admin/api/dashboard/revenue-chart?' + query)
+          .then(function (res) {
+            if (!res.ok) throw new Error('Không tải được dữ liệu biểu đồ');
+            return res.json();
+          })
+          .finally(function () {
+            setLoading(false);
+          });
+      }
+
+      function updateChart(newData) {
+        chart.data.labels = newData.labels || [];
+        chart.data.datasets[0].data = newData.data || [];
+        chart.update();
+      }
+
+      function toggleDateInputs(value) {
+        monthInput.style.display = value === 'pickMonth' ? 'inline-block' : 'none';
+        weekInput.style.display = value === 'pickWeek' ? 'inline-block' : 'none';
+      }
+
+      rangeSelect.addEventListener('change', function () {
+        const value = this.value;
+
+        toggleDateInputs(value);
+
+        // Với "chọn tháng cụ thể" / "chọn tuần cụ thể", chờ người dùng
+        // chọn giá trị trong input ngày rồi mới gọi API.
+        if (value === 'pickMonth' || value === 'pickWeek') return;
+
+        fetchRevenueData({ range: value })
+          .then(updateChart)
+          .catch(function (err) { console.error(err); });
+      });
+
+      monthInput.addEventListener('change', function () {
+        if (!this.value || isLoading) return;
+
+        fetchRevenueData({ range: 'pickMonth', month: this.value })
+          .then(updateChart)
+          .catch(function (err) { console.error(err); });
+      });
+
+      weekInput.addEventListener('change', function () {
+        if (!this.value || isLoading) return;
+
+        fetchRevenueData({ range: 'pickWeek', week: this.value })
+          .then(updateChart)
+          .catch(function (err) { console.error(err); });
+      });
+
+    })();
+

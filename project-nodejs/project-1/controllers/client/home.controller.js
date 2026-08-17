@@ -1,4 +1,4 @@
-const { Tour } = require('../../models/tour.model');
+const Tour = require('../../models/tour.model');
 
 module.exports.home = async (req, res) => {
     try {
