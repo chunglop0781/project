@@ -1,21 +1,20 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-// TODO: thêm 2 biến này vào file .env
-//   EMAIL_USER=your-email@gmail.com
-//   EMAIL_PASS=your-app-password   (App Password của Gmail, KHÔNG phải mật khẩu Gmail thường)
+// TODO: thêm vào file .env
+//   RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 //
-// Cách tạo App Password (Gmail):
-//   1. Bật xác minh 2 bước cho tài khoản Google
-//   2. Vào https://myaccount.google.com/apppasswords
-//   3. Tạo App Password mới -> copy vào EMAIL_PASS
+// Cách lấy API Key:
+//   1. Tạo tài khoản tại https://resend.com (miễn phí, 3.000 email/tháng)
+//   2. Vào mục "API Keys" -> Create API Key -> copy chuỗi bắt đầu bằng "re_"
+//
+// LƯU Ý QUAN TRỌNG (giới hạn tài khoản chưa verify domain):
+//   Khi CHƯA verify domain riêng, Resend chỉ cho phép gửi từ địa chỉ
+//   mặc định "onboarding@resend.dev" và CHỈ gửi tới đúng email bạn
+//   dùng để đăng ký tài khoản Resend (dùng để test).
+//   Muốn gửi tới bất kỳ email nào (khách hàng thật), cần verify 1 domain
+//   riêng tại: https://resend.com/domains (thêm bản ghi DNS: MX, TXT, DKIM)
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Sinh mã OTP 6 chữ số
 function generateOtp() {
@@ -24,8 +23,8 @@ function generateOtp() {
 
 // Gửi email chứa mã OTP
 async function sendOtpEmail(toEmail, otp) {
-    await transporter.sendMail({
-        from: `"28 Travel" <${process.env.EMAIL_USER}>`,
+    const { data, error } = await resend.emails.send({
+        from: '28 Travel <onboarding@resend.dev>', // đổi thành email trên domain đã verify khi lên production
         to: toEmail,
         subject: 'Mã OTP đặt lại mật khẩu',
         html: `
@@ -37,6 +36,12 @@ async function sendOtpEmail(toEmail, otp) {
             </div>
         `
     });
+
+    if (error) {
+        throw new Error(error.message || 'Gửi email thất bại.');
+    }
+
+    return data;
 }
 
 module.exports = { generateOtp, sendOtpEmail };

@@ -2,6 +2,7 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const User = require('../../models/user.model');
 const { generateOtp, sendOtpEmail } = require('../../utils/mailer');
+const requireLogin = require('../../middlewares/requireLogin');
 
 // Trang đăng nhập
 router.get('/login', (req, res) => {
@@ -174,7 +175,7 @@ router.get('/otp-password', (req, res) => {
     if (!req.session.resetEmail || !req.session.otpVerified) {
         return res.redirect('/forgot-password');
     }
-    res.render('client/pages/otp-password');
+    res.render('client/pages/otp-password', { email: req.session.resetEmail });
 });
 
 router.post('/otp-password', async (req, res) => {
@@ -186,11 +187,11 @@ router.post('/otp-password', async (req, res) => {
         const { password, confirmPassword } = req.body;
 
         if (password !== confirmPassword) {
-            return res.render('client/pages/otp-password', { error: 'Mật khẩu xác nhận không khớp.' });
+            return res.render('client/pages/otp-password', { email: req.session.resetEmail, error: 'Mật khẩu xác nhận không khớp.' });
         }
 
         if (password.length < 6) {
-            return res.render('client/pages/otp-password', { error: 'Mật khẩu phải có ít nhất 6 ký tự.' });
+            return res.render('client/pages/otp-password', { email: req.session.resetEmail, error: 'Mật khẩu phải có ít nhất 6 ký tự.' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -205,7 +206,64 @@ router.post('/otp-password', async (req, res) => {
         res.redirect('/login');
     } catch (error) {
         console.log(error);
-        res.render('client/pages/otp-password', { error: 'Có lỗi xảy ra, vui lòng thử lại.' });
+        res.render('client/pages/otp-password', { email: req.session.resetEmail, error: 'Có lỗi xảy ra, vui lòng thử lại.' });
+    }
+});
+
+
+// =============================================================
+// ĐỔI MẬT KHẨU (KHI ĐÃ ĐĂNG NHẬP - KHÁC LUỒNG QUÊN MẬT KHẨU)
+// =============================================================
+
+router.get('/change-password', requireLogin, (req, res) => {
+    res.render('client/pages/change-password', { email: req.session.user.email });
+});
+
+router.post('/change-password', requireLogin, async (req, res) => {
+    try {
+        const { currentPassword, newPassword, confirmPassword } = req.body;
+
+        const user = await User.findById(req.session.user.id);
+        if (!user) {
+            return res.redirect('/login');
+        }
+
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.render('client/pages/change-password', {
+                email: req.session.user.email,
+                error: 'Mật khẩu hiện tại không đúng.'
+            });
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res.render('client/pages/change-password', {
+                email: req.session.user.email,
+                error: 'Mật khẩu xác nhận không khớp.'
+            });
+        }
+
+        if (newPassword.length < 6) {
+            return res.render('client/pages/change-password', {
+                email: req.session.user.email,
+                error: 'Mật khẩu mới phải có ít nhất 6 ký tự.'
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        await user.save();
+
+        res.render('client/pages/change-password', {
+            email: req.session.user.email,
+            success: 'Đổi mật khẩu thành công.'
+        });
+    } catch (error) {
+        console.log(error);
+        res.render('client/pages/change-password', {
+            email: req.session.user.email,
+            error: 'Có lỗi xảy ra, vui lòng thử lại.'
+        });
     }
 });
 
