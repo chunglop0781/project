@@ -48,6 +48,7 @@ Project được phát triển theo hướng:
 - [Mongoose](https://mongoosejs.com/)
 - [dotenv](https://www.npmjs.com/package/dotenv)
 - [Nodemon](https://nodemon.io/)
+- ...
 
 ## Frontend
 
@@ -57,11 +58,13 @@ Project được phát triển theo hướng:
 - Pug
 - Font Awesome
 - Swiper / giao diện slider được sử dụng cho các khu vực hiển thị tour
+- ...
 
 ## Database
 
 - MongoDB
 - Mongoose
+- ...
 
 ## Package Manager
 
