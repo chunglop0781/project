@@ -1,0 +1,367 @@
+extends ../../layouts/admin-layout.pug
+
+block content
+
+  //- =============================================================
+  //- Biến truyền vào (ví dụ):
+  //-   tour : {
+  //-     id, name, category, position, status, image,
+  //-     oldPriceAdult, oldPriceChild, oldPriceInfant,
+  //-     newPriceAdult, newPriceChild, newPriceInfant,
+  //-     remainingAdult, remainingChild, remainingInfant,
+  //-     locations : ["ha-noi", "da-nang"],
+  //-     duration, vehicle, departureDate, code, description, bookedCount
+  //-   }
+  //-   (không truyền "tour" -> hiểu là đang THÊM MỚI)
+  //-   categories : [{ id, name }]
+  //-   locationOptions : [{ value, label }]
+  //- =============================================================
+
+  .admin-page-head
+
+    div
+
+      h2.admin-page-title= (typeof tour !== "undefined" && tour) ? "Sửa Tour" : "Tạo Tour"
+
+      p.admin-page-subtitle Điền đầy đủ thông tin bên dưới.
+
+    a.admin-btn.admin-btn-outline(href="/admin/tours")
+      i.fas.fa-arrow-left
+      |  Quay lại danh sách
+
+
+  if typeof error !== "undefined" && error
+
+    .admin-alert.admin-alert-error
+
+      i.fas.fa-circle-exclamation
+
+      span= error
+
+
+  .admin-card
+
+    form.admin-form(
+      method="POST"
+      action=(typeof tour !== "undefined" && tour) ? "/admin/tours/" + tour.id + "/edit" : "/admin/tours/new"
+      enctype="multipart/form-data"
+    )
+
+      .admin-form-grid
+
+        //- =========================================================
+        //- CỘT TRÁI - THÔNG TIN CHÍNH
+        //- =========================================================
+
+        .admin-form-col
+
+          .admin-form-row
+
+            .admin-form-group
+
+              label(for="name") Tên tour *
+              input#name.admin-input(
+                type="text"
+                name="name"
+                value=(typeof tour !== "undefined" && tour) ? tour.name : ""
+                placeholder="VD: Tour Hạ Long"
+                required
+              )
+
+            .admin-form-group
+
+              label(for="category") Danh mục
+              select#category.admin-input(name="category")
+
+                option(value="") -- Chọn danh mục --
+
+                if typeof categories !== "undefined" && categories.length
+
+                  each cat in categories
+
+                    option(
+                      value=cat.id
+                      selected=(typeof tour !== "undefined" && tour && tour.category === cat.id)
+                    )= cat.name
+
+          .admin-form-row
+
+            .admin-form-group
+
+              label(for="code") Mã tour
+              input#code.admin-input(
+                type="text"
+                name="code"
+                value=(typeof tour !== "undefined" && tour) ? tour.code : ""
+                placeholder="VD: TR001"
+              )
+
+            .admin-form-group
+
+              label(for="position") Vị trí
+              input#position.admin-input(
+                type="number"
+                name="position"
+                min="1"
+                value=(typeof tour !== "undefined" && tour) ? tour.position : ""
+                placeholder="1"
+              )
+
+            .admin-form-group
+
+              label(for="status") Trạng thái
+              select#status.admin-input(name="status")
+
+                option(value="active" selected=(typeof tour !== "undefined" && tour && tour.status === "active")) Hoạt động
+
+                option(value="inactive" selected=(typeof tour !== "undefined" && tour && tour.status === "inactive")) Tạm dừng
+
+          .admin-form-row
+
+            .admin-form-group
+
+              label(for="duration") Thời lượng
+              input#duration.admin-input(
+                type="text"
+                name="duration"
+                value=(typeof tour !== "undefined" && tour) ? tour.duration : ""
+                placeholder="VD: 3 ngày 2 đêm"
+              )
+
+            .admin-form-group
+
+              label(for="vehicle") Phương tiện
+              input#vehicle.admin-input(
+                type="text"
+                name="vehicle"
+                value=(typeof tour !== "undefined" && tour) ? tour.vehicle : ""
+                placeholder="VD: Ô tô"
+              )
+
+            .admin-form-group
+
+              label(for="departureDate") Ngày khởi hành
+              input#departureDate.admin-input(
+                type="date"
+                name="departureDate"
+                value=(typeof tour !== "undefined" && tour && tour.departureDate) ? tour.departureDate : ""
+              )
+
+          //- ---------------------------------------------------------
+          //- GIÁ CŨ / GIÁ MỚI
+          //- ---------------------------------------------------------
+
+          .admin-form-subgrid
+
+            .admin-form-subcol
+
+              h4.admin-form-subtitle Giá cũ
+
+              .admin-form-group
+
+                label(for="oldPriceAdult") Người lớn
+                input#oldPriceAdult.admin-input(
+                  type="number" min="0" name="oldPriceAdult"
+                  value=(typeof tour !== "undefined" && tour) ? tour.oldPriceAdult : ""
+                  placeholder="0"
+                )
+
+              .admin-form-group
+
+                label(for="oldPriceChild") Trẻ em
+                input#oldPriceChild.admin-input(
+                  type="number" min="0" name="oldPriceChild"
+                  value=(typeof tour !== "undefined" && tour) ? tour.oldPriceChild : ""
+                  placeholder="0"
+                )
+
+              .admin-form-group
+
+                label(for="oldPriceInfant") Em bé
+                input#oldPriceInfant.admin-input(
+                  type="number" min="0" name="oldPriceInfant"
+                  value=(typeof tour !== "undefined" && tour) ? tour.oldPriceInfant : ""
+                  placeholder="0"
+                )
+
+            .admin-form-subcol
+
+              h4.admin-form-subtitle Giá mới
+
+              .admin-form-group
+
+                label(for="newPriceAdult") Người lớn
+                input#newPriceAdult.admin-input(
+                  type="number" min="0" name="newPriceAdult"
+                  value=(typeof tour !== "undefined" && tour) ? tour.newPriceAdult : ""
+                  placeholder="0"
+                  required
+                )
+
+              .admin-form-group
+
+                label(for="newPriceChild") Trẻ em
+                input#newPriceChild.admin-input(
+                  type="number" min="0" name="newPriceChild"
+                  value=(typeof tour !== "undefined" && tour) ? tour.newPriceChild : ""
+                  placeholder="0"
+                )
+
+              .admin-form-group
+
+                label(for="newPriceInfant") Em bé
+                input#newPriceInfant.admin-input(
+                  type="number" min="0" name="newPriceInfant"
+                  value=(typeof tour !== "undefined" && tour) ? tour.newPriceInfant : ""
+                  placeholder="0"
+                )
+
+          //- ---------------------------------------------------------
+          //- CÒN LẠI
+          //- ---------------------------------------------------------
+
+          .admin-form-group
+
+            label Còn lại
+
+            .admin-form-row
+
+              .admin-form-group
+
+                label.admin-label-sm(for="remainingAdult") Người lớn
+                input#remainingAdult.admin-input(
+                  type="number" min="0" name="remainingAdult"
+                  value=(typeof tour !== "undefined" && tour) ? tour.remainingAdult : ""
+                  placeholder="0"
+                )
+
+              .admin-form-group
+
+                label.admin-label-sm(for="remainingChild") Trẻ em
+                input#remainingChild.admin-input(
+                  type="number" min="0" name="remainingChild"
+                  value=(typeof tour !== "undefined" && tour) ? tour.remainingChild : ""
+                  placeholder="0"
+                )
+
+              .admin-form-group
+
+                label.admin-label-sm(for="remainingInfant") Em bé
+                input#remainingInfant.admin-input(
+                  type="number" min="0" name="remainingInfant"
+                  value=(typeof tour !== "undefined" && tour) ? tour.remainingInfant : ""
+                  placeholder="0"
+                )
+
+          //- ---------------------------------------------------------
+          //- NHỮNG ĐỊA ĐIỂM CÓ TOUR
+          //- ---------------------------------------------------------
+
+          .admin-form-group
+
+            label Những địa điểm có tour
+
+            .admin-checkbox-group
+
+              if typeof locationOptions !== "undefined" && locationOptions.length
+
+                each loc in locationOptions
+
+                  label.admin-checkbox-inline
+
+                    input(
+                      type="checkbox"
+                      name="locations"
+                      value=loc.value
+                      checked=(typeof tour !== "undefined" && tour && tour.locations && tour.locations.includes(loc.value))
+                    )
+                    span= loc.label
+
+              else
+
+                label.admin-checkbox-inline
+                  input(type="checkbox" name="locations" value="ha-noi" checked=(typeof tour !== "undefined" && tour && tour.locations && tour.locations.includes("ha-noi")))
+                  span Hà Nội
+
+                label.admin-checkbox-inline
+                  input(type="checkbox" name="locations" value="da-nang" checked=(typeof tour !== "undefined" && tour && tour.locations && tour.locations.includes("da-nang")))
+                  span Đà Nẵng
+
+                label.admin-checkbox-inline
+                  input(type="checkbox" name="locations" value="ho-chi-minh" checked=(typeof tour !== "undefined" && tour && tour.locations && tour.locations.includes("ho-chi-minh")))
+                  span Hồ Chí Minh
+
+          .admin-form-group
+
+            label(for="description") Mô tả
+            textarea#description.admin-textarea(
+              name="description"
+              rows="6"
+              placeholder="Mô tả chi tiết về tour..."
+            )= (typeof tour !== "undefined" && tour) ? tour.description : ""
+
+
+        //- =========================================================
+        //- CỘT PHẢI - ẢNH ĐẠI DIỆN
+        //- =========================================================
+
+        .admin-form-col.admin-form-col-side
+
+          .admin-form-group
+
+            label Ảnh đại diện
+
+            .admin-form-image-preview#tourImagePreview
+
+              img(
+                src=(typeof tour !== "undefined" && tour && tour.image) ? tour.image : "/admin/image/no-image.png"
+                alt="Ảnh tour"
+              )
+
+            input#image.admin-input(
+              type="file"
+              name="image"
+              accept="image/*"
+            )
+
+            p.admin-form-hint Chưa chọn ảnh mới sẽ giữ nguyên ảnh cũ (khi sửa).
+
+          //- bookedCount chỉ hiển thị khi sửa tour đã có lượt đặt,
+          //- không cho sửa tay vì con số này tự tăng theo đơn hàng thật
+          if typeof tour !== "undefined" && tour
+
+            .admin-form-group
+
+              label Đã đặt
+              p.admin-form-static= (tour.bookedCount || 0) + " lượt đặt"
+
+
+      .admin-form-actions
+
+        button.admin-btn.admin-btn-primary(type="submit")
+          i.fas.fa-floppy-disk
+          |  #{(typeof tour !== "undefined" && tour) ? "Lưu tour" : "Tạo mới"}
+
+        a.admin-btn.admin-btn-outline(href="/admin/tours") Hủy
+
+
+block scripts
+
+  script.
+    (function () {
+      const imageInput = document.querySelector('#image');
+      const preview = document.querySelector('#tourImagePreview img');
+
+      if (!imageInput || !preview) return;
+
+      imageInput.addEventListener('change', function () {
+        const file = this.files && this.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          preview.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    })();

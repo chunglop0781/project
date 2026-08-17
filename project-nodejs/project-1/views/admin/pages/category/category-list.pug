@@ -1,0 +1,204 @@
+extends ../../layouts/admin-layout.pug
+
+block content
+
+  //- =============================================================
+  //- Biến truyền vào (ví dụ):
+  //-   categories : [{
+  //-     id, name, image, position, status, statusLabel,
+  //-     createdByName, createdAt, updatedByName, updatedAt
+  //-   }]
+  //-   creators : [{ id, fullName }]    -> dùng cho bộ lọc "Người tạo"
+  //-   filter   : { status, creator, dateFrom, dateTo, keyword }
+  //-   currentPage, totalPages
+  //- =============================================================
+
+  .admin-page-head
+
+    div
+
+      h2.admin-page-title Quản Lý Danh Mục
+
+      p.admin-page-subtitle Danh sách tất cả các danh mục tour hiện có.
+
+    a.admin-btn.admin-btn-primary(href="/admin/categories/new")
+      i.fas.fa-plus
+      |  Tạo mới
+
+
+  .admin-card
+
+    //- ===============================================================
+    //- THANH BỘ LỌC
+    //- ===============================================================
+
+    form.admin-filter-bar(action="/admin/categories" method="GET")
+
+      .admin-filter-label
+        i.fas.fa-filter
+        |  Bộ lọc
+
+      select.admin-filter-select(name="status")
+
+        option(value="") Trạng thái
+
+        option(value="active" selected=(typeof filter !== "undefined" && filter.status === "active"))
+          | Hoạt động
+
+        option(value="inactive" selected=(typeof filter !== "undefined" && filter.status === "inactive"))
+          | Tạm dừng
+
+      select.admin-filter-select(name="creator")
+
+        option(value="") Người tạo
+
+        if typeof creators !== "undefined" && creators.length
+
+          each creator in creators
+
+            option(
+              value=creator.id
+              selected=(typeof filter !== "undefined" && filter.creator === creator.id)
+            )= creator.fullName
+
+      .admin-filter-daterange
+
+        input.admin-filter-date(
+          type="text"
+          name="dateFrom"
+          placeholder="dd/mm/yyyy"
+          value=(typeof filter !== "undefined" && filter.dateFrom) ? filter.dateFrom : ""
+        )
+
+        span -
+
+        input.admin-filter-date(
+          type="text"
+          name="dateTo"
+          placeholder="dd/mm/yyyy"
+          value=(typeof filter !== "undefined" && filter.dateTo) ? filter.dateTo : ""
+        )
+
+      a.admin-filter-clear(href="/admin/categories")
+        i.fas.fa-rotate-left
+        |  Xóa bộ lọc
+
+
+    //- ===============================================================
+    //- TOOLBAR: HÀNH ĐỘNG HÀNG LOẠT + TÌM KIẾM
+    //- ===============================================================
+
+    .admin-toolbar
+
+      form.admin-bulk-form(action="/admin/categories/bulk" method="POST")
+
+        select.admin-select(name="bulkAction")
+
+          option(value="") -- Hành động --
+
+          option(value="activate") Kích hoạt
+
+          option(value="deactivate") Tạm dừng
+
+          option(value="delete") Xóa
+
+        button.admin-btn.admin-btn-outline(type="submit") Áp dụng
+
+      form.admin-search-form(action="/admin/categories" method="GET")
+
+        i.fas.fa-magnifying-glass
+
+        input(
+          type="text"
+          name="keyword"
+          placeholder="Tìm kiếm"
+          value=(typeof filter !== "undefined" && filter.keyword) ? filter.keyword : ""
+        )
+
+
+    //- ===============================================================
+    //- BẢNG DANH SÁCH
+    //- ===============================================================
+
+    .admin-table-wrap
+
+      table.admin-table
+
+        thead
+
+          tr
+
+            th(style="width: 36px")
+              input.admin-checkbox(type="checkbox" id="checkAllCategories")
+
+            th Tên danh mục
+
+            th Ảnh đại diện
+
+            th Vị trí
+
+            th Trạng thái
+
+            th Tạo bởi
+
+            th Cập nhật bởi
+
+            th Hành động
+
+
+        tbody
+
+          if typeof categories !== "undefined" && categories.length
+
+            each category in categories
+
+              tr
+
+                td
+                  input.admin-checkbox(type="checkbox" name="ids" value=category.id)
+
+                td= category.name
+
+                td
+                  img.admin-table-thumb(src=category.image alt=category.name)
+
+                td= category.position
+
+                td
+
+                  span.admin-badge(class=category.status === "active" ? "is-active" : "is-inactive")
+                    = category.statusLabel || (category.status === "active" ? "Hoạt động" : "Tạm dừng")
+
+                td
+
+                  div= category.createdByName
+
+                  span.admin-table-sub= category.createdAt
+
+                td
+
+                  div= category.updatedByName
+
+                  span.admin-table-sub= category.updatedAt
+
+                td
+
+                  a.admin-icon-btn(href="/admin/categories/" + category.id + "/edit" title="Sửa")
+                    i.fas.fa-pen
+
+                  button.admin-icon-btn.admin-icon-btn-danger(
+                    type="button"
+                    data-delete-url="/admin/categories/" + category.id
+                    data-confirm="Bạn có chắc muốn xóa danh mục này?"
+                    title="Xóa"
+                  )
+                    i.fas.fa-trash
+
+          else
+
+            tr
+
+              td.admin-table-empty(colspan="8") Chưa có danh mục nào.
+
+
+    include ../../partials/pagination.pug

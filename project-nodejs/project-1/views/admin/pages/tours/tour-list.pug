@@ -2,6 +2,20 @@ extends ../../layouts/admin-layout.pug
 
 block content
 
+  //- =============================================================
+  //- Biến truyền vào (ví dụ):
+  //-   tours : [{
+  //-     id, name, image, position, status, statusLabel,
+  //-     priceAdult, priceChild, priceInfant,
+  //-     remainingAdult, remainingChild, remainingInfant,
+  //-     createdByName, createdAt, updatedByName, updatedAt
+  //-   }]
+  //-   categories   : [{ id, name }]        -> dùng cho bộ lọc "Danh mục"
+  //-   creators     : [{ id, fullName }]    -> dùng cho bộ lọc "Người tạo"
+  //-   filter       : { status, creator, dateFrom, dateTo, category, priceRange, keyword }
+  //-   currentPage, totalPages
+  //- =============================================================
+
   .admin-page-head
 
     div
@@ -10,12 +24,137 @@ block content
 
       p.admin-page-subtitle Danh sách tất cả các tour du lịch hiện có.
 
-    a.admin-btn.admin-btn-primary(href="/admin/tours/new")
-      i.fas.fa-plus
-      |  Thêm Tour Mới
+    .admin-page-head-actions
+
+      a.admin-btn.admin-btn-outline-danger(href="/admin/tours/trash")
+        i.fas.fa-trash
+        |  Thùng rác
+
+      a.admin-btn.admin-btn-primary(href="/admin/tours/new")
+        i.fas.fa-plus
+        |  Tạo mới
 
 
   .admin-card
+
+    //- ===============================================================
+    //- THANH BỘ LỌC
+    //- ===============================================================
+
+    form.admin-filter-bar(action="/admin/tours" method="GET")
+
+      .admin-filter-label
+        i.fas.fa-filter
+        |  Bộ lọc
+
+      select.admin-filter-select(name="status")
+
+        option(value="") Trạng thái
+
+        option(value="active" selected=(typeof filter !== "undefined" && filter.status === "active"))
+          | Hoạt động
+
+        option(value="inactive" selected=(typeof filter !== "undefined" && filter.status === "inactive"))
+          | Tạm dừng
+
+      select.admin-filter-select(name="creator")
+
+        option(value="") Người tạo
+
+        if typeof creators !== "undefined" && creators.length
+
+          each creator in creators
+
+            option(
+              value=creator.id
+              selected=(typeof filter !== "undefined" && filter.creator === creator.id)
+            )= creator.fullName
+
+      .admin-filter-daterange
+
+        input.admin-filter-date(
+          type="text"
+          name="dateFrom"
+          placeholder="dd/mm/yyyy"
+          value=(typeof filter !== "undefined" && filter.dateFrom) ? filter.dateFrom : ""
+        )
+
+        span -
+
+        input.admin-filter-date(
+          type="text"
+          name="dateTo"
+          placeholder="dd/mm/yyyy"
+          value=(typeof filter !== "undefined" && filter.dateTo) ? filter.dateTo : ""
+        )
+
+      select.admin-filter-select(name="category")
+
+        option(value="") Danh mục
+
+        if typeof categories !== "undefined" && categories.length
+
+          each cat in categories
+
+            option(
+              value=cat.id
+              selected=(typeof filter !== "undefined" && filter.category === cat.id)
+            )= cat.name
+
+      select.admin-filter-select(name="priceRange")
+
+        option(value="") Mức giá
+
+        option(value="under-1tr" selected=(typeof filter !== "undefined" && filter.priceRange === "under-1tr")) Dưới 1 triệu
+
+        option(value="1-3tr" selected=(typeof filter !== "undefined" && filter.priceRange === "1-3tr")) 1 - 3 triệu
+
+        option(value="3-5tr" selected=(typeof filter !== "undefined" && filter.priceRange === "3-5tr")) 3 - 5 triệu
+
+        option(value="over-5tr" selected=(typeof filter !== "undefined" && filter.priceRange === "over-5tr")) Trên 5 triệu
+
+      button.admin-btn.admin-btn-text(type="submit" form="tourFilterApply") Áp dụng
+
+      a.admin-filter-clear(href="/admin/tours")
+        i.fas.fa-rotate-left
+        |  Xóa bộ lọc
+
+
+    //- ===============================================================
+    //- TOOLBAR: HÀNH ĐỘNG HÀNG LOẠT + TÌM KIẾM
+    //- ===============================================================
+
+    .admin-toolbar
+
+      form.admin-bulk-form(action="/admin/tours/bulk" method="POST")
+
+        select.admin-select(name="bulkAction")
+
+          option(value="") -- Hành động --
+
+          option(value="activate") Kích hoạt
+
+          option(value="deactivate") Tạm dừng
+
+          option(value="delete") Chuyển vào thùng rác
+
+        button.admin-btn.admin-btn-outline(type="submit") Áp dụng
+
+      form.admin-search-form(action="/admin/tours" method="GET")
+
+        i.fas.fa-magnifying-glass
+
+        input(
+          type="text"
+          name="keyword"
+          placeholder="Tìm kiếm"
+          value=(typeof filter !== "undefined" && filter.keyword) ? filter.keyword : ""
+        )
+
+
+    //- ===============================================================
+    //- BẢNG DANH SÁCH
+    //- ===============================================================
 
     .admin-table-wrap
 
@@ -25,15 +164,26 @@ block content
 
           tr
 
-            th Tên Tour
+            th(style="width: 36px")
+              input.admin-checkbox(type="checkbox" id="checkAllTours")
 
-            th Phương Tiện
+            th Tên tour
+
+            th Ảnh đại diện
 
             th Giá
 
-            th Trạng Thái
+            th Còn lại
 
-            th Hành Động
+            th Vị trí
+
+            th Trạng thái
+
+            th Tạo bởi
+
+            th Cập nhật bởi
+
+            th Hành động
 
 
         tbody
@@ -44,24 +194,59 @@ block content
 
               tr
 
+                td
+                  input.admin-checkbox(type="checkbox" name="ids" value=tour.id)
+
                 td= tour.name
 
-                td= tour.vehicle
-
-                td= (tour.price || 0).toLocaleString("vi-VN") + " đ"
-
                 td
-                  span.admin-badge.is-active Đang bán
+                  img.admin-table-thumb(src=tour.image alt=tour.name)
 
                 td
 
-                  a.admin-btn.admin-btn-sm(href="/admin/tours/" + tour._id + "/edit")
+                  div NL: #{(tour.priceAdult || 0).toLocaleString("vi-VN")}đ
+
+                  div TE: #{(tour.priceChild || 0).toLocaleString("vi-VN")}đ
+
+                  div EB: #{(tour.priceInfant || 0).toLocaleString("vi-VN")}đ
+
+                td
+
+                  div NL: #{tour.remainingAdult || 0}
+
+                  div TE: #{tour.remainingChild || 0}
+
+                  div EB: #{tour.remainingInfant || 0}
+
+                td= tour.position
+
+                td
+
+                  span.admin-badge(class=tour.status === "active" ? "is-active" : "is-inactive")
+                    = tour.statusLabel || (tour.status === "active" ? "Hoạt động" : "Tạm dừng")
+
+                td
+
+                  div= tour.createdByName
+
+                  span.admin-table-sub= tour.createdAt
+
+                td
+
+                  div= tour.updatedByName
+
+                  span.admin-table-sub= tour.updatedAt
+
+                td
+
+                  a.admin-icon-btn(href="/admin/tours/" + tour.id + "/edit" title="Sửa")
                     i.fas.fa-pen
 
-                  button.admin-btn.admin-btn-sm.admin-btn-danger(
+                  button.admin-icon-btn.admin-icon-btn-danger(
                     type="button"
-                    data-delete-url="/admin/tours/" + tour._id
-                    data-confirm="Bạn có chắc muốn xóa tour này?"
+                    data-delete-url="/admin/tours/" + tour.id
+                    data-confirm="Bạn có chắc muốn chuyển tour này vào thùng rác?"
+                    title="Xóa"
                   )
                     i.fas.fa-trash
 
@@ -69,4 +254,7 @@ block content
 
             tr
 
-              td.admin-table-empty(colspan="5") Chưa có tour nào.
+              td.admin-table-empty(colspan="10") Chưa có tour nào.
+
+
+    include ../../partials/pagination.pug

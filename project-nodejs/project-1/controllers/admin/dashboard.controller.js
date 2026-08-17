@@ -83,13 +83,13 @@ exports.dashboard = async (req, res) => {
         ] = await Promise.all([
             Order.countDocuments(),
             User.countDocuments({ role: 'customer' }),
-            Tour.countDocuments(),
+            Tour.countDocuments({ isDeleted: false }),
             Order.aggregate([
                 { $match: { status: { $ne: 'cancelled' } } },
                 { $group: { _id: null, total: { $sum: '$total' } } }
             ]),
             Order.find().sort({ createdAt: -1 }).limit(5).populate('user').populate('tour'),
-            Tour.find().sort({ bookedCount: -1 }).limit(5),
+            Tour.find({ isDeleted: false }).sort({ bookedCount: -1 }).limit(5),
             getRevenueChartData()
         ]);
 

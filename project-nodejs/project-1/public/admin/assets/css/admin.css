@@ -1690,6 +1690,213 @@ textarea {
 
 
 /* =============================================================
+   14b. FILTER BAR / BULK TOOLBAR / TABLE CHECKBOX
+============================================================= */
+
+.admin-filter-bar {
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 18px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--admin-border);
+
+}
+
+
+.admin-filter-label {
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--admin-text);
+    white-space: nowrap;
+
+}
+
+
+.admin-filter-label i {
+
+    color: var(--admin-primary);
+    font-size: 13px;
+
+}
+
+
+.admin-filter-select {
+
+    height: 38px;
+    padding: 0 12px;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-sm);
+    background: #fff;
+    color: var(--admin-text);
+    font-size: 13px;
+    min-width: 140px;
+    cursor: pointer;
+    transition: .15s ease;
+
+}
+
+
+.admin-filter-select:hover,
+.admin-filter-select:focus {
+
+    border-color: var(--admin-primary);
+    outline: none;
+
+}
+
+
+.admin-filter-daterange {
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+}
+
+
+.admin-filter-daterange span {
+
+    color: var(--admin-text-light);
+    font-size: 13px;
+
+}
+
+
+.admin-filter-date {
+
+    height: 38px;
+    width: 122px;
+    padding: 0 12px;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-sm);
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E") no-repeat right 10px center;
+    background-size: 14px;
+    color: var(--admin-text);
+    font-size: 13px;
+
+}
+
+
+.admin-filter-date:focus {
+
+    border-color: var(--admin-primary);
+    outline: none;
+
+}
+
+
+.admin-btn-text {
+
+    height: 38px;
+    padding: 0 6px;
+    background: none;
+    border: none;
+    color: var(--admin-primary);
+    font-weight: 600;
+
+}
+
+
+.admin-btn-text:hover {
+
+    text-decoration: underline;
+
+}
+
+
+.admin-filter-clear {
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--admin-text-light);
+    transition: .15s ease;
+
+}
+
+
+.admin-filter-clear:hover {
+
+    color: var(--admin-danger);
+
+}
+
+
+.admin-bulk-form {
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+}
+
+
+.admin-bulk-form .admin-select {
+
+    min-width: 190px;
+
+}
+
+
+input[type="checkbox"].admin-checkbox {
+
+    -webkit-appearance: none;
+    appearance: none;
+    width: 17px;
+    height: 17px;
+    border: 1.5px solid var(--admin-border);
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: .15s ease;
+
+}
+
+
+input[type="checkbox"].admin-checkbox:hover {
+
+    border-color: var(--admin-primary);
+
+}
+
+
+input[type="checkbox"].admin-checkbox:checked {
+
+    background: var(--admin-primary);
+    border-color: var(--admin-primary);
+
+}
+
+
+input[type="checkbox"].admin-checkbox:checked::after {
+
+    content: "\f00c";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 10px;
+
+}
+
+
+/* =============================================================
    15. TRANG ĐĂNG NHẬP
 ============================================================= */
 
@@ -1925,6 +2132,34 @@ textarea {
 
     .admin-user-name {
         display: none;
+    }
+
+    .admin-filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-filter-select,
+    .admin-filter-daterange {
+        width: 100%;
+    }
+
+    .admin-filter-daterange .admin-filter-date {
+        flex: 1;
+        width: auto;
+    }
+
+    .admin-filter-clear {
+        margin-left: 0;
+    }
+
+    .admin-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-search-form {
+        max-width: none;
     }
 
 }

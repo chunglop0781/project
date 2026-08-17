@@ -1,0 +1,171 @@
+extends ../../layouts/admin-layout.pug
+
+block content
+
+  //- =============================================================
+  //- Biến truyền vào (ví dụ):
+  //-   tours : [{
+  //-     id, name, image, position, status, statusLabel,
+  //-     priceAdult, priceChild, priceInfant,
+  //-     remainingAdult, remainingChild, remainingInfant,
+  //-     createdByName, createdAt, deletedByName, deletedAt
+  //-   }]
+  //-   currentPage, totalPages
+  //- =============================================================
+
+  .admin-page-head
+
+    div
+
+      h2.admin-page-title Thùng Rác Tour
+
+      p.admin-page-subtitle Các tour đã bị xóa, có thể khôi phục hoặc xóa vĩnh viễn.
+
+    a.admin-btn.admin-btn-outline(href="/admin/tours")
+      i.fas.fa-arrow-left
+      |  Quay lại danh sách tour
+
+
+  .admin-card
+
+    //- ===============================================================
+    //- TOOLBAR: HÀNH ĐỘNG HÀNG LOẠT + TÌM KIẾM
+    //- ===============================================================
+
+    .admin-toolbar
+
+      form.admin-bulk-form(action="/admin/tours/trash/bulk" method="POST")
+
+        select.admin-select(name="bulkAction")
+
+          option(value="") -- Hành động --
+
+          option(value="restore") Khôi phục
+
+          option(value="delete") Xóa vĩnh viễn
+
+        button.admin-btn.admin-btn-outline(type="submit") Áp dụng
+
+      form.admin-search-form(action="/admin/tours/trash" method="GET")
+
+        i.fas.fa-magnifying-glass
+
+        input(
+          type="text"
+          name="keyword"
+          placeholder="Tìm kiếm"
+          value=(typeof filter !== "undefined" && filter.keyword) ? filter.keyword : ""
+        )
+
+
+    //- ===============================================================
+    //- BẢNG DANH SÁCH
+    //- ===============================================================
+
+    .admin-table-wrap
+
+      table.admin-table
+
+        thead
+
+          tr
+
+            th(style="width: 36px")
+              input.admin-checkbox(type="checkbox" id="checkAllTrashTours")
+
+            th Tên tour
+
+            th Ảnh đại diện
+
+            th Giá
+
+            th Còn lại
+
+            th Vị trí
+
+            th Trạng thái
+
+            th Tạo bởi
+
+            th Xóa bởi
+
+            th Hành động
+
+
+        tbody
+
+          if typeof tours !== "undefined" && tours.length
+
+            each tour in tours
+
+              tr
+
+                td
+                  input.admin-checkbox(type="checkbox" name="ids" value=tour.id)
+
+                td= tour.name
+
+                td
+                  img.admin-table-thumb(src=tour.image alt=tour.name)
+
+                td
+
+                  div NL: #{(tour.priceAdult || 0).toLocaleString("vi-VN")}đ
+
+                  div TE: #{(tour.priceChild || 0).toLocaleString("vi-VN")}đ
+
+                  div EB: #{(tour.priceInfant || 0).toLocaleString("vi-VN")}đ
+
+                td
+
+                  div NL: #{tour.remainingAdult || 0}
+
+                  div TE: #{tour.remainingChild || 0}
+
+                  div EB: #{tour.remainingInfant || 0}
+
+                td= tour.position
+
+                td
+
+                  span.admin-badge(class=tour.status === "active" ? "is-active" : "is-inactive")
+                    = tour.statusLabel || (tour.status === "active" ? "Hoạt động" : "Tạm dừng")
+
+                td
+
+                  div= tour.createdByName
+
+                  span.admin-table-sub= tour.createdAt
+
+                td
+
+                  div= tour.deletedByName
+
+                  span.admin-table-sub= tour.deletedAt
+
+                td
+
+                  button.admin-icon-btn(
+                    type="button"
+                    data-restore-url="/admin/tours/" + tour.id + "/restore"
+                    data-confirm="Khôi phục tour này về danh sách?"
+                    title="Khôi phục"
+                  )
+                    i.fas.fa-rotate-left
+
+                  button.admin-icon-btn.admin-icon-btn-danger(
+                    type="button"
+                    data-delete-url="/admin/tours/" + tour.id + "/force"
+                    data-confirm="Xóa vĩnh viễn tour này? Hành động không thể hoàn tác."
+                    title="Xóa vĩnh viễn"
+                  )
+                    i.fas.fa-trash
+
+          else
+
+            tr
+
+              td.admin-table-empty(colspan="10") Thùng rác trống.
+
+
+    include ../../partials/pagination.pug
