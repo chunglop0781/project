@@ -4,8 +4,10 @@ block content
 
   //- =============================================================
   //- Biến truyền vào:
-  //-   customers : [{ id, name, phone, email, totalOrders, totalSpent, joinedAt }]
-  //-   currentPage, totalPages
+  //-   customers : [{ id, name, phone, email, address, avatar, status,
+  //-                   statusLabel, totalOrders, totalSpent, joinedAt }]
+  //-   currentPage, totalPages, baseUrl
+  //-   keyword, status, fromDate, toDate
   //- =============================================================
 
   .admin-page-head
@@ -19,78 +21,147 @@ block content
 
   .admin-card
 
-    .admin-toolbar
+    form#customerFilterForm.admin-toolbar(action="/admin/customers" method="GET")
 
-      form.admin-search-form(action="/admin/customers" method="GET")
+      .admin-filter-group
+
+        select(name="status")
+          option(value="") Trạng thái
+          option(value="active" selected=status === "active") Hoạt động
+          option(value="inactive" selected=status === "inactive") Tạm dừng
+
+        input(
+          type="text"
+          name="fromDate"
+          placeholder="dd/mm/yyyy"
+          value=fromDate
+          autocomplete="off"
+        )
+
+        span –
+
+        input(
+          type="text"
+          name="toDate"
+          placeholder="dd/mm/yyyy"
+          value=toDate
+          autocomplete="off"
+        )
+
+        a.admin-btn.admin-btn-outline(href="/admin/customers")
+          i.fas.fa-rotate-left
+          |  Xóa bộ lọc
+
+      .admin-search-form
 
         i.fas.fa-magnifying-glass
 
         input(
           type="text"
           name="keyword"
+          value=keyword
           placeholder="Tìm theo tên, SĐT hoặc email..."
         )
 
 
-    .admin-table-wrap
+    form#customerBulkForm(action="/admin/customers/bulk-action" method="POST")
 
-      table.admin-table
+      .admin-bulk-bar
 
-        thead
+        select(name="action")
+          option(value="") -- Hành động --
+          option(value="activate") Kích hoạt
+          option(value="deactivate") Tạm dừng
+          option(value="delete") Xóa
 
-          tr
-
-            th Khách hàng
-
-            th Số điện thoại
-
-            th Email
-
-            th Số đơn hàng
-
-            th Tổng chi tiêu
-
-            th Ngày tham gia
-
-            th(style="width: 90px") Thao tác
+        button.admin-btn.admin-btn-primary(type="submit") Áp dụng
 
 
-        tbody
+      .admin-table-wrap
 
-          if typeof customers !== "undefined" && customers.length
+        table.admin-table
 
-            each customer in customers
-
-              tr
-
-                td
-
-                  .admin-table-item
-
-                    .admin-avatar-fallback= customer.name.charAt(0).toUpperCase()
-
-                    span= customer.name
-
-                td= customer.phone
-
-                td= customer.email
-
-                td= customer.totalOrders
-
-                td= customer.totalSpent.toLocaleString("vi-VN") + " đ"
-
-                td= customer.joinedAt
-
-                td
-
-                  a.admin-icon-btn(href="/admin/customers/" + customer.id title="Xem chi tiết")
-                    i.fas.fa-eye
-
-          else
+          thead
 
             tr
 
-              td.admin-table-empty(colspan="7") Chưa có khách hàng nào.
+              th(style="width: 40px")
+                input#checkAll(type="checkbox")
+
+              th Họ tên
+
+              th Ảnh đại diện
+
+              th Email
+
+              th Số điện thoại
+
+              th Địa chỉ
+
+              th Trạng thái
+
+              th Ngày tạo
+
+              th(style="width: 90px") Hành động
+
+
+          tbody
+
+            if typeof customers !== "undefined" && customers.length
+
+              each customer in customers
+
+                tr
+
+                  td
+                    input.rowCheck(type="checkbox" name="ids" value=customer.id form="customerBulkForm")
+
+                  td= customer.name
+
+                  td
+                    if customer.avatar
+                      img.admin-avatar(src=customer.avatar alt=customer.name)
+                    else
+                      .admin-avatar-fallback= customer.name.charAt(0).toUpperCase()
+
+                  td= customer.email
+
+                  td= customer.phone
+
+                  td= customer.address || "—"
+
+                  td
+                    span.admin-badge(class="is-" + customer.status)= customer.statusLabel
+
+                  td= customer.joinedAt
+
+                  td
+
+                    a.admin-icon-btn(href="/admin/customers/" + customer.id title="Xem / sửa")
+                      i.fas.fa-pen
+
+                    button.admin-icon-btn(
+                      type="submit"
+                      formaction="/admin/customers/" + customer.id + "/delete"
+                      formmethod="POST"
+                      form="customerBulkForm"
+                      title="Xóa"
+                      onclick="return confirm('Xóa khách hàng này?')"
+                    )
+                      i.fas.fa-trash
+
+            else
+
+              tr
+
+                td.admin-table-empty(colspan="9") Chưa có khách hàng nào.
 
 
     include ../../partials/pagination.pug
+
+  script.
+    document.getElementById('checkAll').addEventListener('change', function (e) {
+      document.querySelectorAll('.rowCheck').forEach(function (cb) {
+        cb.checked = e.target.checked;
+      });
+    });

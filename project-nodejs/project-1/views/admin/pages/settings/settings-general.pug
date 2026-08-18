@@ -1,0 +1,54 @@
+extends ../../layouts/admin-layout.pug
+
+block content
+
+  //- =============================================================
+  //- Trang: Cài Đặt Chung
+  //- Menu dẫn tới các trang cài đặt con.
+  //- =============================================================
+
+  .admin-page-head
+
+    div
+
+      h2.admin-page-title Cài Đặt Chung
+
+      p.admin-page-subtitle Quản lý thông tin website, tài khoản quản trị và nhóm quyền.
+
+
+  .admin-settings-grid
+
+    a.admin-settings-card(href="/admin/settings/website")
+
+      .admin-settings-card-icon.is-info
+        i.fas.fa-circle-info
+
+      .admin-settings-card-body
+
+        h3 Thông tin website
+
+        p Tên, logo, favicon, thông tin liên hệ hiển thị trên website.
+
+
+    a.admin-settings-card(href="/admin/settings/accounts")
+
+      .admin-settings-card-icon.is-primary
+        i.fas.fa-user
+
+      .admin-settings-card-body
+
+        h3 Tài khoản quản trị
+
+        p Danh sách và phân quyền các tài khoản quản trị hệ thống.
+
+
+    a.admin-settings-card(href="/admin/settings/roles")
+
+      .admin-settings-card-icon.is-purple
+        i.fas.fa-user-gear
+
+      .admin-settings-card-body
+
+        h3 Nhóm quyền
+
+        p Thiết lập nhóm quyền và phạm vi truy cập cho từng vai trò.

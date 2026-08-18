@@ -1,0 +1,56 @@
+extends ../layouts/admin-layout
+
+block content
+
+  a.admin-form-back-link(href="/admin/dashboard")
+    i.fas.fa-arrow-left
+    | Quay lại trang chủ
+
+  h2 Hồ sơ cá nhân
+
+  //- error/success đã được admin-layout.pug tự render sẵn (block content
+  //- nằm sau đoạn flash message chung) - không cần lặp lại ở đây.
+
+  //- ===========================================================
+  //- THÔNG TIN CƠ BẢN
+  //- ===========================================================
+  form.admin-form(method="POST" action="/admin/profile")
+
+    .admin-form-row
+      .admin-form-group
+        label Họ và tên
+        input(type="text" name="fullName" value=user.fullName required)
+
+      .admin-form-group
+        label Số điện thoại
+        input(type="text" name="phone" value=user.phone)
+
+    .admin-form-group
+      label Email
+      input(type="email" value=user.email disabled title="Email dùng để đăng nhập, không thể thay đổi ở đây")
+
+    .admin-form-actions
+      button.admin-btn.admin-btn-primary(type="submit") Lưu thay đổi
+
+  //- ===========================================================
+  //- ĐỔI MẬT KHẨU
+  //- ===========================================================
+  h2 Đổi mật khẩu
+
+  form.admin-form(method="POST" action="/admin/profile/password")
+
+    .admin-form-group
+      label Mật khẩu hiện tại
+      input(type="password" name="currentPassword" required)
+
+    .admin-form-row
+      .admin-form-group
+        label Mật khẩu mới
+        input(type="password" name="newPassword" required minlength="6")
+
+      .admin-form-group
+        label Xác nhận mật khẩu mới
+        input(type="password" name="confirmPassword" required minlength="6")
+
+    .admin-form-actions
+      button.admin-btn.admin-btn-outline(type="submit") Đổi mật khẩu

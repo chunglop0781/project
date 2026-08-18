@@ -7,6 +7,8 @@ const categoriesRoutes = require('./categories.route');
 const ordersRoutes = require('./orders.route');
 const customersRoutes = require('./customers.route');
 const newsRoutes = require('./news.route');
+const settingsRoutes = require('./settings.route');
+const profileRoutes = require('./profile.route'); // MỚI THÊM
 
 // login/logout KHÔNG qua requireAdmin (không thì lặp redirect vô hạn)
 router.use('/', loginRoutes);
@@ -17,5 +19,7 @@ router.use('/categories', categoriesRoutes);
 router.use('/orders', ordersRoutes);
 router.use('/customers', customersRoutes);
 router.use('/news', newsRoutes);
+router.use('/', settingsRoutes); // route đã tự có prefix /settings bên trong
+router.use('/', profileRoutes); // MỚI THÊM - route đã tự có prefix /profile bên trong
 
 module.exports = router;

@@ -1,0 +1,164 @@
+extends ../../layouts/admin-layout.pug
+
+block content
+
+  //- =============================================================
+  //- Trang: Thông Tin Website
+  //- Biến truyền vào (ví dụ):
+  //-   website : { name, phone, email, address, logo, favicon }
+  //- =============================================================
+
+  .admin-page-head
+
+    div
+
+      h2.admin-page-title Thông Tin Website
+
+      p.admin-page-subtitle Cập nhật thông tin hiển thị chung trên website.
+
+    a.admin-btn.admin-btn-outline(href="/admin/settings")
+      i.fas.fa-arrow-left
+      |  Quay lại danh sách
+
+
+  .admin-card
+
+    form.admin-form(action="/admin/settings/website" method="POST" enctype="multipart/form-data")
+
+      .admin-form-row
+
+        .admin-form-group
+
+          label.admin-form-label(for="name") Tên website
+
+          input.admin-form-input#name(
+            type="text"
+            name="name"
+            value=(typeof website !== "undefined" && website.name) ? website.name : ""
+            placeholder="Vd: 28.TRAVEL"
+          )
+
+        .admin-form-group
+
+          label.admin-form-label(for="phone") Số điện thoại
+
+          input.admin-form-input#phone(
+            type="text"
+            name="phone"
+            value=(typeof website !== "undefined" && website.phone) ? website.phone : ""
+            placeholder="Vd: 0123456789"
+          )
+
+
+      .admin-form-row
+
+        .admin-form-group
+
+          label.admin-form-label(for="email") Email
+
+          input.admin-form-input#email(
+            type="email"
+            name="email"
+            value=(typeof website !== "undefined" && website.email) ? website.email : ""
+            placeholder="Vd: contact@28.travel.com"
+          )
+
+        .admin-form-group
+
+          label.admin-form-label(for="address") Địa chỉ
+
+          input.admin-form-input#address(
+            type="text"
+            name="address"
+            value=(typeof website !== "undefined" && website.address) ? website.address : ""
+            placeholder="Vd: Số 123, đường ABC"
+          )
+
+
+      .admin-form-row
+
+        .admin-form-group
+
+          label.admin-form-label Logo
+
+          .admin-upload-box(data-upload-preview="logoPreview")
+
+            if typeof website !== "undefined" && website.logo
+
+              img#logoPreview.admin-upload-preview(src=website.logo alt="Logo")
+
+              button.admin-upload-remove(type="button" data-remove-preview="logoPreview" aria-label="Xóa ảnh")
+                i.fas.fa-xmark
+
+            else
+
+              label.admin-upload-placeholder(for="logoInput")
+                i.fas.fa-plus
+
+            input#logoInput.admin-upload-input(type="file" name="logo" accept="image/*" hidden)
+
+        .admin-form-group
+
+          label.admin-form-label Favicon
+
+          .admin-upload-box(data-upload-preview="faviconPreview")
+
+            if typeof website !== "undefined" && website.favicon
+
+              img#faviconPreview.admin-upload-preview(src=website.favicon alt="Favicon")
+
+              button.admin-upload-remove(type="button" data-remove-preview="faviconPreview" aria-label="Xóa ảnh")
+                i.fas.fa-xmark
+
+            else
+
+              label.admin-upload-placeholder(for="faviconInput")
+                i.fas.fa-plus
+
+            input#faviconInput.admin-upload-input(type="file" name="favicon" accept="image/*" hidden)
+
+
+      .admin-form-actions
+
+        button.admin-btn.admin-btn-primary(type="submit") Cập nhật
+
+      a.admin-form-back-link(href="/admin/settings") Quay lại danh sách
+
+
+  script.
+    // Click vào ô upload (khi chưa có ảnh) sẽ mở input file tương ứng.
+    // Khi chọn ảnh mới -> hiển thị preview ngay, kèm nút x để xóa.
+    document.querySelectorAll('.admin-upload-box').forEach(function (box) {
+      var input = box.querySelector('.admin-upload-input');
+      var previewId = box.getAttribute('data-upload-preview');
+
+      box.addEventListener('click', function (e) {
+        if (e.target.closest('.admin-upload-remove')) return;
+        if (!box.querySelector('.admin-upload-preview')) input.click();
+      });
+
+      input.addEventListener('change', function () {
+        if (!input.files || !input.files[0]) return;
+
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          box.innerHTML =
+            '<img id="' + previewId + '" class="admin-upload-preview" src="' + e.target.result + '" alt="">' +
+            '<button type="button" class="admin-upload-remove" data-remove-preview="' + previewId + '" aria-label="Xóa ảnh"><i class="fas fa-xmark"></i></button>';
+          box.appendChild(input);
+        };
+        reader.readAsDataURL(input.files[0]);
+      });
+    });
+
+    document.addEventListener('click', function (e) {
+      var removeBtn = e.target.closest('.admin-upload-remove');
+      if (!removeBtn) return;
+
+      var box = removeBtn.closest('.admin-upload-box');
+      var input = box.querySelector('.admin-upload-input');
+      input.value = '';
+
+      box.innerHTML = '<label class="admin-upload-placeholder"><i class="fas fa-plus"></i></label>';
+      box.appendChild(input);
+    });
