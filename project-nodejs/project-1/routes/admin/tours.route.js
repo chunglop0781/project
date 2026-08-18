@@ -231,7 +231,10 @@ router.post('/trash/bulk', requireAdmin, async (req, res) => {
             if (bulkAction === 'restore') {
                 await Tour.updateMany(
                     { _id: { $in: ids } },
-                    { isDeleted: false, deletedAt: undefined, deletedBy: undefined }
+                    {
+                        $set: { isDeleted: false },
+                        $unset: { deletedAt: '', deletedBy: '' }
+                    }
                 );
             } else if (bulkAction === 'delete') {
                 await Tour.deleteMany({ _id: { $in: ids } });
@@ -476,11 +479,19 @@ router.delete('/:id', requireAdmin, async (req, res) => {
 
 router.post('/:id/restore', requireAdmin, async (req, res) => {
     try {
-        await Tour.findByIdAndUpdate(req.params.id, {
-            isDeleted: false,
-            deletedAt: undefined,
-            deletedBy: undefined
-        });
+        const tour = await Tour.findByIdAndUpdate(
+            req.params.id,
+            {
+                $set: { isDeleted: false },
+                $unset: { deletedAt: '', deletedBy: '' }
+            },
+            { new: true }
+        );
+
+        if (!tour) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy tour' });
+        }
+
         res.json({ success: true });
     } catch (error) {
         console.log(error);

@@ -34,7 +34,7 @@ block content
 
     .admin-toolbar
 
-      form.admin-bulk-form(action="/admin/tours/trash/bulk" method="POST")
+      form#trashBulkForm.admin-bulk-form(action="/admin/tours/trash/bulk" method="POST")
 
         select.admin-select(name="bulkAction")
 
@@ -101,7 +101,7 @@ block content
               tr
 
                 td
-                  input.admin-checkbox(type="checkbox" name="ids" value=tour.id)
+                  input.admin-checkbox(type="checkbox" name="ids" value=tour.id form="trashBulkForm")
 
                 td= tour.name
 
@@ -169,3 +169,29 @@ block content
 
 
     include ../../partials/pagination.pug
+
+  script.
+    // JS chung (admin-layout.pug) chỉ xử lý nút có data-delete-url.
+    // Nút "Khôi phục" dùng data-restore-url nên cần xử lý riêng ở đây.
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-restore-url]');
+      if (!btn) return;
+
+      var url = btn.getAttribute('data-restore-url');
+      var confirmMsg = btn.getAttribute('data-confirm');
+
+      if (confirmMsg && !window.confirm(confirmMsg)) return;
+
+      fetch(url, { method: 'POST' })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data && data.success) {
+            window.location.reload();
+          } else {
+            alert((data && data.message) || 'Khôi phục thất bại, vui lòng thử lại.');
+          }
+        })
+        .catch(function () {
+          alert('Có lỗi xảy ra, vui lòng thử lại.');
+        });
+    });
