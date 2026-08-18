@@ -1,0 +1,194 @@
+extends ../../layouts/admin-layout.pug
+
+block content
+
+  //- =============================================================
+  //- Biến truyền vào:
+  //-   order : {
+  //-     id, code, createdAt,
+  //-     customer: { name, phone, note },
+  //-     paymentMethod, paymentStatus,          -- TODO: paymentStatus chưa có trong model, xem ghi chú cuối file
+  //-     status,
+  //-     tour: { name, image, departureDate },
+  //-     passengers: [{ label, quantity, price }],
+  //-     total, discount, discountCode, paidAmount
+  //-   }
+  //- =============================================================
+
+  .admin-page-head
+
+    div
+
+      h2.admin-page-title Đơn hàng: #{order.code}
+
+      p.admin-page-subtitle Đặt lúc #{order.createdAt}
+
+    a.admin-btn.admin-btn-outline(href="/admin/orders/" + order.id)
+
+      i.fas.fa-arrow-left
+
+      | Quay lại chi tiết
+
+
+  form.admin-card(action="/admin/orders/" + order.id + "/edit" method="POST")
+
+    //- ===============================================================
+    //- THÔNG TIN KHÁCH HÀNG
+    //- ===============================================================
+
+    .admin-form-row
+
+      .admin-form-group
+
+        label(for="customerName") Tên khách hàng
+
+        input#customerName(type="text" name="customerName" value=order.customer.name)
+
+      .admin-form-group
+
+        label(for="customerPhone") Số điện thoại
+
+        input#customerPhone(type="text" name="customerPhone" value=order.customer.phone)
+
+
+    .admin-form-group
+
+      label(for="note") Ghi chú
+
+      textarea#note(name="note" rows="3")= order.customer.note
+
+
+    //- ===============================================================
+    //- THANH TOÁN & TRẠNG THÁI
+    //- ===============================================================
+
+    .admin-form-row
+
+      .admin-form-group
+
+        label(for="paymentMethod") Phương thức thanh toán
+
+        select#paymentMethod(name="paymentMethod")
+
+          option(value="cash" selected=order.paymentMethod === "cash") Tiền mặt
+
+          option(value="bank" selected=order.paymentMethod === "bank") Chuyển khoản ngân hàng
+
+      .admin-form-group
+
+        label(for="paymentStatus") Trạng thái thanh toán
+
+        select#paymentStatus(name="paymentStatus")
+
+          option(value="unpaid" selected=order.paymentStatus === "unpaid") Chưa thanh toán
+
+          option(value="paid" selected=order.paymentStatus === "paid") Đã thanh toán
+
+
+    .admin-form-row
+
+      .admin-form-group
+
+        label(for="createdAt") Ngày đặt
+
+        input#createdAt(type="text" name="createdAt" value=order.createdAt disabled)
+
+      .admin-form-group
+
+        label(for="status") Trạng thái
+
+        select#status(name="status")
+
+          option(value="pending" selected=order.status === "pending") Chờ xác nhận
+
+          option(value="confirmed" selected=order.status === "confirmed") Đã xác nhận
+
+          option(value="completed" selected=order.status === "completed") Hoàn thành
+
+          option(value="cancelled" selected=order.status === "cancelled") Đã hủy
+
+
+    //- ===============================================================
+    //- DANH SÁCH TOUR (chỉ xem, không sửa số lượng/giá ở đây)
+    //- ===============================================================
+
+    h3.admin-card-title Danh sách tour
+
+    .admin-order-tour
+
+      img(src=order.tour.image || "/admin/image/no-image.png" alt=order.tour.name)
+
+      div
+
+        h4= order.tour.name
+
+        if order.tour.departureDate
+          .admin-order-tour-meta
+            span
+              i.fas.fa-calendar
+              | Khởi hành: #{order.tour.departureDate}
+
+        .admin-table-wrap
+
+          table.admin-table
+
+            thead
+
+              tr
+
+                th Loại khách
+
+                th Số lượng
+
+                th Đơn giá
+
+
+            tbody
+
+              each passenger in order.passengers
+
+                tr
+
+                  td= passenger.label
+
+                  td= passenger.quantity
+
+                  td= passenger.price.toLocaleString("vi-VN") + " đ"
+
+
+    //- ===============================================================
+    //- THANH TOÁN TỔNG
+    //- ===============================================================
+
+    ul.admin-info-list
+
+      li
+
+        span Tổng tiền
+
+        strong= order.total.toLocaleString("vi-VN") + " đ"
+
+      li
+
+        span Giảm
+
+        strong= (order.discount || 0).toLocaleString("vi-VN") + " đ"
+
+      li
+
+        span Mã giảm
+
+        strong= order.discountCode || "—"
+
+      li
+
+        span Thanh toán
+
+        strong= (order.paidAmount != null ? order.paidAmount : order.total).toLocaleString("vi-VN") + " đ"
+
+
+    .admin-form-actions
+
+      button.admin-btn.admin-btn-primary(type="submit") Lưu thay đổi
+
+      a.admin-btn.admin-btn-outline(href="/admin/orders/" + order.id) Hủy

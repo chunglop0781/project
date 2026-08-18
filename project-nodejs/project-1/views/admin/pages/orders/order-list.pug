@@ -4,17 +4,25 @@ block content
 
   //- =============================================================
   //- Biến truyền vào:
-  //-   orders : [{ id, code, customerName, phone, tourName, totalPassengers,
-  //-               total, status, statusLabel, createdAt }]
-  //-   currentPage, totalPages
-  //-   activeStatus : trạng thái tab đang chọn ("all" | "pending" | ...)
+  //-   orders : [{
+  //-     id, code,
+  //-     customerName, phone, note,
+  //-     tourName, tourImage, passengers: [{ label, quantity, price }], departureDate,
+  //-     total, discount, discountCode, paidAmount,
+  //-     paymentMethod, paymentMethodLabel,
+  //-     paymentStatus, paymentStatusLabel,   -- TODO: chưa có trong order.model.js, xem ghi chú cuối file
+  //-     status, statusLabel,
+  //-     createdAt
+  //-   }]
+  //-   currentPage, totalPages, baseUrl
+  //-   filter : { status, paymentMethod, paymentStatus, dateFrom, dateTo, keyword }
   //- =============================================================
 
   .admin-page-head
 
     div
 
-      h2.admin-page-title Đơn Hàng
+      h2.admin-page-title Quản lý đơn hàng
 
       p.admin-page-subtitle Quản lý toàn bộ đơn đặt tour từ khách hàng.
 
@@ -22,35 +30,78 @@ block content
   .admin-card
 
     //- ===============================================================
-    //- TAB TRẠNG THÁI
+    //- BỘ LỌC
     //- ===============================================================
 
-    .admin-tabs
+    form.admin-filter-bar(action="/admin/orders" method="GET" id="orderFilterForm")
 
-      a(
-        href="/admin/orders?status=all"
-        class=(!activeStatus || activeStatus === "all") ? "active" : ""
-      ) Tất cả
+      .admin-filter-group
 
-      a(
-        href="/admin/orders?status=pending"
-        class=activeStatus === "pending" ? "active" : ""
-      ) Chờ xác nhận
+        i.fas.fa-filter
 
-      a(
-        href="/admin/orders?status=confirmed"
-        class=activeStatus === "confirmed" ? "active" : ""
-      ) Đã xác nhận
+        span Bộ lọc
 
-      a(
-        href="/admin/orders?status=completed"
-        class=activeStatus === "completed" ? "active" : ""
-      ) Hoàn thành
+      .admin-filter-group
 
-      a(
-        href="/admin/orders?status=cancelled"
-        class=activeStatus === "cancelled" ? "active" : ""
-      ) Đã hủy
+        label(for="filter-status") Trạng thái
+
+        select#filter-status(name="status")
+
+          option(value="all" selected=(!filter.status || filter.status === "all")) Tất cả
+
+          option(value="pending" selected=filter.status === "pending") Chờ xác nhận
+
+          option(value="confirmed" selected=filter.status === "confirmed") Đã xác nhận
+
+          option(value="completed" selected=filter.status === "completed") Hoàn thành
+
+          option(value="cancelled" selected=filter.status === "cancelled") Đã hủy
+
+      .admin-filter-group
+
+        label(for="filter-date-from") Ngày đặt
+
+        input#filter-date-from(type="text" name="dateFrom" placeholder="dd/mm/yyyy" value=filter.dateFrom)
+
+        span –
+
+        input#filter-date-to(type="text" name="dateTo" placeholder="dd/mm/yyyy" value=filter.dateTo)
+
+      .admin-filter-group
+
+        label(for="filter-payment-method") Phương thức thanh toán
+
+        select#filter-payment-method(name="paymentMethod")
+
+          option(value="" selected=!filter.paymentMethod) Tất cả
+
+          option(value="cash" selected=filter.paymentMethod === "cash") Tiền mặt
+
+          option(value="bank" selected=filter.paymentMethod === "bank") Chuyển khoản
+
+      .admin-filter-group
+
+        label(for="filter-payment-status") Trạng thái thanh toán
+
+        select#filter-payment-status(name="paymentStatus")
+
+          option(value="" selected=!filter.paymentStatus) Tất cả
+
+          option(value="unpaid" selected=filter.paymentStatus === "unpaid") Chưa thanh toán
+
+          option(value="paid" selected=filter.paymentStatus === "paid") Đã thanh toán
+
+      button.admin-btn.admin-btn-text(type="submit")
+
+        i.fas.fa-magnifying-glass
+
+        | Áp dụng
+
+      a.admin-btn.admin-btn-outline(href="/admin/orders")
+
+        i.fas.fa-rotate-left
+
+        | Xóa bộ lọc
 
 
     .admin-toolbar
@@ -62,6 +113,7 @@ block content
         input(
           type="text"
           name="keyword"
+          value=filter.keyword
           placeholder="Tìm theo mã đơn, tên hoặc SĐT khách hàng..."
         )
 
@@ -78,21 +130,19 @@ block content
 
           tr
 
-            th Mã đơn
+            th Mã
 
-            th Khách hàng
+            th Thông tin khách
 
-            th Tour
+            th Danh sách tour
 
-            th Số khách
-
-            th Tổng tiền
-
-            th Ngày đặt
+            th Thanh toán
 
             th Trạng thái
 
-            th(style="width: 90px") Thao tác
+            th Ngày đặt
+
+            th(style="width: 90px") Hành động
 
 
         tbody
@@ -104,36 +154,77 @@ block content
               tr
 
                 td
-                  strong= order.code
+
+                  a.admin-table-link(href="/admin/orders/" + order.id)= order.code
 
                 td
 
                   div= order.customerName
 
-                  span.admin-table-sub= order.phone
+                  span.admin-table-sub SĐT: #{order.phone}
 
-                td= order.tourName
+                  if order.note
+                    span.admin-table-sub Ghi chú: #{order.note}
 
-                td= order.totalPassengers
+                td
 
-                td= order.total.toLocaleString("vi-VN") + " đ"
+                  .admin-order-mini
 
-                td= order.createdAt
+                    img(src=order.tourImage || "/admin/image/no-image.png" alt=order.tourName)
+
+                    div
+
+                      strong= order.tourName
+
+                      each passenger in order.passengers
+
+                        div.admin-table-sub= passenger.label + ": " + passenger.quantity + " x " + passenger.price.toLocaleString("vi-VN") + "đ"
+
+                      if order.departureDate
+                        div.admin-table-sub Khởi hành: #{order.departureDate}
+
+                td
+
+                  div Tổng tiền: #{order.total.toLocaleString("vi-VN")}đ
+
+                  if order.discount
+                    div.admin-table-sub Giảm: #{order.discount.toLocaleString("vi-VN")}đ
+
+                  if order.discountCode
+                    div.admin-table-sub Mã giảm: #{order.discountCode}
+
+                  div.admin-table-sub Thanh toán: #{(order.paidAmount != null ? order.paidAmount : order.total).toLocaleString("vi-VN")}đ
+
+                  div.admin-table-sub PTTT: #{order.paymentMethodLabel || "—"}
+
+                  div.admin-table-sub TTTT: #{order.paymentStatusLabel || "—"}
 
                 td
 
                   span.admin-badge(class="is-" + order.status)= order.statusLabel
 
+                td= order.createdAt
+
                 td
 
-                  a.admin-icon-btn(href="/admin/orders/" + order.id title="Xem chi tiết")
-                    i.fas.fa-eye
+                  .admin-table-actions
+
+                    a.admin-icon-btn(href="/admin/orders/" + order.id + "/edit" title="Chỉnh sửa")
+                      i.fas.fa-pen
+
+                    button.admin-icon-btn(
+                      type="button"
+                      title="Xóa"
+                      data-confirm="Bạn có chắc muốn xóa đơn hàng " + order.code + "?"
+                      data-delete-url="/admin/orders/" + order.id
+                    )
+                      i.fas.fa-trash
 
           else
 
             tr
 
-              td.admin-table-empty(colspan="8") Chưa có đơn hàng nào.
+              td.admin-table-empty(colspan="7") Chưa có đơn hàng nào.
 
 
     include ../../partials/pagination.pug
