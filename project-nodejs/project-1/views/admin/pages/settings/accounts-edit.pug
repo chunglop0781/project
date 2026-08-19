@@ -1,0 +1,240 @@
+extends ../../layouts/admin-layout.pug
+
+block content
+
+  .admin-page-head
+    div
+      h2.admin-page-title Sửa tài khoản quản trị
+      p.admin-page-subtitle Cập nhật thông tin tài khoản quản trị.
+
+    a.admin-btn.admin-btn-outline(
+      href="/admin/settings/accounts"
+    )
+      i.fa-solid.fa-arrow-left
+      |  Quay lại danh sách
+
+
+  .admin-card
+
+    if error
+      .admin-alert.admin-alert-danger
+        i.fa-solid.fa-circle-exclamation
+        |  #{error}
+
+
+    form.admin-form(
+      action=`/admin/settings/accounts/edit/${account._id}`
+      method="POST"
+    )
+
+      // =====================================================
+      // HỌ TÊN + EMAIL
+      // =====================================================
+
+      .admin-form-row
+
+        .admin-form-group
+          label.admin-form-label(for="fullName")
+            | Họ tên
+
+          input.admin-form-input#fullName(
+            type="text"
+            name="fullName"
+            placeholder="Nhập họ tên"
+            value=account.fullName || ''
+            required
+          )
+
+        .admin-form-group
+          label.admin-form-label(for="email")
+            | Email
+
+          input.admin-form-input#email(
+            type="email"
+            name="email"
+            placeholder="Nhập email"
+            value=account.email || ''
+            required
+          )
+
+
+      // =====================================================
+      // SỐ ĐIỆN THOẠI + CHỨC VỤ
+      // =====================================================
+
+      .admin-form-row
+
+        .admin-form-group
+          label.admin-form-label(for="phone")
+            | Số điện thoại
+
+          input.admin-form-input#phone(
+            type="text"
+            name="phone"
+            placeholder="Ví dụ: +84352417216"
+            value=account.phone || ''
+          )
+
+        .admin-form-group
+          label.admin-form-label(for="position")
+            | Chức vụ
+
+          input.admin-form-input#position(
+            type="text"
+            name="position"
+            placeholder="Ví dụ: Quản trị hệ thống"
+            value=account.position || ''
+          )
+
+
+      // =====================================================
+      // NHÓM QUYỀN + TRẠNG THÁI
+      // =====================================================
+
+      .admin-form-row
+
+        .admin-form-group
+          label.admin-form-label(for="role")
+            | Nhóm quyền
+
+          select.admin-form-input#role(
+            name="role"
+            required
+          )
+
+            option(
+              value=""
+              selected=!account.role
+            )
+              | -- Chọn nhóm quyền --
+
+            option(
+              value="admin"
+              selected=account.role === 'admin'
+            )
+              | Quản trị viên
+
+            option(
+              value="tour-manager"
+              selected=account.role === 'tour-manager'
+            )
+              | Quản lý tour
+
+            option(
+              value="order-manager"
+              selected=account.role === 'order-manager'
+            )
+              | Quản lý đơn hàng
+
+
+        .admin-form-group
+          label.admin-form-label(for="status")
+            | Trạng thái
+
+          select.admin-form-input#status(
+            name="status"
+          )
+
+            option(
+              value="active"
+              selected=account.status === 'active'
+            )
+              | Hoạt động
+
+            option(
+              value="inactive"
+              selected=account.status === 'inactive'
+            )
+              | Tạm dừng
+
+
+      // =====================================================
+      // ĐỊA CHỈ
+      // =====================================================
+
+      .admin-form-row
+
+        .admin-form-group
+          label.admin-form-label(for="address")
+            | Địa chỉ
+
+          input.admin-form-input#address(
+            type="text"
+            name="address"
+            placeholder="Nhập địa chỉ"
+            value=account.address || ''
+          )
+
+
+      // =====================================================
+      // MẬT KHẨU
+      // =====================================================
+
+      .admin-form-row
+
+        .admin-form-group
+          label.admin-form-label(for="password")
+            | Mật khẩu mới
+
+          input.admin-form-input#password(
+            type="password"
+            name="password"
+            placeholder="Để trống nếu không muốn đổi mật khẩu"
+          )
+
+        .admin-form-group
+          label.admin-form-label(for="confirmPassword")
+            | Nhập lại mật khẩu
+
+          input.admin-form-input#confirmPassword(
+            type="password"
+            name="confirmPassword"
+            placeholder="Nhập lại mật khẩu mới"
+          )
+
+
+      // =====================================================
+      // BUTTON
+      // =====================================================
+
+      .admin-form-actions
+
+        a.admin-btn.admin-btn-outline(
+          href="/admin/settings/accounts"
+        )
+          | Hủy
+
+        button.admin-btn.admin-btn-primary(
+          type="submit"
+        )
+          i.fa-solid.fa-check
+          |  Lưu thay đổi
+
+
+  // =========================================================
+  // KIỂM TRA MẬT KHẨU
+  // =========================================================
+
+  script.
+    document
+      .querySelector('.admin-form')
+      .addEventListener('submit', function(e) {
+
+        const password =
+          document.getElementById('password').value;
+
+        const confirmPassword =
+          document.getElementById('confirmPassword').value;
+
+        if (
+          password !== '' &&
+          password !== confirmPassword
+        ) {
+          e.preventDefault();
+
+          alert(
+            'Mật khẩu nhập lại không khớp!'
+          );
+        }
+
+      });

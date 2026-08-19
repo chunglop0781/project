@@ -23,7 +23,7 @@ block content
 
   .admin-card
 
-    form.admin-form(action="/admin/settings/website" method="POST" enctype="multipart/form-data")
+    form.admin-form(action="/admin/settings/websiteInfo" method="POST" enctype="multipart/form-data")
 
       .admin-form-row
 
@@ -34,7 +34,7 @@ block content
           input.admin-form-input#name(
             type="text"
             name="name"
-            value=(typeof website !== "undefined" && website.name) ? website.name : ""
+            value=(website && website.name) ? website.name : ""
             placeholder="Vd: 28.TRAVEL"
           )
 
@@ -45,7 +45,7 @@ block content
           input.admin-form-input#phone(
             type="text"
             name="phone"
-            value=(typeof website !== "undefined" && website.phone) ? website.phone : ""
+            value=(website && website.phone) ? website.phone : ""
             placeholder="Vd: 0123456789"
           )
 
@@ -59,7 +59,7 @@ block content
           input.admin-form-input#email(
             type="email"
             name="email"
-            value=(typeof website !== "undefined" && website.email) ? website.email : ""
+            value=(website && website.email) ? website.email : ""
             placeholder="Vd: contact@28.travel.com"
           )
 
@@ -70,7 +70,7 @@ block content
           input.admin-form-input#address(
             type="text"
             name="address"
-            value=(typeof website !== "undefined" && website.address) ? website.address : ""
+            value=(website && website.address) ? website.address : ""
             placeholder="Vd: Số 123, đường ABC"
           )
 
@@ -83,7 +83,7 @@ block content
 
           .admin-upload-box(data-upload-preview="logoPreview")
 
-            if typeof website !== "undefined" && website.logo
+            if website && website.logo
 
               img#logoPreview.admin-upload-preview(src=website.logo alt="Logo")
 
@@ -103,7 +103,7 @@ block content
 
           .admin-upload-box(data-upload-preview="faviconPreview")
 
-            if typeof website !== "undefined" && website.favicon
+            if website && website.favicon
 
               img#faviconPreview.admin-upload-preview(src=website.favicon alt="Favicon")
 

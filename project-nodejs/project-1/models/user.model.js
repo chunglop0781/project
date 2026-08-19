@@ -1,22 +1,116 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-    fullName: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    phone: { type: String, required: true },
-    password: { type: String, required: true },
-    address: { type: String }, // dùng ở customer-detail.pug và order-detail.pug
-    avatar: { type: String, default: '' }, // rỗng -> dùng ảnh mặc định / chữ cái đầu tên
+
+    // =========================================================
+    // HỌ TÊN
+    // =========================================================
+
+    fullName: {
+        type: String,
+        required: true,
+        trim: true
+    },
+
+
+    // =========================================================
+    // EMAIL
+    // =========================================================
+
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        lowercase: true
+    },
+
+
+    // =========================================================
+    // SỐ ĐIỆN THOẠI
+    // =========================================================
+
+    phone: {
+        type: String,
+        required: true,
+        trim: true
+    },
+
+
+    // =========================================================
+    // MẬT KHẨU
+    // =========================================================
+
+    password: {
+        type: String,
+        required: true
+    },
+
+
+    // =========================================================
+    // ĐỊA CHỈ
+    // =========================================================
+
+    address: {
+        type: String,
+        default: ''
+    },
+
+
+    // =========================================================
+    // AVATAR
+    // =========================================================
+
+    avatar: {
+        type: String,
+        default: ''
+    },
+
+
+    // =========================================================
+    // CHỨC VỤ
+    // =========================================================
+
+    position: {
+        type: String,
+        default: '',
+        trim: true
+    },
+
+
+    // =========================================================
+    // TRẠNG THÁI
+    // =========================================================
+
     status: {
         type: String,
-        enum: ['active', 'inactive'],
+        enum: [
+            'active',
+            'inactive'
+        ],
         default: 'active'
     },
+
+
+    // =========================================================
+    // NHÓM QUYỀN
+    // =========================================================
+
     role: {
         type: String,
-        enum: ['customer', 'admin'],
+        enum: [
+            'customer',
+            'admin',
+            'tour-manager',
+            'order-manager'
+        ],
         default: 'customer'
     }
-}, { timestamps: true });
 
-module.exports = mongoose.model('User', userSchema);
+}, {
+    timestamps: true
+});
+
+
+module.exports =
+    mongoose.model('User', userSchema);

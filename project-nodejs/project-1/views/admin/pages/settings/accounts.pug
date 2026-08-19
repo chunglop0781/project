@@ -1,0 +1,205 @@
+extends ../../layouts/admin-layout.pug
+
+block content
+
+  .admin-page-head
+    div
+      h2.admin-page-title Tài khoản quản trị
+      p.admin-page-subtitle Quản lý danh sách tài khoản quản trị hệ thống.
+
+
+  //- =============================================================
+  //- Section 4: Bộ lọc
+  //- =============================================================
+
+  .section-4
+    .inner-wrap
+
+      .inner-item.inner-label
+        i.fa-solid.fa-filter
+        |  Bộ lọc
+
+      .inner-item
+        select
+          option(value="") Trạng thái
+          option(value="active") Hoạt động
+          option(value="inactive") Tạm dừng
+
+      .inner-item.inner-date
+        input(type="date")
+        span -
+        input(type="date")
+
+      .inner-item
+        select
+          option(value="") Nhóm quyền
+          option(value="admin") Quản trị viên
+          option(value="tour-manager") Quản lý tour
+          option(value="order-manager") Quản lý đơn hàng
+
+      .inner-item.inner-reset
+        i.fa-solid.fa-rotate-left
+        |  Xóa bộ lọc
+
+
+  //- =============================================================
+  //- Section 5: Thay đổi trạng thái + tìm kiếm + tạo mới
+  //- =============================================================
+
+  .section-5
+    .inner-wrap
+
+      .inner-change-status
+
+        .inner-item
+          select
+            option(value="") Hành động
+            option(value="active") Hoạt động
+            option(value="inactive") Dừng hoạt động
+            option(value="delete") Xóa
+
+        .inner-item
+          button(type="button") Áp dụng
+
+      .inner-search
+        i.fa-solid.fa-magnifying-glass
+        input(
+          type="text"
+          placeholder="Tìm kiếm"
+        )
+
+      //- Nút tạo tài khoản mới
+      .inner-button-create
+        button(
+          type="button"
+          onclick="window.location.href='/admin/settings/accounts/create'"
+        ) + Tạo mới
+
+
+  //- =============================================================
+  //- Section 6: Bảng tài khoản
+  //- =============================================================
+
+  .section-6
+    .table-2
+
+      table
+        thead
+          tr
+
+            th.inner-center
+              input(
+                type="checkbox"
+                class="inner-check"
+              )
+
+            th Họ tên
+
+            th.inner-center Ảnh đại diện
+
+            th Email
+
+            th Số điện thoại
+
+            th Nhóm quyền
+
+            th Chức vụ
+
+            th Trạng thái
+
+            th Hành động
+
+
+        tbody
+
+          if accounts && accounts.length
+
+            each account in accounts
+
+              tr
+
+                td.inner-center
+                  input.inner-check(
+                    type="checkbox"
+                    value=account._id
+                  )
+
+                td= account.fullName
+
+                td.inner-center
+
+                  if account.avatar
+                    img.inner-avatar(
+                      src=account.avatar
+                      alt=account.fullName
+                    )
+                  else
+                    img.inner-avatar(
+                      src="/admin/image/avatar-default.png"
+                      alt=account.fullName
+                    )
+
+                td= account.email
+
+                td= account.phone
+
+                td Quản trị viên
+
+                td Quản trị hệ thống
+
+                td
+
+                  if account.status === 'active'
+                    .badge.badge-green Hoạt động
+                  else
+                    .badge.badge-red Tạm dừng
+
+                td
+
+                  .inner-buttons
+
+                    a.inner-edit(
+                      href="/admin/settings/accounts/edit/" + account._id
+                      title="Chỉnh sửa"
+                    )
+                      i.fa-regular.fa-pen-to-square
+
+                    form(
+                      action="/admin/settings/accounts/delete/" + account._id
+                      method="POST"
+                      style="display:inline;"
+                      onsubmit="return confirm('Bạn có chắc muốn xóa tài khoản này?')"
+                    )
+
+                      button.inner-delete(
+                        type="submit"
+                        title="Xóa"
+                      )
+                        i.fa-regular.fa-trash-can
+
+          else
+
+            tr
+
+              td(
+                colspan="9"
+                style="text-align:center;padding:30px;"
+              )
+                | Chưa có tài khoản quản trị nào.
+
+
+  //- =============================================================
+  //- Section 7: Phân trang
+  //- =============================================================
+
+  .section-7
+
+    span.inner-label
+      | Hiển thị 1 - 9 của 78
+
+    select.inner-pagination
+      option Trang 1
+      option Trang 2
+      option Trang 3
+
+  //- End Section

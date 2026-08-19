@@ -1,0 +1,408 @@
+
+extends ../../layouts/admin-layout.pug
+
+block content
+
+  .admin-page-head
+
+    div
+      h2.admin-page-title Nhóm quyền
+      p.admin-page-subtitle Quản lý các nhóm quyền trong hệ thống.
+
+
+  .admin-card
+
+    // =========================================================
+    // THANH CÔNG CỤ
+    // =========================================================
+
+    .admin-toolbar
+
+      .admin-toolbar-left
+
+        select.admin-form-input(
+          id="bulkAction"
+          name="bulkAction"
+        )
+
+          option(value="") -- Hành động --
+
+          option(value="delete") Xóa
+
+
+        button.admin-btn.admin-btn-outline(
+          type="button"
+          id="applyBulkAction"
+        )
+          | Áp dụng
+
+
+      .admin-toolbar-right
+
+        .admin-search
+
+          i.fa-solid.fa-magnifying-glass
+
+          input.admin-form-input(
+            type="text"
+            id="searchRole"
+            placeholder="Tìm kiếm"
+          )
+
+
+        a.admin-btn.admin-btn-primary(
+          href="/admin/settings/roles/create"
+        )
+          i.fa-solid.fa-plus
+          |  Tạo mới
+
+
+    // =========================================================
+    // THÔNG BÁO
+    // =========================================================
+
+    if success
+
+      .admin-alert.admin-alert-success
+
+        i.fa-solid.fa-circle-check
+
+        |  #{success}
+
+
+    if error
+
+      .admin-alert.admin-alert-danger
+
+        i.fa-solid.fa-circle-exclamation
+
+        |  #{error}
+
+
+    // =========================================================
+    // DANH SÁCH NHÓM QUYỀN
+    // =========================================================
+
+    .admin-table-wrapper
+
+      table.admin-table
+
+        thead
+
+          tr
+
+            th.admin-table-checkbox
+
+              input(
+                type="checkbox"
+                id="checkAll"
+              )
+
+
+            th Tên nhóm quyền
+
+            th Mô tả ngắn
+
+            th Hành động
+
+
+        tbody#roleTableBody
+
+          if roles && roles.length
+
+            each role in roles
+
+              tr.role-row(
+                data-name=(role.name || '').toLowerCase()
+                data-description=(role.description || '').toLowerCase()
+              )
+
+                // =================================================
+                // CHECKBOX
+                // =================================================
+
+                td.admin-table-checkbox
+
+                  input.role-checkbox(
+                    type="checkbox"
+                    name="roleIds"
+                    value=role._id
+                  )
+
+
+                // =================================================
+                // TÊN NHÓM QUYỀN
+                // =================================================
+
+                td
+
+                  .admin-table-name
+
+                    | #{role.name}
+
+
+                // =================================================
+                // MÔ TẢ
+                // =================================================
+
+                td
+
+                  if role.description
+
+                    | #{role.description}
+
+                  else
+
+                    span.admin-text-muted
+                      | Chưa có mô tả
+
+
+                // =================================================
+                // HÀNH ĐỘNG
+                // =================================================
+
+                td
+
+                  .admin-table-actions
+
+                    // -------------------------------------------
+                    // SỬA - ID ĐỘNG
+                    // -------------------------------------------
+
+                    a.admin-btn.admin-btn-sm.admin-btn-outline(
+                      href=`/admin/settings/roles/edit/${role._id}`
+                      title="Chỉnh sửa"
+                    )
+
+                      i.fa-solid.fa-pen-to-square
+
+
+                    // -------------------------------------------
+                    // XÓA - ID ĐỘNG
+                    // -------------------------------------------
+
+                    form(
+                      action=`/admin/settings/roles/delete/${role._id}`
+                      method="POST"
+                      style="display: inline;"
+                      onsubmit="return confirm('Bạn có chắc muốn xóa nhóm quyền này không?');"
+                    )
+
+                      button.admin-btn.admin-btn-sm.admin-btn-danger(
+                        type="submit"
+                        title="Xóa"
+                      )
+
+                        i.fa-solid.fa-trash
+
+
+          else
+
+            tr
+
+              td(
+                colspan="4"
+                style="text-align: center;"
+              )
+
+                .admin-empty-state
+
+                  i.fa-solid.fa-user-shield
+
+                  h3 Chưa có nhóm quyền
+
+                  p Hệ thống chưa có nhóm quyền nào.
+
+
+  // =========================================================
+  // JAVASCRIPT
+  // =========================================================
+
+  script.
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+      const checkAll =
+        document.getElementById('checkAll');
+
+
+      const checkboxes =
+        document.querySelectorAll('.role-checkbox');
+
+
+      const searchInput =
+        document.getElementById('searchRole');
+
+
+      const bulkAction =
+        document.getElementById('bulkAction');
+
+
+      const applyButton =
+        document.getElementById('applyBulkAction');
+
+
+      // =======================================================
+      // CHỌN TẤT CẢ
+      // =======================================================
+
+      if (checkAll) {
+
+        checkAll.addEventListener('change', function () {
+
+          checkboxes.forEach(function (checkbox) {
+
+            checkbox.checked = checkAll.checked;
+
+          });
+
+        });
+
+      }
+
+
+      // =======================================================
+      // TÌM KIẾM NHÓM QUYỀN
+      // =======================================================
+
+      if (searchInput) {
+
+        searchInput.addEventListener('input', function () {
+
+          const keyword =
+            searchInput.value
+              .trim()
+              .toLowerCase();
+
+
+          document
+            .querySelectorAll('.role-row')
+            .forEach(function (row) {
+
+              const name =
+                row.dataset.name || '';
+
+
+              const description =
+                row.dataset.description || '';
+
+
+              if (
+                name.includes(keyword) ||
+                description.includes(keyword)
+              ) {
+
+                row.style.display = '';
+
+              } else {
+
+                row.style.display = 'none';
+
+              }
+
+            });
+
+        });
+
+      }
+
+
+      // =======================================================
+      // ÁP DỤNG HÀNH ĐỘNG
+      // =======================================================
+
+      if (applyButton) {
+
+        applyButton.addEventListener('click', function () {
+
+          const action =
+            bulkAction.value;
+
+
+          const selected =
+            Array.from(
+              document.querySelectorAll(
+                '.role-checkbox:checked'
+              )
+            );
+
+
+          // ---------------------------------------------------
+          // CHƯA CHỌN HÀNH ĐỘNG
+          // ---------------------------------------------------
+
+          if (!action) {
+
+            alert('Vui lòng chọn hành động.');
+
+            return;
+
+          }
+
+
+          // ---------------------------------------------------
+          // CHƯA CHỌN NHÓM QUYỀN
+          // ---------------------------------------------------
+
+          if (selected.length === 0) {
+
+            alert('Vui lòng chọn ít nhất một nhóm quyền.');
+
+            return;
+
+          }
+
+
+          // ---------------------------------------------------
+          // XÓA NHIỀU
+          // ---------------------------------------------------
+
+          if (action === 'delete') {
+
+            const confirmDelete =
+              confirm(
+                'Bạn có chắc muốn xóa các nhóm quyền đã chọn không?'
+              );
+
+
+            if (!confirmDelete) {
+
+              return;
+
+            }
+
+
+            // Lấy danh sách ID đã chọn
+            const roleIds =
+              selected.map(function (checkbox) {
+
+                return checkbox.value;
+
+              });
+
+
+            console.log(
+              'Các role được chọn:',
+              roleIds
+            );
+
+
+            // TODO:
+            // Gửi danh sách roleIds về controller.
+            //
+            // Ví dụ:
+            // POST /admin/settings/roles/delete-multiple
+
+
+            alert(
+              'Chức năng xóa nhiều nhóm quyền sẽ được xử lý ở controller.'
+            );
+
+          }
+
+        });
+
+      }
+
+    });
+

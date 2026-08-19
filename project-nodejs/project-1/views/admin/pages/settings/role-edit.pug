@@ -1,0 +1,120 @@
+extends ../../layouts/admin-layout.pug
+
+block content
+
+  .admin-page-head
+
+    div
+      if isEdit
+        h2.admin-page-title Chỉnh sửa nhóm quyền
+        p.admin-page-subtitle Cập nhật thông tin và phân quyền cho nhóm quyền.
+      else
+        h2.admin-page-title Tạo nhóm quyền
+        p.admin-page-subtitle Tạo một nhóm quyền mới cho hệ thống.
+
+
+  .admin-card
+
+    form(
+      action=isEdit ? `/admin/settings/roles/edit/${role._id}` : '/admin/settings/roles/create'
+      method="POST"
+    )
+
+      // =========================================================
+      // THÔNG TIN NHÓM QUYỀN
+      // =========================================================
+
+      .role-form-grid
+
+        .admin-form-group
+
+          label.admin-form-label(
+            for="name"
+          )
+            | Tên nhóm quyền
+
+          input.admin-form-input(
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Nhập tên nhóm quyền"
+            value=role ? role.name : ''
+            required
+          )
+
+
+        .admin-form-group
+
+          label.admin-form-label(
+            for="description"
+          )
+            | Mô tả ngắn
+
+          input.admin-form-input(
+            type="text"
+            id="description"
+            name="description"
+            placeholder="Nhập mô tả ngắn"
+            value=role ? role.description : ''
+          )
+
+
+      // =========================================================
+      // PHÂN QUYỀN
+      // =========================================================
+
+      .admin-form-group.role-permission-group
+
+        label.admin-form-label
+          | Phân quyền
+
+
+        .role-permission-box
+
+          if permissions && permissions.length
+
+            each permission in permissions
+
+              label.role-permission-item
+
+                input(
+                  type="checkbox"
+                  name="permissions"
+                  value=permission.value
+                  checked=role && role.permissions && (
+                    role.permissions.includes('*') ||
+                    role.permissions.includes(permission.value)
+                  )
+                )
+
+                span
+                  | #{permission.label}
+
+          else
+
+            .admin-text-muted
+              | Chưa có quyền nào.
+
+
+      // =========================================================
+      // NÚT
+      // =========================================================
+
+      .role-form-actions
+
+        button.admin-btn.admin-btn-primary(
+          type="submit"
+        )
+
+          if isEdit
+            i.fa-solid.fa-floppy-disk
+            |  Cập nhật
+          else
+            i.fa-solid.fa-plus
+            |  Tạo mới
+
+
+        a.admin-btn.admin-btn-outline(
+          href="/admin/settings/roles"
+        )
+          | Quay lại danh sách

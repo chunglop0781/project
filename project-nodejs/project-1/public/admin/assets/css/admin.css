@@ -2356,3 +2356,911 @@ input[type="checkbox"].admin-checkbox:checked::after {
     width: 100% !important;
     height: 100% !important;
 }
+
+
+/* =========================================================
+   ADMIN - TÀI KHOẢN QUẢN TRỊ
+   URL: /admin/settings/accounts
+   ========================================================= */
+
+/* =========================
+   SECTION 4 - BỘ LỌC
+   ========================= */
+
+.section-4 {
+    margin-bottom: 12px;
+}
+
+.section-4 .inner-wrap {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 58px;
+    background: #fff;
+    border: 1px solid #e2e2e8;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Từng ô trong bộ lọc */
+.section-4 .inner-item {
+    display: flex;
+    align-items: center;
+    height: 56px;
+    padding: 0 14px;
+    border-right: 1px solid #e5e5ea;
+    white-space: nowrap;
+}
+
+/* Icon + Bộ lọc */
+.section-4 .inner-label {
+    gap: 9px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #333;
+}
+
+/* Icon filter */
+.section-4 .inner-label i {
+    font-size: 15px;
+    color: #222;
+}
+
+/* Select */
+.section-4 select {
+    min-width: 115px;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: #444;
+    font-size: 13px;
+    cursor: pointer;
+    padding-right: 15px;
+}
+
+/* Date */
+.section-4 .inner-date {
+    gap: 8px;
+}
+
+.section-4 .inner-date input {
+    width: 125px;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: #555;
+    font-size: 13px;
+    font-family: inherit;
+}
+
+.section-4 .inner-date span {
+    color: #777;
+    font-size: 13px;
+}
+
+/* Xóa bộ lọc */
+.section-4 .inner-reset {
+    gap: 7px;
+    border-right: 0;
+    color: #e34b6b;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.section-4 .inner-reset i {
+    font-size: 13px;
+}
+
+
+/* =========================
+   SECTION 5 - ACTION + SEARCH
+   ========================= */
+
+.section-5 {
+    margin-bottom: 20px;
+}
+
+.section-5 .inner-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+/* Nhóm hành động */
+.inner-change-status {
+    display: flex;
+    align-items: center;
+    height: 38px;
+    border: 1px solid #e2e2e8;
+    border-radius: 10px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.inner-change-status .inner-item {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.inner-change-status .inner-item:first-child {
+    border-right: 1px solid #e5e5ea;
+}
+
+/* Select hành động */
+.inner-change-status select {
+    height: 100%;
+    min-width: 115px;
+    padding: 0 12px;
+    border: 0;
+    outline: none;
+    background: #fff;
+    color: #555;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* Nút áp dụng */
+.inner-change-status button {
+    height: 100%;
+    padding: 0 15px;
+    border: 0;
+    background: #fff;
+    color: #d94d78;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.inner-change-status button:hover {
+    background: #fff4f7;
+}
+
+/* =========================
+   SEARCH
+   ========================= */
+
+.inner-search {
+    display: flex;
+    align-items: center;
+    width: 260px;
+    height: 38px;
+    padding: 0 13px;
+    border: 1px solid #e2e2e8;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.inner-search i {
+    margin-right: 10px;
+    color: #222;
+    font-size: 14px;
+}
+
+.inner-search input {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    outline: none;
+    background: transparent;
+    font-size: 13px;
+    color: #333;
+}
+
+.inner-search input::placeholder {
+    color: #999;
+}
+
+/* =========================
+   NÚT TẠO MỚI
+   ========================= */
+
+.inner-button-create {
+    margin-left: auto;
+}
+
+.inner-button-create button {
+    height: 38px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 9px;
+    background: #4d7df3;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.inner-button-create button:hover {
+    background: #3d6fe9;
+    transform: translateY(-1px);
+}
+
+
+/* =========================
+   SECTION 6 - TABLE
+   ========================= */
+
+.section-6 {
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.table-2 {
+    width: 100%;
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid #dedee5;
+    border-radius: 12px;
+}
+
+/* Thanh scrollbar */
+.table-2::-webkit-scrollbar {
+    height: 7px;
+}
+
+.table-2::-webkit-scrollbar-track {
+    background: #f4f4f7;
+    border-radius: 10px;
+}
+
+.table-2::-webkit-scrollbar-thumb {
+    background: #999;
+    border-radius: 10px;
+}
+
+.table-2 table {
+    width: 100%;
+    min-width: 1000px;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+/* Header */
+.table-2 thead {
+    background: #fff;
+}
+
+.table-2 th {
+    height: 40px;
+    padding: 0 14px;
+    border-bottom: 1px solid #dedee5;
+    color: #333;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+}
+
+/* Body */
+.table-2 td {
+    height: 62px;
+    padding: 8px 14px;
+    border-bottom: 1px solid #eeeeF2;
+    color: #444;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.table-2 tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.table-2 tbody tr:hover {
+    background: #fafaff;
+}
+
+/* Căn giữa */
+.table-2 .inner-center {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Checkbox */
+.table-2 .inner-check {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: #4d7df3;
+}
+
+/* Avatar */
+.table-2 .inner-avatar {
+    display: inline-block;
+    width: 42px;
+    height: 42px;
+    border-radius: 7px;
+    object-fit: cover;
+    vertical-align: middle;
+}
+
+/* =========================
+   BADGE TRẠNG THÁI
+   ========================= */
+
+.table-2 .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 78px;
+    height: 27px;
+    padding: 0 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.table-2 .badge-green {
+    color: #15803d;
+    background: #dcfce7;
+}
+
+
+/* =========================
+   NÚT HÀNH ĐỘNG
+   ========================= */
+
+.inner-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+}
+
+.inner-buttons button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.inner-buttons i {
+    font-size: 14px;
+}
+
+/* Edit */
+.inner-buttons .inner-edit {
+    color: #4d7df3;
+    background: #eef3ff;
+}
+
+.inner-buttons .inner-edit:hover {
+    background: #dfe8ff;
+}
+
+/* Delete */
+.inner-buttons .inner-delete {
+    color: #ef4444;
+    background: #fff0f0;
+}
+
+.inner-buttons .inner-delete:hover {
+    background: #ffe0e0;
+}
+
+
+/* =========================
+   SECTION 7 - PHÂN TRANG
+   ========================= */
+
+.section-7 {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 38px;
+    margin-bottom: 20px;
+}
+
+.section-7 .inner-label {
+    color: #555;
+    font-size: 13px;
+}
+
+.section-7 .inner-pagination {
+    min-width: 75px;
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid #dedee5;
+    border-radius: 8px;
+    background: #fff;
+    color: #444;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+/* Tablet */
+@media (max-width: 1000px) {
+
+    .section-4 .inner-wrap {
+        flex-wrap: wrap;
+        height: auto;
+        overflow: visible;
+    }
+
+    .section-4 .inner-item {
+        border-bottom: 1px solid #e5e5ea;
+    }
+
+    .section-4 .inner-reset {
+        border-bottom: 0;
+    }
+
+    .section-5 .inner-wrap {
+        flex-wrap: wrap;
+    }
+
+    .inner-button-create {
+        margin-left: 0;
+    }
+}
+
+
+/* Mobile */
+@media (max-width: 768px) {
+
+    .admin-page-head {
+        margin-bottom: 14px;
+    }
+
+    .admin-page-title {
+        font-size: 22px;
+    }
+
+    .admin-page-subtitle {
+        font-size: 12px;
+    }
+
+    /* Bộ lọc */
+    .section-4 .inner-wrap {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border-radius: 12px;
+    }
+
+    .section-4 .inner-item {
+        width: 100%;
+        min-width: 0;
+        height: 46px;
+        padding: 0 12px;
+        border-right: 1px solid #e5e5ea;
+        border-bottom: 1px solid #e5e5ea;
+        box-sizing: border-box;
+    }
+
+    .section-4 .inner-label {
+        grid-column: span 2;
+    }
+
+    .section-4 .inner-date {
+        grid-column: span 2;
+    }
+
+    .section-4 .inner-reset {
+        grid-column: span 2;
+        border-right: 0;
+        border-bottom: 0;
+    }
+
+    .section-4 select {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .section-4 .inner-date input {
+        width: 100%;
+        min-width: 0;
+    }
+
+
+    /* Action */
+    .section-5 .inner-wrap {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .inner-change-status {
+        width: 100%;
+    }
+
+    .inner-change-status .inner-item:first-child {
+        flex: 1;
+    }
+
+    .inner-change-status select {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .inner-change-status button {
+        padding: 0 12px;
+    }
+
+    .inner-search {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .inner-button-create {
+        grid-column: span 2;
+    }
+
+    .inner-button-create button {
+        width: 100%;
+    }
+
+
+    /* Table */
+    .table-2 {
+        border-radius: 10px;
+    }
+
+    .table-2 table {
+        min-width: 1000px;
+    }
+
+    .table-2 th {
+        height: 42px;
+        padding: 0 12px;
+        font-size: 11px;
+    }
+
+    .table-2 td {
+        height: 60px;
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .table-2 .inner-avatar {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* Pagination */
+    .section-7 {
+        gap: 10px;
+    }
+
+}
+
+
+/* Mobile nhỏ */
+@media (max-width: 480px) {
+
+    .section-4 .inner-wrap {
+        grid-template-columns: 1fr;
+    }
+
+    .section-4 .inner-label,
+    .section-4 .inner-date,
+    .section-4 .inner-reset {
+        grid-column: span 1;
+    }
+
+    .section-5 .inner-wrap {
+        grid-template-columns: 1fr;
+    }
+
+    .inner-search {
+        width: 100%;
+    }
+
+    .inner-button-create {
+        grid-column: span 1;
+    }
+
+    .section-7 {
+        flex-wrap: wrap;
+    }
+}
+
+.inner-button-create a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    padding: 0 18px;
+    border-radius: 9px;
+    background: #4d7df3;
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.inner-button-create a:hover {
+    background: #3d6fe9;
+    color: #fff;
+}
+
+/* =========================================================
+   TOOLBAR - BỘ LỌC + TÌM KIẾM + NÚT TẠO MỚI
+   ========================================================= */
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+/* ---------------------------------------------------------
+   Dropdown
+   --------------------------------------------------------- */
+
+.toolbar select {
+    height: 38px;
+    min-width: 145px;
+    padding: 0 34px 0 14px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+
+    background-color: #fff;
+    color: #374151;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    outline: none;
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.toolbar select:hover {
+    border-color: #cbd5e1;
+}
+
+.toolbar select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+
+/* ---------------------------------------------------------
+   Nút Áp dụng
+   --------------------------------------------------------- */
+
+.toolbar .btn-apply {
+    height: 38px;
+    padding: 0 18px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #fff;
+    color: #e85d75;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.toolbar .btn-apply:hover {
+    background: #fff1f3;
+    color: #d94660;
+}
+
+
+/* ---------------------------------------------------------
+   Ô tìm kiếm
+   --------------------------------------------------------- */
+
+.toolbar .search-box {
+    position: relative;
+    width: 195px;
+}
+
+.toolbar .search-box input {
+    width: 100%;
+    height: 38px;
+
+    box-sizing: border-box;
+
+    padding: 0 14px 0 38px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+
+    background: #fff;
+    color: #374151;
+
+    font-size: 13px;
+
+    outline: none;
+
+    transition: all 0.2s ease;
+}
+
+.toolbar .search-box input::placeholder {
+    color: #9ca3af;
+}
+
+.toolbar .search-box input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Icon kính lúp */
+
+.toolbar .search-box::before {
+    content: "⌕";
+
+    position: absolute;
+    left: 14px;
+    top: 50%;
+
+    transform: translateY(-52%);
+
+    color: #9ca3af;
+    font-size: 18px;
+
+    pointer-events: none;
+}
+
+
+/* ---------------------------------------------------------
+   Nút Tạo mới
+   --------------------------------------------------------- */
+
+.toolbar .btn-create {
+    height: 38px;
+    margin-left: auto;
+
+    padding: 0 20px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #5b8def;
+    color: #fff;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow: 0 2px 5px rgba(91, 141, 239, 0.2);
+
+    transition: all 0.2s ease;
+}
+
+.toolbar .btn-create:hover {
+    background: #4f7fe0;
+    transform: translateY(-1px);
+
+    box-shadow: 0 4px 10px rgba(91, 141, 239, 0.25);
+}
+
+.toolbar .btn-create:active {
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .toolbar {
+        flex-wrap: wrap;
+    }
+
+    .toolbar .search-box {
+        width: 100%;
+        order: 3;
+    }
+
+    .toolbar .btn-create {
+        margin-left: 0;
+    }
+}
+
+/* =========================================================
+   ROLE FORM
+   ========================================================= */
+
+.role-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.role-permission-group {
+    max-width: 520px;
+    margin-bottom: 30px;
+}
+
+.role-permission-box {
+    background: #f7f7fb;
+    border: 1px solid #e5e5ed;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-top: 10px;
+}
+
+.role-permission-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 32px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #555;
+}
+
+.role-permission-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.role-form-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin-top: 24px;
+}
+
+.role-form-actions .admin-btn-primary {
+    min-width: 230px;
+    justify-content: center;
+}
+
+.role-form-actions .admin-btn-outline {
+    border: none;
+    background: transparent;
+    color: #4776e6;
+    text-decoration: underline;
+}
+
+.role-form-actions .admin-btn-outline:hover {
+    background: transparent;
+    color: #315dcc;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .role-form-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .role-permission-group {
+        max-width: 100%;
+    }
+
+}
