@@ -5,6 +5,7 @@ require('dotenv').config();
 const database = require('./config/database.config');
 const clientRoutes = require('./routes/client/index.route');
 const adminRoutes = require('./routes/admin/index.route');
+const errorRoutes = require('./routes/error.route');
 
 const app = express();
 const port = 3000;
@@ -48,3 +49,9 @@ app.use('/admin', adminRoutes);
 app.listen(port, () => {
     console.log(`Website đang chạy trên cổng ${port}`);
 });
+
+// =============================================================
+// 404 - PHẢI ĐẶT CUỐI CÙNG
+// =============================================================
+
+app.use(errorRoutes);

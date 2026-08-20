@@ -1,0 +1,210 @@
+doctype html
+html(lang="vi")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
+    title 404 - Không tìm thấy trang
+
+    // =========================================================
+    // GOOGLE FONT
+    // =========================================================
+
+    link(
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Righteous&display=swap"
+    )
+
+    // =========================================================
+    // FONT AWESOME
+    // =========================================================
+
+    link(
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    )
+
+    // =========================================================
+    // CSS CHUNG
+    // =========================================================
+
+    link(
+      rel="stylesheet"
+      href="/assets/css/style.css"
+    )
+
+    // =========================================================
+    // CSS 404
+    // =========================================================
+
+    link(
+      rel="stylesheet"
+      href="/assets/css/404.css"
+    )
+
+  body
+
+    // =========================================================
+    // HEADER
+    // =========================================================
+
+    include ../partials/header
+
+
+    // =========================================================
+    // 404 PAGE
+    // =========================================================
+
+    main.error-page
+
+      // =======================================================
+      // MOON
+      // =======================================================
+
+      .moon
+
+      div(class="moon__crater moon__crater1")
+      div(class="moon__crater moon__crater2")
+      div(class="moon__crater moon__crater3")
+
+
+      // =======================================================
+      // STARS
+      // =======================================================
+
+      .star.star1
+      .star.star2
+      .star.star3
+      .star.star4
+      .star.star5
+
+
+      // =======================================================
+      // ERROR CONTENT
+      // =======================================================
+
+      .error
+
+        div(class="error__title")
+          | 404
+
+        div(class="error__subtitle")
+          | Hmmm...
+
+        div(class="error__description")
+          | Trang bạn đang tìm kiếm không tồn tại hoặc đã được di chuyển.
+
+
+        // =====================================================
+        // TRANG CHỦ
+        // =====================================================
+
+        a(
+          href="/"
+          class="error__button error__button--active"
+        )
+          | TRANG CHỦ
+
+
+      // =======================================================
+      // ASTRONAUT
+      // =======================================================
+
+      .astronaut
+
+        div(class="astronaut__backpack")
+
+        div(class="astronaut__body")
+
+        div(class="astronaut__body__chest")
+
+
+        // =====================================================
+        // LEFT ARM
+        // =====================================================
+
+        div(class="astronaut__arm-left1")
+
+        div(class="astronaut__arm-left2")
+
+        div(class="astronaut__arm-thumb-left")
+
+
+        // =====================================================
+        // RIGHT ARM
+        // =====================================================
+
+        div(class="astronaut__arm-right1")
+
+        div(class="astronaut__arm-right2")
+
+        div(class="astronaut__arm-thumb-right")
+
+
+        // =====================================================
+        // LEGS
+        // =====================================================
+
+        div(class="astronaut__leg-left")
+
+        div(class="astronaut__leg-right")
+
+
+        // =====================================================
+        // FEET
+        // =====================================================
+
+        div(class="astronaut__foot-left")
+
+        div(class="astronaut__foot-right")
+
+
+        // =====================================================
+        // WRISTS
+        // =====================================================
+
+        div(class="astronaut__wrist-left")
+
+        div(class="astronaut__wrist-right")
+
+
+        // =====================================================
+        // CORD
+        // =====================================================
+
+        div(class="astronaut__cord")
+
+          canvas#cord(
+            width="500"
+            height="500"
+          )
+
+
+        // =====================================================
+        // HEAD
+        // =====================================================
+
+        div(class="astronaut__head")
+
+          canvas#visor(
+            height="60"
+            width="60"
+          )
+
+          div(class="astronaut__head-visor-flare1")
+
+          div(class="astronaut__head-visor-flare2")
+
+
+    // =========================================================
+    // FOOTER
+    // =========================================================
+
+    include ../partials/footer
+
+
+    // =========================================================
+    // 404 JAVASCRIPT
+    // =========================================================
+
+    script(src="/assets/js/404.js")
