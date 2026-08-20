@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../../models/user.model');
 const { generateOtp, sendOtpEmail } = require('../../utils/mailer');
 const requireLogin = require('../../middlewares/requireLogin');
+const changePassword = require('../../controllers/auth/change-password.controller');
 
 // Trang đăng nhập
 router.get('/login', (req, res) => {
@@ -221,49 +222,78 @@ router.get('/change-password', requireLogin, (req, res) => {
 
 router.post('/change-password', requireLogin, async (req, res) => {
     try {
-        const { currentPassword, newPassword, confirmPassword } = req.body;
-
-        const user = await User.findById(req.session.user._id);
-        if (!user) {
-            return res.redirect('/login');
-        }
-
-        const isMatch = await bcrypt.compare(currentPassword, user.password);
-        if (!isMatch) {
-            return res.render('client/pages/change-password', {
-                email: req.session.user.email,
-                error: 'Mật khẩu hiện tại không đúng.'
-            });
-        }
-
-        if (newPassword !== confirmPassword) {
-            return res.render('client/pages/change-password', {
-                email: req.session.user.email,
-                error: 'Mật khẩu xác nhận không khớp.'
-            });
-        }
-
-        if (newPassword.length < 6) {
-            return res.render('client/pages/change-password', {
-                email: req.session.user.email,
-                error: 'Mật khẩu mới phải có ít nhất 6 ký tự.'
-            });
-        }
-
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        user.password = hashedPassword;
-        await user.save();
-
-        res.render('client/pages/change-password', {
-            email: req.session.user.email,
-            success: 'Đổi mật khẩu thành công.'
+        // =============================================================
+        // GỌI CONTROLLER ĐỔI MẬT KHẨU DÙNG CHUNG
+        // =============================================================
+        return await changePassword(req, res, {
+            clientView: 'client/pages/change-password',
+            adminView: 'admin/pages/profile'
         });
+
     } catch (error) {
         console.log(error);
-        res.render('client/pages/change-password', {
-            email: req.session.user.email,
-            error: 'Có lỗi xảy ra, vui lòng thử lại.'
-        });
+
+        // =============================================================
+        // FALLBACK - GIỮ LOGIC CŨ
+        // =============================================================
+
+        try {
+            const { currentPassword, newPassword, confirmPassword } = req.body;
+
+            const user = await User.findById(req.session.user._id);
+
+            if (!user) {
+                return res.redirect('/login');
+            }
+
+            const isMatch = await bcrypt.compare(
+                currentPassword,
+                user.password
+            );
+
+            if (!isMatch) {
+                return res.render('client/pages/change-password', {
+                    email: req.session.user.email,
+                    error: 'Mật khẩu hiện tại không đúng.'
+                });
+            }
+
+            if (newPassword !== confirmPassword) {
+                return res.render('client/pages/change-password', {
+                    email: req.session.user.email,
+                    error: 'Mật khẩu xác nhận không khớp.'
+                });
+            }
+
+            if (newPassword.length < 6) {
+                return res.render('client/pages/change-password', {
+                    email: req.session.user.email,
+                    error: 'Mật khẩu mới phải có ít nhất 6 ký tự.'
+                });
+            }
+
+            const hashedPassword = await bcrypt.hash(
+                newPassword,
+                10
+            );
+
+            user.password = hashedPassword;
+
+            await user.save();
+
+            return res.render('client/pages/change-password', {
+                email: req.session.user.email,
+                success: 'Đổi mật khẩu thành công.'
+            });
+
+        } catch (fallbackError) {
+            console.log(fallbackError);
+
+            return res.render('client/pages/change-password', {
+                email: req.session.user.email,
+                error: 'Có lỗi xảy ra, vui lòng thử lại.'
+            });
+        }
     }
 });
 
