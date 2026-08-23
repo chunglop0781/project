@@ -106,67 +106,46 @@ const registerSchema = Joi.object({
 // =============================================================
 
 const validate = (schema) => {
-
     return (req, res, next) => {
-
         const { error, value } = schema.validate(req.body, {
             abortEarly: false
         });
-
         // =========================================================
         // CÓ LỖI VALIDATION
         // =========================================================
-
         if (error) {
-
             console.log('================ VALIDATION ERROR ================');
-
             console.log(
                 'Message:',
                 error.details[0].message
             );
-
             console.log(
                 'Field:',
                 error.details[0].path.join('.')
             );
-
             console.log(
                 'Type:',
                 error.details[0].type
             );
-
             console.log(
                 'Request body:',
                 req.body
             );
-
             console.log('===================================================');
-
             return res.status(400).json({
-
                 code: 'error',
-
                 message: 'Lỗi xác thực dữ liệu.',
-
                 details: error.details.map(
                     detail => detail.message
                 )
-
             });
-
         }
-
         // =========================================================
         // VALIDATION THÀNH CÔNG
         // =========================================================
-
         req.body = value;
-
         next();
-
     };
-
 };
 
 

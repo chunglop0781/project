@@ -1,11 +1,15 @@
 const bcrypt = require('bcryptjs');
 const User = require('../../models/user.model');
 const { generateOtp, sendOtpEmail } = require('../../utils/mailer');
-const { loginSchema, registerSchema } = require('../../validates/account.validate');
+const {
+    loginSchema,
+    registerSchema
+} = require('../../validates/account.validate');
+const jwt = require('jsonwebtoken');
 
 
 // =============================================================
-// ĐĂNG NHẬP
+// ĐĂNG NHẬP PAGE
 // =============================================================
 
 exports.loginPage = (req, res) => {
@@ -39,7 +43,9 @@ exports.login = async (req, res) => {
         // TÌM TÀI KHOẢN
         // =============================================================
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({
+            email: email
+        });
 
         if (!user) {
             return res.render('client/pages/login', {
@@ -62,6 +68,50 @@ exports.login = async (req, res) => {
                 error: 'Mật khẩu không đúng.'
             });
         }
+
+
+        // =============================================================
+        // KIỂM TRA JWT SECRET
+        // =============================================================
+
+        if (!process.env.JWT_SECRET) {
+
+            console.error(
+                '❌ JWT_SECRET chưa được cấu hình trong file .env'
+            );
+
+            return res.render('client/pages/login', {
+                error: 'Lỗi cấu hình hệ thống. Vui lòng thử lại sau.'
+            });
+        }
+
+
+        // =============================================================
+        // TẠO JWT
+        // =============================================================
+
+        const token = jwt.sign(
+            {
+                id: user._id.toString(),
+                email: user.email
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: '1d'
+            }
+        );
+
+
+        // =============================================================
+        // LƯU JWT VÀO COOKIE
+        // =============================================================
+
+        res.cookie('token', token, {
+            maxAge: 24 * 60 * 60 * 1000, // 1 ngày
+            httpOnly: true,
+            sameSite: 'strict',
+            secure: process.env.NODE_ENV === 'production'
+        });
 
 
         // =============================================================
@@ -88,7 +138,7 @@ exports.login = async (req, res) => {
 
     } catch (error) {
 
-        console.log(error);
+        console.error('❌ LOGIN ERROR:', error);
 
         return res.render('client/pages/login', {
             error: 'Có lỗi xảy ra, vui lòng thử lại.'
@@ -98,7 +148,7 @@ exports.login = async (req, res) => {
 
 
 // =============================================================
-// ĐĂNG KÝ
+// ĐĂNG KÝ PAGE
 // =============================================================
 
 exports.registerPage = (req, res) => {
@@ -106,10 +156,15 @@ exports.registerPage = (req, res) => {
 };
 
 
+// =============================================================
+// ĐĂNG KÝ
+// =============================================================
+
 exports.register = async (req, res) => {
     try {
 
         console.log('🔥🔥🔥 CONTROLLER REGISTER ĐÃ CHẠY');
+
 
         // =============================================================
         // DEBUG - KIỂM TRA DỮ LIỆU FORM
@@ -166,7 +221,7 @@ exports.register = async (req, res) => {
         // =============================================================
 
         const existingUser = await User.findOne({
-            email
+            email: email
         });
 
         if (existingUser) {
@@ -204,10 +259,9 @@ exports.register = async (req, res) => {
 
         return res.redirect('/login');
 
-
     } catch (error) {
 
-        console.log(error);
+        console.error('❌ REGISTER ERROR:', error);
 
         return res.render('client/pages/register', {
             error: 'Có lỗi xảy ra, vui lòng thử lại.'
@@ -217,7 +271,7 @@ exports.register = async (req, res) => {
 
 
 // =============================================================
-// QUÊN MẬT KHẨU
+// QUÊN MẬT KHẨU PAGE
 // =============================================================
 
 exports.forgotPasswordPage = (req, res) => {
@@ -225,11 +279,18 @@ exports.forgotPasswordPage = (req, res) => {
 };
 
 
+// =============================================================
+// QUÊN MẬT KHẨU
+// =============================================================
+
 exports.forgotPassword = async (req, res) => {
     try {
+
         const { email } = req.body;
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({
+            email: email
+        });
 
         if (!user) {
             return res.render('client/pages/forgot-password', {
@@ -237,22 +298,40 @@ exports.forgotPassword = async (req, res) => {
             });
         }
 
-        // Tạo OTP
+
+        // =============================================================
+        // TẠO OTP
+        // =============================================================
+
         const otp = generateOtp();
 
-        // Lưu thông tin reset password vào session
+
+        // =============================================================
+        // LƯU OTP VÀO SESSION
+        // =============================================================
+
         req.session.resetEmail = email;
         req.session.otpCode = otp;
         req.session.otpExpires = Date.now() + 5 * 60 * 1000;
         req.session.otpVerified = false;
 
-        // Gửi OTP qua email
+
+        // =============================================================
+        // GỬI OTP QUA EMAIL
+        // =============================================================
+
         await sendOtpEmail(email, otp);
+
+
+        // =============================================================
+        // CHUYỂN SANG TRANG XÁC MINH OTP
+        // =============================================================
 
         return res.redirect('/verify-otp');
 
     } catch (error) {
-        console.log(error);
+
+        console.error('❌ FORGOT PASSWORD ERROR:', error);
 
         return res.render('client/pages/forgot-password', {
             error: 'Có lỗi xảy ra, vui lòng thử lại.'
@@ -262,7 +341,7 @@ exports.forgotPassword = async (req, res) => {
 
 
 // =============================================================
-// XÁC MINH OTP
+// XÁC MINH OTP PAGE
 // =============================================================
 
 exports.verifyOtpPage = (req, res) => {
@@ -277,10 +356,19 @@ exports.verifyOtpPage = (req, res) => {
 };
 
 
+// =============================================================
+// XÁC MINH OTP
+// =============================================================
+
 exports.verifyOtp = (req, res) => {
+
     const { otp } = req.body;
 
-    // Không có session reset password
+
+    // =============================================================
+    // KIỂM TRA SESSION
+    // =============================================================
+
     if (
         !req.session.resetEmail ||
         !req.session.otpCode
@@ -288,23 +376,37 @@ exports.verifyOtp = (req, res) => {
         return res.redirect('/forgot-password');
     }
 
-    // Kiểm tra hết hạn
+
+    // =============================================================
+    // KIỂM TRA HẾT HẠN
+    // =============================================================
+
     if (Date.now() > req.session.otpExpires) {
+
         return res.render('client/pages/verify-otp', {
             email: req.session.resetEmail,
             error: 'Mã OTP đã hết hạn.'
         });
     }
 
-    // Kiểm tra OTP
+
+    // =============================================================
+    // KIỂM TRA OTP
+    // =============================================================
+
     if (otp !== req.session.otpCode) {
+
         return res.render('client/pages/verify-otp', {
             email: req.session.resetEmail,
             error: 'Mã OTP không đúng.'
         });
     }
 
-    // OTP chính xác
+
+    // =============================================================
+    // OTP CHÍNH XÁC
+    // =============================================================
+
     req.session.otpVerified = true;
 
     return res.redirect('/otp-password');
@@ -312,7 +414,7 @@ exports.verifyOtp = (req, res) => {
 
 
 // =============================================================
-// ĐẶT MẬT KHẨU MỚI SAU KHI XÁC MINH OTP
+// ĐẶT MẬT KHẨU MỚI PAGE
 // =============================================================
 
 exports.otpPasswordPage = (req, res) => {
@@ -330,8 +432,16 @@ exports.otpPasswordPage = (req, res) => {
 };
 
 
+// =============================================================
+// ĐẶT MẬT KHẨU MỚI
+// =============================================================
+
 exports.otpPassword = async (req, res) => {
     try {
+
+        // =============================================================
+        // KIỂM TRA SESSION
+        // =============================================================
 
         if (
             !req.session.resetEmail ||
@@ -340,34 +450,53 @@ exports.otpPassword = async (req, res) => {
             return res.redirect('/forgot-password');
         }
 
+
         const {
             password,
             confirmPassword
         } = req.body;
 
-        // Kiểm tra xác nhận mật khẩu
+
+        // =============================================================
+        // KIỂM TRA MẬT KHẨU XÁC NHẬN
+        // =============================================================
+
         if (password !== confirmPassword) {
+
             return res.render('client/pages/otp-password', {
                 email: req.session.resetEmail,
                 error: 'Mật khẩu xác nhận không khớp.'
             });
         }
 
-        // Kiểm tra độ dài
-        if (password.length < 6) {
+
+        // =============================================================
+        // KIỂM TRA ĐỘ DÀI MẬT KHẨU
+        // =============================================================
+
+        if (!password || password.length < 6) {
+
             return res.render('client/pages/otp-password', {
                 email: req.session.resetEmail,
                 error: 'Mật khẩu phải có ít nhất 6 ký tự.'
             });
         }
 
-        // Hash password
+
+        // =============================================================
+        // HASH PASSWORD
+        // =============================================================
+
         const hashedPassword = await bcrypt.hash(
             password,
             10
         );
 
-        // Cập nhật password
+
+        // =============================================================
+        // CẬP NHẬT PASSWORD
+        // =============================================================
+
         await User.findOneAndUpdate(
             {
                 email: req.session.resetEmail
@@ -377,16 +506,26 @@ exports.otpPassword = async (req, res) => {
             }
         );
 
-        // Xóa session tạm
+
+        // =============================================================
+        // XÓA SESSION TẠM
+        // =============================================================
+
         delete req.session.resetEmail;
         delete req.session.otpCode;
         delete req.session.otpExpires;
         delete req.session.otpVerified;
 
+
+        // =============================================================
+        // CHUYỂN VỀ LOGIN
+        // =============================================================
+
         return res.redirect('/login');
 
     } catch (error) {
-        console.log(error);
+
+        console.error('❌ OTP PASSWORD ERROR:', error);
 
         return res.render('client/pages/otp-password', {
             email: req.session.resetEmail,
@@ -397,11 +536,16 @@ exports.otpPassword = async (req, res) => {
 
 
 // =============================================================
-// ĐỔI MẬT KHẨU - CLIENT
+// ĐỔI MẬT KHẨU - CLIENT PAGE
 // =============================================================
 
 exports.changePasswordPage = (req, res) => {
-    res.render('client/pages/change-password', {
+
+    if (!req.session.user) {
+        return res.redirect('/login');
+    }
+
+    return res.render('client/pages/change-password', {
         email: req.session.user.email
     });
 };
@@ -413,14 +557,27 @@ exports.changePasswordPage = (req, res) => {
 
 exports.logout = (req, res) => {
 
+    // =============================================================
+    // XÓA JWT COOKIE
+    // =============================================================
+
+    res.clearCookie('token', {
+        httpOnly: true,
+        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production'
+    });
+
+
+    // =============================================================
+    // XÓA SESSION
+    // =============================================================
+
     req.session.destroy((error) => {
 
         if (error) {
-            console.log(error);
+            console.error('❌ LOGOUT ERROR:', error);
         }
 
         return res.redirect('/login');
     });
 };
-
-
