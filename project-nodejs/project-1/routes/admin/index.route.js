@@ -10,9 +10,16 @@ const newsRoutes = require('./news.route');
 const settingsRoutes = require('./settings.route');
 const profileRoutes = require('./profile.route'); // MỚI THÊM
 
-// login/logout KHÔNG qua requireAdmin (không thì lặp redirect vô hạn)
-router.use('/', loginRoutes);
+// Không cho trình duyệt cache các trang admin
+router.use((req, res, next) => {
+    res.setHeader('Cache-Control', 'no-store');
+    next();
+});
 
+// login/logout KHÔNG qua requireAdmin
+// (không thì lặp redirect vô hạn)
+
+router.use('/', loginRoutes);
 router.use('/', dashboardRoutes);
 router.use('/tours', toursRoutes);
 router.use('/categories', categoriesRoutes);
@@ -20,6 +27,6 @@ router.use('/orders', ordersRoutes);
 router.use('/customers', customersRoutes);
 router.use('/news', newsRoutes);
 router.use('/', settingsRoutes); // route đã tự có prefix /settings bên trong
-router.use('/', profileRoutes); // MỚI THÊM - route đã tự có prefix /profile bên trong
+router.use('/', profileRoutes); // route đã tự có prefix /profile bên trong
 
 module.exports = router;

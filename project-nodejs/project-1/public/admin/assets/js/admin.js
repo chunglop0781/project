@@ -295,3 +295,89 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
+
+/* =============================================================
+   8. XỬ LÝ ĐĂNG NHẬP ADMIN
+   Gửi email + password + rememberPassword bằng fetch JSON
+============================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const loginForm = document.querySelector("#adminLoginForm");
+
+    if (!loginForm) {
+        return;
+    }
+
+    loginForm.addEventListener("submit", async function (event) {
+
+        // Ngăn form submit theo cách mặc định
+        event.preventDefault();
+
+        const emailInput = loginForm.querySelector('[name="email"]');
+        const passwordInput = loginForm.querySelector('[name="password"]');
+        const rememberPasswordInput = loginForm.querySelector('[name="rememberPassword"]');
+
+        if (!emailInput || !passwordInput) {
+            return;
+        }
+
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        const rememberPassword = rememberPasswordInput
+            ? rememberPasswordInput.checked
+            : false;
+
+        const dataFinal = {
+            email: email,
+            password: password,
+            rememberPassword: rememberPassword
+        };
+
+        try {
+
+            const response = await fetch("/login", {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(dataFinal)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.message || "Đăng nhập thất bại.");
+                return;
+            }
+
+            // Đăng nhập thành công
+            if (data.success) {
+
+                if (data.redirect) {
+                    window.location.href = data.redirect;
+                    return;
+                }
+
+                // Nếu backend không trả redirect
+                window.location.href = "/admin";
+
+                return;
+            }
+
+            alert(data.message || "Email hoặc mật khẩu không chính xác.");
+
+        } catch (error) {
+
+            console.error("LOGIN ERROR:", error);
+
+            alert("Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.");
+
+        }
+
+    });
+
+});

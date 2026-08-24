@@ -1,0 +1,134 @@
+
+doctype html
+html(lang="vi")
+
+  head
+
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
+    title= (typeof pageTitle !== "undefined" && pageTitle ? pageTitle + " - " : "") + "Xác Minh OTP Đăng Ký - 28 Travel"
+
+    link(rel="icon" href="/assets/image/logo.png" type="image/png")
+
+    link(rel="preconnect" href="https://fonts.googleapis.com")
+    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css")
+
+    link(rel="stylesheet" href="/assets/css/style.css")
+
+
+  body
+
+    include ../../partials/header.pug
+
+
+    // =========================================================
+    // TRANG XÁC MINH OTP ĐĂNG KÝ
+    // =========================================================
+
+    main.auth-page
+
+      .auth-wrapper
+
+        .auth-card
+
+          .auth-card-head
+
+            h1.auth-title Xác Minh OTP
+
+            p.auth-subtitle
+              | Nhập mã OTP đã được gửi tới email của bạn.
+
+
+          // =====================================================
+          // THÔNG BÁO LỖI
+          // =====================================================
+
+          if typeof error !== "undefined" && error
+
+            .auth-alert.auth-alert-error
+
+              i.fas.fa-circle-exclamation
+
+              span= error
+
+
+          // =====================================================
+          // THÔNG BÁO THÀNH CÔNG
+          // =====================================================
+
+          if typeof success !== "undefined" && success
+
+            .auth-alert.auth-alert-success
+
+              i.fas.fa-circle-check
+
+              span= success
+
+
+          // =====================================================
+          // FORM XÁC MINH OTP
+          // =====================================================
+
+          form#verifyRegisterOtpForm.auth-form(
+            action="/verify-register-otp"
+            method="POST"
+            novalidate
+          )
+
+            .auth-form-group
+
+              label(for="verify-register-otp-code")
+                | Mã OTP
+
+              .auth-input-icon
+
+                i.fas.fa-shield-halved
+
+                input#verify-register-otp-code(
+                  type="text"
+                  name="otp"
+                  placeholder="Nhập mã 6 chữ số"
+                  inputmode="numeric"
+                  pattern="[0-9]{6}"
+                  maxlength="6"
+                  minlength="6"
+                  autocomplete="one-time-code"
+                  required
+                )
+
+
+            span#verifyRegisterOtpFormError.auth-form-error
+
+
+            button.auth-submit(type="submit")
+
+              i.fas.fa-circle-check
+
+              | Xác Nhận
+
+
+          // =====================================================
+          // GỬI LẠI OTP
+          // =====================================================
+
+          p.auth-switch
+            | Chưa nhận được mã?
+            a(href="/register") Đăng ký lại
+
+
+          // =====================================================
+          // ĐĂNG NHẬP
+          // =====================================================
+
+          p.auth-switch
+            | Bạn đã có tài khoản?
+            a(href="/login") Đăng nhập
+
+
+    // =========================================================
+    // JAVASCRIPT
+    // =========================================================
+
+    script(src="/assets/js/script.js")
+

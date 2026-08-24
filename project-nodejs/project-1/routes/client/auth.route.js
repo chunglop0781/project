@@ -1,3 +1,4 @@
+
 const router = require('express').Router();
 
 const requireLogin = require('../../middlewares/requireLogin');
@@ -42,9 +43,23 @@ router.post(
         next();
     },
 
-
     validate(registerSchema),
     accountController.register
+);
+
+
+// =============================================================
+// XÁC MINH OTP ĐĂNG KÝ
+// =============================================================
+
+router.get(
+    '/verify-register-otp',
+    accountController.verifyRegisterOtpPage
+);
+
+router.post(
+    '/verify-register-otp',
+    accountController.verifyRegisterOtp
 );
 
 
@@ -126,3 +141,4 @@ router.get(
 
 
 module.exports = router;
+

@@ -17,9 +17,17 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.9.2",
     "multer": "^2.2.0",
+    "nodemailer": "^9.0.5",
     "nodemon": "^3.1.14",
     "pug": "^3.0.4",
     "resend": "^6.20.0",
     "sib-api-v3-sdk": "^8.5.0"
-  }
+  },
+  "version": "1.0.0",
+  "description": "> Một project Node.js + Express + Pug được xây dựng trong quá trình học Backend. > > Đây không phải một hệ thống thương mại điện tử hoàn chỉnh, mà là project thực hành để ôn lại kiến thức Node.js, Express, Pug, MongoDB/Mongoose, JavaScript, HTML và CSS. > > Nói đơn giản: > > **Học đến đâu → code đến đó → lỗi đâu → sửa đó → cuối cùng thành một cái website du lịch.** 🥹",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
 }
