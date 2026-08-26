@@ -14,14 +14,16 @@ const accountController = require('../../controllers/auth/account.controller');
 const forgotPasswordController = require('../../controllers/auth/forgot-password.controller');
 
 // =============================================================
-// VALIDATION
+// VALIDATION - IMPORT ĐÚNG CÁCH
 // =============================================================
 
 const {
     validate,
     loginSchema,
     registerSchema,
-    changePasswordSchema
+    changePasswordSchema,
+    forgotPasswordSchema,
+    verifyOtpSchema
 } = require('../../validates/account.validate');
 
 // =============================================================
@@ -66,7 +68,7 @@ router.post('/otp-password', forgotPasswordController.otpPassword);
 router.post('/resend-otp', forgotPasswordController.resendOtp);
 
 // =============================================================
-// ✅ CHANGE PASSWORD - THÊM VÀO ĐÂY
+// CHANGE PASSWORD
 // =============================================================
 
 router.get('/change-password', requireLogin, accountController.changePasswordPage);
@@ -79,15 +81,7 @@ router.post('/change-password', requireLogin, validate(changePasswordSchema), ac
 router.get('/logout', accountController.logout);
 
 // =============================================================
-// TEST SESSION
+// EXPORT
 // =============================================================
-
-router.get('/test-session', (req, res) => {
-    res.json({
-        sessionId: req.session.id,
-        hasUser: !!req.session.user,
-        user: req.session.user
-    });
-});
 
 module.exports = router;

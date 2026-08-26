@@ -1,193 +1,283 @@
 doctype html
 html(lang="vi")
 
-  head
+    head
 
-    meta(charset="UTF-8")
-    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+        meta(charset="UTF-8")
 
-    title= (pageTitle ? pageTitle + " - " : "") + "Đăng Ký - Website Du Lịch"
+        meta(
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+        )
 
-    link(rel="icon" href="/assets/image/logo.png" type="image/png")
+        title= (pageTitle ? pageTitle + " - " : "") + "Đăng Ký - Website Du Lịch"
 
-    link(rel="preconnect" href="https://fonts.googleapis.com")
-    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css")
+        link(
+            rel="icon"
+            href="/assets/image/logo.png"
+            type="image/png"
+        )
 
-    link(rel="stylesheet" href="/assets/css/style.css")
+        link(
+            rel="preconnect"
+            href="https://fonts.googleapis.com"
+        )
 
+        link(
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        )
 
-  body
+        link(
+            rel="stylesheet"
+            href="/assets/css/style.css"
+        )
 
-    include ../../partials/header.pug
 
+    body
 
-    // =========================================================
-    // TRANG ĐĂNG KÝ
-    // =========================================================
+        include ../../partials/header.pug
 
-    main.auth-page
 
-      .auth-wrapper
+        main.auth-page
 
-        .auth-card
+            .auth-wrapper
 
-          .auth-card-head
+                .auth-card
 
-            h1.auth-title Đăng Ký Tài Khoản
+                    .auth-card-head
 
-            p.auth-subtitle Tạo tài khoản để đặt tour nhanh hơn và theo dõi đơn hàng
+                        h1.auth-title Đăng Ký
 
+                        p.auth-subtitle
+                            | Tạo tài khoản mới
 
-          // -------------------------------------------------------
-          // THÔNG BÁO LỖI (từ server, sau khi kết nối MongoDB)
-          // -------------------------------------------------------
 
-          if typeof error !== "undefined" && error
+                    // =====================================================
+                    // VALIDATION ERROR
+                    // =====================================================
 
-            .auth-alert.auth-alert-error
+                    if validationErrors && validationErrors.length
 
-              i.fas.fa-circle-exclamation
+                        .auth-alert.auth-alert-error
 
-              span= error
+                            i.fas.fa-circle-exclamation
 
+                            .auth-validation-list
 
-          // -------------------------------------------------------
-          // FORM ĐĂNG KÝ
-          //
-          // TODO (backend / MongoDB):
-          //   - action="/register" method="POST" gửi lên server
-          //   - Server nhận req.body.fullName, email, phone, password
-          //   - Kiểm tra email đã tồn tại chưa (User.findOne({ email }))
-          //   - Hash password (bcrypt.hash) trước khi lưu
-          //   - Tạo user mới (User.create({...})) trong MongoDB
-          //   - Đăng nhập luôn hoặc redirect về /login kèm thông báo thành công
-          //   - Nếu lỗi: render lại register.pug kèm biến `error`
-          // -------------------------------------------------------
+                                each message in validationErrors
 
-          form#registerForm.auth-form(action="/register" method="POST" novalidate)
+                                    div= message
 
-            .auth-form-group
 
-              label(for="register-fullname") Họ và tên
+                    // =====================================================
+                    // ERROR THÔNG THƯỜNG
+                    // =====================================================
 
-              .auth-input-icon
+                    if typeof error !== "undefined" && error
 
-                i.fas.fa-user
+                        .auth-alert.auth-alert-error
 
-                input#register-fullname(
-                  type="text"
-                  name="fullName"
-                  placeholder="Nhập họ và tên"
-                  autocomplete="name"
-                  required
-                )
+                            i.fas.fa-circle-exclamation
 
+                            span= error
 
-            .auth-form-group
 
-              label(for="register-email") Email
+                    // =====================================================
+                    // FORM
+                    // =====================================================
 
-              .auth-input-icon
+                    form#registerForm.auth-form(
+                        action="/register"
+                        method="POST"
+                        novalidate
+                    )
 
-                i.fas.fa-envelope
 
-                input#register-email(
-                  type="email"
-                  name="email"
-                  placeholder="Nhập email của bạn"
-                  autocomplete="email"
-                  required
-                )
+                        // =================================================
+                        // HỌ VÀ TÊN
+                        // =================================================
 
+                        .auth-form-group
 
-            .auth-form-group
+                            label(
+                                for="register-fullName"
+                            ) Họ và tên
 
-              label(for="register-phone") Số điện thoại
+                            .auth-input-icon
 
-              .auth-input-icon
+                                i.fas.fa-user
 
-                i.fas.fa-phone
+                                input#register-fullName(
+                                    type="text"
+                                    name="fullName"
+                                    placeholder="Nhập họ và tên"
+                                    autocomplete="name"
+                                    value=formData && formData.fullName ? formData.fullName : ""
+                                )
 
-                input#register-phone(
-                  type="tel"
-                  name="phone"
-                  placeholder="Nhập số điện thoại"
-                  autocomplete="tel"
-                  required
-                )
 
+                        // =================================================
+                        // EMAIL
+                        // =================================================
 
-            .auth-form-group
+                        .auth-form-group
 
-              label(for="register-password") Mật khẩu
+                            label(
+                                for="register-email"
+                            ) Email
 
-              .auth-input-icon
+                            .auth-input-icon
 
-                i.fas.fa-lock
+                                i.fas.fa-envelope
 
-                input#register-password(
-                  type="password"
-                  name="password"
-                  placeholder="Tối thiểu 6 ký tự"
-                  autocomplete="new-password"
-                  minlength="6"
-                  required
-                )
+                                input#register-email(
+                                    type="email"
+                                    name="email"
+                                    placeholder="Nhập email"
+                                    autocomplete="email"
+                                    value=formData && formData.email ? formData.email : ""
+                                )
 
-                button.auth-password-toggle(type="button" aria-label="Hiện mật khẩu")
-                  i.fas.fa-eye
 
+                        // =================================================
+                        // SỐ ĐIỆN THOẠI
+                        // =================================================
 
-            .auth-form-group
+                        .auth-form-group
 
-              label(for="register-confirm-password") Xác nhận mật khẩu
+                            label(
+                                for="register-phone"
+                            ) Số điện thoại
 
-              .auth-input-icon
+                            .auth-input-icon
 
-                i.fas.fa-lock
+                                i.fas.fa-phone
 
-                input#register-confirm-password(
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="Nhập lại mật khẩu"
-                  autocomplete="new-password"
-                  minlength="6"
-                  required
-                )
+                                input#register-phone(
+                                    type="tel"
+                                    name="phone"
+                                    placeholder="Nhập số điện thoại"
+                                    autocomplete="tel"
+                                    value=formData && formData.phone ? formData.phone : ""
+                                )
 
-                button.auth-password-toggle(type="button" aria-label="Hiện mật khẩu")
-                  i.fas.fa-eye
 
+                        // =================================================
+                        // MẬT KHẨU
+                        // =================================================
 
-            .auth-form-row
+                        .auth-form-group
 
-              label.auth-checkbox
+                            label(
+                                for="register-password"
+                            ) Mật khẩu
 
-                input(type="checkbox" name="agreeTerms" required)
+                            .auth-input-icon
 
-                span.auth-checkbox-box
+                                i.fas.fa-lock
 
-                | Tôi đồng ý với
-                a(href="/terms") điều khoản sử dụng
+                                input#register-password(
+                                    type="password"
+                                    name="password"
+                                    placeholder="Nhập mật khẩu"
+                                    autocomplete="new-password"
+                                )
 
+                                button.auth-password-toggle(
+                                    type="button"
+                                    aria-label="Hiện mật khẩu"
+                                )
 
-            span#registerFormError.auth-form-error
+                                    i.fas.fa-eye
 
 
-            button.auth-submit(type="submit")
+                        // =================================================
+                        // XÁC NHẬN MẬT KHẨU
+                        // =================================================
 
-              i.fas.fa-user-plus
+                        .auth-form-group
 
-              | Đăng Ký
+                            label(
+                                for="register-confirmPassword"
+                            ) Xác nhận mật khẩu
 
+                            .auth-input-icon
 
-          p.auth-switch
-            | Đã có tài khoản?
-            a(href="/login") Đăng nhập ngay
+                                i.fas.fa-lock
 
+                                input#register-confirmPassword(
+                                    type="password"
+                                    name="confirmPassword"
+                                    placeholder="Nhập lại mật khẩu"
+                                    autocomplete="new-password"
+                                )
 
-    // =========================================================
-    // JS
-    // =========================================================
+                                button.auth-password-toggle(
+                                    type="button"
+                                    aria-label="Hiện mật khẩu"
+                                )
 
-    script(src="/assets/js/script.js")
+                                    i.fas.fa-eye
+
+
+                        // =================================================
+                        // ĐIỀU KHOẢN
+                        // =================================================
+
+                        label.auth-checkbox
+
+                            input(
+                                type="checkbox"
+                                name="agreeTerms"
+                                value="on"
+                                checked=formData && formData.agreeTerms === "on"
+                            )
+
+                            span.auth-checkbox-box
+
+                            | Tôi đồng ý với
+
+                            a(
+                                href="/terms"
+                            ) điều khoản sử dụng
+
+
+                        // =================================================
+                        // ERROR FORM
+                        // =================================================
+
+                        span#registerFormError.auth-form-error
+
+
+                        // =================================================
+                        // SUBMIT
+                        // =================================================
+
+                        button.auth-submit(
+                            type="submit"
+                        )
+
+                            i.fas.fa-user-plus
+
+                            | Đăng Ký
+
+
+                    // =====================================================
+                    // LOGIN
+                    // =====================================================
+
+                    p.auth-switch
+
+                        | Đã có tài khoản?
+
+                        a(href="/login") Đăng nhập
+
+
+        script(
+            src="/assets/js/script.js"
+        )
+
+        script(
+            src="/assets/js/account.js"
+        )

@@ -15,6 +15,7 @@
     "express-session": "^1.19.0",
     "joi": "^18.2.5",
     "jsonwebtoken": "^9.0.3",
+    "method-override": "^3.0.0",
     "mongoose": "^9.9.2",
     "multer": "^2.2.0",
     "nodemailer": "^9.0.5",

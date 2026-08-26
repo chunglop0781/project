@@ -6,12 +6,63 @@
 
 module.exports = function requireAdmin(req, res, next) {
 
-    const user = req.session.user;
+    console.log(
+        '========================================'
+    );
 
-    if (!user || user.role !== 'admin') {
+    console.log(
+        '🔥 REQUIRE ADMIN'
+    );
+
+    console.log(
+        'URL:',
+        req.originalUrl
+    );
+
+    console.log(
+        'SESSION ID:',
+        req.sessionID
+    );
+
+    console.log(
+        'SESSION USER:',
+        req.session.user
+    );
+
+    console.log(
+        'ROLE:',
+        req.session.user?.role
+    );
+
+    console.log(
+        '========================================'
+    );
+
+
+    const user =
+        req.session.user;
+
+
+    if (
+        !user ||
+        user.role !== 'admin'
+    ) {
+
+        console.log(
+            '❌ ADMIN AUTH FAILED'
+        );
+
         // TODO: đổi path này nếu route đăng nhập admin của bạn khác
-        return res.redirect('/admin/login');
+        return res.redirect(
+            '/admin/login'
+        );
     }
+
+
+    console.log(
+        '✅ ADMIN AUTH SUCCESS'
+    );
+
 
     next();
 

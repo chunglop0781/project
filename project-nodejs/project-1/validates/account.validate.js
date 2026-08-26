@@ -1,276 +1,193 @@
 const Joi = require('joi');
 
-
-
 // =============================================================
-// ĐĂNG NHẬP
+// LOGIN SCHEMA
 // =============================================================
 
 const loginSchema = Joi.object({
-
     email: Joi.string()
-        .trim()
         .email()
         .required()
         .messages({
-
-            'string.empty': 'Email không được để trống.',
+            'string.empty': 'Vui lòng nhập email.',
             'string.email': 'Email không đúng định dạng.',
             'any.required': 'Vui lòng nhập email.'
-
         }),
-
     password: Joi.string()
-        .min(8)
         .required()
-        .custom((value, helpers) => {
-
-            // =========================================================
-            // KIỂM TRA CHỮ IN HOA
-            // =========================================================
-
-            if (!/[A-Z]/.test(value)) {
-                return helpers.error('password.uppercase');
-            }
-
-
-            // =========================================================
-            // KIỂM TRA CHỮ THƯỜNG
-            // =========================================================
-
-            if (!/[a-z]/.test(value)) {
-                return helpers.error('password.lowercase');
-            }
-
-
-            // =========================================================
-            // KIỂM TRA CHỮ SỐ
-            // =========================================================
-
-            if (!/[0-9]/.test(value)) {
-                return helpers.error('password.number');
-            }
-
-
-            // =========================================================
-            // KIỂM TRA KÝ TỰ ĐẶC BIỆT
-            // =========================================================
-
-            if (!/[^A-Za-z0-9]/.test(value)) {
-                return helpers.error('password.special');
-            }
-
-
-            return value;
-
-        })
         .messages({
-
-            'string.empty': 'Vui lòng nhập mật khẩu!',
-            'string.min': 'Mật khẩu phải chứa ít nhất 8 ký tự!',
-
-            'password.uppercase':
-                'Mật khẩu phải chứa ít nhất một chữ cái in hoa!',
-
-            'password.lowercase':
-                'Mật khẩu phải chứa ít nhất một chữ cái thường!',
-
-            'password.number':
-                'Mật khẩu phải chứa ít nhất một chữ số!',
-
-            'password.special':
-                'Mật khẩu phải chứa ít nhất một ký tự đặc biệt!'
-
+            'string.empty': 'Vui lòng nhập mật khẩu.',
+            'any.required': 'Vui lòng nhập mật khẩu.'
         }),
-
     rememberPassword: Joi.boolean()
-
+        .default(false)
 });
 
-
-
 // =============================================================
-// ĐĂNG KÝ
+// REGISTER SCHEMA
 // =============================================================
 
 const registerSchema = Joi.object({
-
     fullName: Joi.string()
-
         .trim()
-
         .min(2)
-
-        .max(100)
-
         .required()
-
         .messages({
-
-            'string.empty': 'Họ và tên không được để trống.',
-            'string.min': 'Họ và tên phải có ít nhất 2 ký tự.',
-            'string.max': 'Họ và tên không được vượt quá 100 ký tự.',
-            'any.required': 'Vui lòng nhập họ và tên.'
-
+            'string.empty': 'Vui lòng nhập họ tên.',
+            'string.min': 'Họ tên phải có ít nhất 2 ký tự.',
+            'any.required': 'Vui lòng nhập họ tên.'
         }),
-
     email: Joi.string()
-
-        .trim()
-
         .email()
-
         .required()
-
         .messages({
-
-            'string.empty': 'Email không được để trống.',
+            'string.empty': 'Vui lòng nhập email.',
             'string.email': 'Email không đúng định dạng.',
             'any.required': 'Vui lòng nhập email.'
-
         }),
-
     phone: Joi.string()
-
         .trim()
-
-        .pattern(/^(0|\+84)[0-9]{9}$/)
-
-        .required()
-
+        .allow('')  // ✅ Cho phép trống
+        .pattern(/^[0-9]{10,11}$/)
         .messages({
-
-            'string.empty': 'Số điện thoại không được để trống.',
-            'string.pattern.base': 'Số điện thoại không đúng định dạng.',
-            'any.required': 'Vui lòng nhập số điện thoại.'
-
+            'string.pattern.base': 'Số điện thoại không hợp lệ (phải có 10-11 chữ số).'
         }),
-
     password: Joi.string()
-
         .min(6)
-
-        .max(30)
-
         .required()
-
         .messages({
-
-            'string.empty': 'Mật khẩu không được để trống.',
+            'string.empty': 'Vui lòng nhập mật khẩu.',
             'string.min': 'Mật khẩu phải có ít nhất 6 ký tự.',
-            'string.max': 'Mật khẩu không được vượt quá 30 ký tự.',
             'any.required': 'Vui lòng nhập mật khẩu.'
-
         }),
-
     confirmPassword: Joi.string()
-
-        .required()
-
         .valid(Joi.ref('password'))
-
-        .messages({
-
-            'string.empty': 'Vui lòng nhập lại mật khẩu.',
-            'any.only': 'Mật khẩu xác nhận không khớp.',
-            'any.required': 'Vui lòng nhập lại mật khẩu.'
-
-        }),
-
-    agreeTerms: Joi.any()
-
-        .valid('on')
-
         .required()
-
         .messages({
-
-            'any.only': 'Bạn phải đồng ý với điều khoản sử dụng.',
-            'any.required': 'Bạn phải đồng ý với điều khoản sử dụng.'
-
+            'any.only': 'Mật khẩu xác nhận không khớp.',
+            'any.required': 'Vui lòng xác nhận mật khẩu.'
+        }),
+    agreeTerms: Joi.string()
+        .valid('on')
+        .required()
+        .messages({
+            'any.only': 'Bạn phải đồng ý với điều khoản và điều kiện.',
+            'any.required': 'Bạn phải đồng ý với điều khoản và điều kiện.'
         })
-
 });
 
+// =============================================================
+// CHANGE PASSWORD SCHEMA
+// =============================================================
 
+const changePasswordSchema = Joi.object({
+    currentPassword: Joi.string()
+        .required()
+        .messages({
+            'string.empty': 'Vui lòng nhập mật khẩu hiện tại.',
+            'any.required': 'Vui lòng nhập mật khẩu hiện tại.'
+        }),
+    newPassword: Joi.string()
+        .min(6)
+        .required()
+        .messages({
+            'string.empty': 'Vui lòng nhập mật khẩu mới.',
+            'string.min': 'Mật khẩu mới phải có ít nhất 6 ký tự.',
+            'any.required': 'Vui lòng nhập mật khẩu mới.'
+        }),
+    confirmPassword: Joi.string()
+        .valid(Joi.ref('newPassword'))
+        .required()
+        .messages({
+            'any.only': 'Mật khẩu xác nhận không khớp.',
+            'any.required': 'Vui lòng xác nhận mật khẩu mới.'
+        })
+});
 
 // =============================================================
-// MIDDLEWARE VALIDATE
+// FORGOT PASSWORD SCHEMA
+// =============================================================
+
+const forgotPasswordSchema = Joi.object({
+    email: Joi.string()
+        .email()
+        .required()
+        .messages({
+            'string.empty': 'Vui lòng nhập email.',
+            'string.email': 'Email không đúng định dạng.',
+            'any.required': 'Vui lòng nhập email.'
+        })
+});
+
+// =============================================================
+// VERIFY OTP SCHEMA
+// =============================================================
+
+const verifyOtpSchema = Joi.object({
+    otp: Joi.string()
+        .length(6)
+        .pattern(/^[0-9]{6}$/)
+        .required()
+        .messages({
+            'string.empty': 'Vui lòng nhập mã OTP.',
+            'string.length': 'Mã OTP phải có 6 chữ số.',
+            'string.pattern.base': 'Mã OTP phải là 6 chữ số.',
+            'any.required': 'Vui lòng nhập mã OTP.'
+        })
+});
+
+// =============================================================
+// VALIDATE MIDDLEWARE
 // =============================================================
 
 const validate = (schema) => {
+    // ✅ KIỂM TRA SCHEMA CÓ TỒN TẠI KHÔNG
+    if (!schema) {
+        throw new Error('Schema is required for validation');
+    }
 
     return (req, res, next) => {
-
-        const { error, value } = schema.validate(req.body, {
-
-            abortEarly: false
-
-        });
-
-
-        // =========================================================
-        // CÓ LỖI VALIDATION
-        // =========================================================
-
-        if (error) {
-
-            console.log(
-                '================ VALIDATION ERROR ================'
-            );
-
-            console.log(
-                'Message:',
-                error.details[0].message
-            );
-
-            console.log(
-                'Field:',
-                error.details[0].path.join('.')
-            );
-
-            console.log(
-                'Type:',
-                error.details[0].type
-            );
-
-            console.log(
-                'Request body:',
-                req.body
-            );
-
-            console.log(
-                '==================================================='
-            );
-
-            return res.status(400).json({
-
-                code: 'error',
-
-                message: 'Lỗi xác thực dữ liệu.',
-
-                details: error.details.map(
-                    detail => detail.message
-                )
-            });
+        // ✅ KIỂM TRA req.body TỒN TẠI
+        if (!req.body) {
+            req.body = {};
         }
 
-        // =========================================================
-        // VALIDATION THÀNH CÔNG
-        // =========================================================
+        const { error, value } = schema.validate(req.body, {
+            abortEarly: false,
+            allowUnknown: true
+        });
+
+        // Validation error
+        if (error) {
+            console.log('❌ VALIDATION ERROR:', error.details);
+
+            const errors = error.details.map(detail => detail.message);
+            const message = errors.join(', ');
+
+            // ✅ LƯU LỖI VÀO req.validationErrors CHO CONTROLLER
+            req.validationErrors = errors;
+            req.body = value;
+
+            // ✅ CHO CONTROLLER TIẾP TỤC XỬ LÝ
+            return next();
+        }
+
+        // Validation thành công
         req.body = value;
+        req.validationErrors = [];
         next();
     };
 };
 
-
-
 // =============================================================
-// EXPORT
+// EXPORT - ĐẢM BẢO EXPORT ĐÚNG
 // =============================================================
 
 module.exports = {
+    validate,
     loginSchema,
     registerSchema,
-    validate
+    changePasswordSchema,
+    forgotPasswordSchema,
+    verifyOtpSchema
 };

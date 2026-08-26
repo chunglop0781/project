@@ -199,4 +199,206 @@ document.addEventListener("DOMContentLoaded", function () {
 
     });
 
+
+    /* =========================================================
+       MENU TOGGLE (MOBILE)
+       CSS đang dùng:
+         - header.header .menu.open > ul        -> hiện menu
+         - header.header .menu-overlay.active    -> hiện lớp phủ
+       Nên JS PHẢI toggle đúng 2 class "open" và "active",
+       không phải "active" cho cả hai.
+    ========================================================= */
+
+    const menuToggle =
+        document.querySelector('.menu-toggle');
+
+    const menu =
+        document.querySelector('.menu');
+
+    const menuOverlay =
+        document.querySelector('.menu-overlay');
+
+
+    function openMenu() {
+        menu.classList.add('open');
+        if (menuOverlay) {
+            menuOverlay.classList.add('active');
+        }
+    }
+
+
+    function closeMenu() {
+        menu.classList.remove('open');
+        if (menuOverlay) {
+            menuOverlay.classList.remove('active');
+        }
+    }
+
+
+    if (menuToggle && menu) {
+
+        menuToggle.addEventListener('click', function (event) {
+
+            event.stopPropagation();
+
+            if (menu.classList.contains('open')) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
+
+        });
+
+
+        // Bấm ra ngoài overlay -> đóng menu
+        if (menuOverlay) {
+
+            menuOverlay.addEventListener('click', function () {
+                closeMenu();
+            });
+
+        }
+
+
+        // Bấm 1 link trong menu -> đóng menu
+        menu.querySelectorAll('a').forEach(function (link) {
+
+            link.addEventListener('click', function () {
+                closeMenu();
+            });
+
+        });
+
+
+        // Phím Esc -> đóng menu
+        document.addEventListener('keydown', function (event) {
+
+            if (event.key === 'Escape') {
+                closeMenu();
+            }
+
+        });
+
+    } else {
+
+        console.error('❌ Không tìm thấy .menu-toggle hoặc .menu');
+
+    }
+
+
+    /*------------------*/
+    const registerForm =
+        document.getElementById('registerForm');
+
+    const registerFormError =
+        document.getElementById('registerFormError');
+
+
+    if (registerForm) {
+
+        registerForm.addEventListener(
+            'submit',
+            async function (event) {
+
+                event.preventDefault();
+
+
+                registerFormError.innerHTML = '';
+
+
+                const formData =
+                    new FormData(registerForm);
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            registerForm.action,
+                            {
+                                method: 'POST',
+                                body: formData
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    // =================================================
+                    // VALIDATION ERROR
+                    // =================================================
+
+                    if (data.code === 'error') {
+
+                        if (
+                            Array.isArray(data.details)
+                        ) {
+
+                            registerFormError.innerHTML =
+                                data.details
+                                    .map(
+                                        message =>
+                                            `<div>${message}</div>`
+                                    )
+                                    .join('');
+
+                        } else {
+
+                            registerFormError.innerHTML =
+                                `<div>${data.message || 'Có lỗi xảy ra.'}</div>`;
+
+                        }
+
+                        return;
+                    }
+
+
+                    // =================================================
+                    // THÀNH CÔNG
+                    // =================================================
+
+                    if (data.redirect) {
+
+                        window.location.href =
+                            data.redirect;
+
+                        return;
+                    }
+
+
+                    // =================================================
+                    // TRƯỜNG HỢP SERVER REDIRECT
+                    // =================================================
+
+                    if (
+                        response.redirected
+                    ) {
+
+                        window.location.href =
+                            response.url;
+
+                        return;
+                    }
+
+
+                } catch (error) {
+
+                    console.error(
+                        '❌ REGISTER FETCH ERROR:',
+                        error
+                    );
+
+
+                    registerFormError.innerHTML =
+                        '<div>Có lỗi xảy ra, vui lòng thử lại.</div>';
+
+                }
+
+            }
+        );
+
+    }
+
 });

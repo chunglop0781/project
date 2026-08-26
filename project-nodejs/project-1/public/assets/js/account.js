@@ -2,12 +2,14 @@
    ACCOUNT JS
 
    LOGIN + REGISTER
+   FORGOT PASSWORD
+   OTP PASSWORD
+   CHANGE PASSWORD
 
    Frontend:
    - Hỗ trợ UX
-   - Gửi request bằng fetch()
-   - Backend Joi vẫn là validation chính
-   - Không để browser hiển thị JSON trực tiếp
+   - Backend vẫn là validation chính
+   - Không tự hiển thị "Có lỗi xảy ra"
 ============================================================= */
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -72,82 +74,70 @@ document.addEventListener("DOMContentLoaded", function () {
                    FRONTEND VALIDATION
                 ================================================= */
 
-                let frontendError = false;
+                const errors = [];
 
-
-                /* EMAIL */
 
                 if (!email) {
 
-                    showError(
-                        loginError,
+                    errors.push(
                         "Email không được để trống."
                     );
-
-                    frontendError = true;
-
-                    if (emailInput) {
-                        emailInput.focus();
-                    }
 
                 }
                 else if (!isValidEmail(email)) {
 
-                    showError(
-                        loginError,
+                    errors.push(
                         "Email không đúng định dạng."
                     );
-
-                    frontendError = true;
-
-                    if (emailInput) {
-                        emailInput.focus();
-                    }
 
                 }
 
 
-                /* PASSWORD */
-
                 if (!password) {
 
-                    showError(
-                        loginError,
+                    errors.push(
                         "Mật khẩu không được để trống."
                     );
-
-                    frontendError = true;
-
-                    if (passwordInput) {
-                        passwordInput.focus();
-                    }
 
                 }
                 else if (password.length < 6) {
 
-                    showError(
-                        loginError,
+                    errors.push(
                         "Mật khẩu phải có ít nhất 6 ký tự."
                     );
-
-                    frontendError = true;
-
-                    if (passwordInput) {
-                        passwordInput.focus();
-                    }
 
                 }
 
 
                 /* =================================================
-                   KHÔNG RETURN
-
-                   Frontend có lỗi vẫn gửi Backend.
-                   Backend Joi là validation chính.
+                   HIỂN THỊ LỖI
                 ================================================= */
 
+                if (errors.length > 0) {
+
+                    loginError.innerHTML =
+                        errors
+                            .map(
+                                message =>
+                                    `<div>${message}</div>`
+                            )
+                            .join("");
+
+                    loginError.classList.add("show");
+                }
+
+
+                /* =================================================
+                   GỬI BACKEND
+                ================================================= */
 
                 try {
+
+                    const formData =
+                        new FormData(
+                            loginForm
+                        );
+
 
                     const response =
                         await fetch(
@@ -155,62 +145,16 @@ document.addEventListener("DOMContentLoaded", function () {
                             {
                                 method: "POST",
 
-                                headers: {
-                                    "Content-Type":
-                                        "application/x-www-form-urlencoded"
-                                },
-
                                 body:
                                     new URLSearchParams(
-                                        new FormData(loginForm)
+                                        formData
                                     )
                             }
                         );
 
 
                     /* =================================================
-                       SERVER TRẢ JSON
-                    ================================================= */
-
-                    const contentType =
-                        response.headers.get(
-                            "content-type"
-                        );
-
-
-                    if (
-                        contentType &&
-                        contentType.includes(
-                            "application/json"
-                        )
-                    ) {
-
-                        if (!response.ok) {
-
-                            await handleJsonError(
-                                response,
-                                loginError,
-                                "Đăng nhập không thành công."
-                            );
-
-                        }
-                        else {
-
-                            try {
-                                await response.json();
-                            }
-                            catch (error) {
-                                // Không làm gì
-                            }
-
-                        }
-
-                        return;
-                    }
-
-
-                    /* =================================================
-                       SERVER REDIRECT / HTML
+                       SERVER REDIRECT
                     ================================================= */
 
                     if (
@@ -226,30 +170,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                     /* =================================================
-                       HTTP 2XX
+                       SERVER TRẢ HTML
                     ================================================= */
 
-                    if (response.ok) {
+                    if (
+                        response.headers
+                            .get("content-type")
+                            ?.includes("text/html")
+                    ) {
+
+                        const html =
+                            await response.text();
+
+                        document.open();
+
+                        document.write(html);
+
+                        document.close();
+
                         return;
                     }
-
-
-                    /* =================================================
-                       HTTP ERROR KHÔNG PHẢI JSON
-                    ================================================= */
-
-                    showError(
-                        loginError,
-                        "Đăng nhập không thành công."
-                    );
 
                 }
                 catch (error) {
 
-                    showError(
-                        loginError,
-                        "Không thể kết nối đến máy chủ."
+                    console.error(
+                        "LOGIN ERROR:",
+                        error
                     );
+
+
+                    if (!errors.length) {
+
+                        loginError.innerHTML =
+                            "<div>Không thể kết nối đến máy chủ.</div>";
+
+                        loginError.classList.add("show");
+                    }
 
                 }
 
@@ -277,7 +234,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const fullNameInput =
             registerForm.querySelector(
-                "#register-fullname"
+                "#register-fullName"
             );
 
 
@@ -301,7 +258,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const confirmPasswordInput =
             registerForm.querySelector(
-                "#register-confirm-password"
+                "#register-confirmPassword"
             );
 
 
@@ -358,53 +315,32 @@ document.addEventListener("DOMContentLoaded", function () {
                    FRONTEND VALIDATION
                 ================================================= */
 
-                let frontendError = false;
+                const errors = [];
 
 
                 /* =================================================
-                   FULL NAME
+                   HỌ VÀ TÊN
                 ================================================= */
 
                 if (!fullName) {
 
-                    showError(
-                        registerError,
+                    errors.push(
                         "Họ và tên không được để trống."
                     );
-
-                    frontendError = true;
-
-                    if (fullNameInput) {
-                        fullNameInput.focus();
-                    }
 
                 }
                 else if (fullName.length < 2) {
 
-                    showError(
-                        registerError,
+                    errors.push(
                         "Họ và tên phải có ít nhất 2 ký tự."
                     );
-
-                    frontendError = true;
-
-                    if (fullNameInput) {
-                        fullNameInput.focus();
-                    }
 
                 }
                 else if (fullName.length > 100) {
 
-                    showError(
-                        registerError,
+                    errors.push(
                         "Họ và tên không được vượt quá 100 ký tự."
                     );
-
-                    frontendError = true;
-
-                    if (fullNameInput) {
-                        fullNameInput.focus();
-                    }
 
                 }
 
@@ -415,30 +351,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (!email) {
 
-                    showError(
-                        registerError,
+                    errors.push(
                         "Email không được để trống."
                     );
-
-                    frontendError = true;
-
-                    if (emailInput) {
-                        emailInput.focus();
-                    }
 
                 }
                 else if (!isValidEmail(email)) {
 
-                    showError(
-                        registerError,
+                    errors.push(
                         "Email không đúng định dạng."
                     );
-
-                    frontendError = true;
-
-                    if (emailInput) {
-                        emailInput.focus();
-                    }
 
                 }
 
@@ -449,30 +371,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (!phone) {
 
-                    showError(
-                        registerError,
+                    errors.push(
                         "Số điện thoại không được để trống."
                     );
-
-                    frontendError = true;
-
-                    if (phoneInput) {
-                        phoneInput.focus();
-                    }
 
                 }
                 else if (!isValidPhone(phone)) {
 
-                    showError(
-                        registerError,
+                    errors.push(
                         "Số điện thoại không đúng định dạng."
                     );
-
-                    frontendError = true;
-
-                    if (phoneInput) {
-                        phoneInput.focus();
-                    }
 
                 }
 
@@ -483,44 +391,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (!password) {
 
-                    showError(
-                        registerError,
+                    errors.push(
                         "Mật khẩu không được để trống."
                     );
-
-                    frontendError = true;
-
-                    if (passwordInput) {
-                        passwordInput.focus();
-                    }
 
                 }
                 else if (password.length < 6) {
 
-                    showError(
-                        registerError,
+                    errors.push(
                         "Mật khẩu phải có ít nhất 6 ký tự."
                     );
-
-                    frontendError = true;
-
-                    if (passwordInput) {
-                        passwordInput.focus();
-                    }
 
                 }
                 else if (password.length > 30) {
 
-                    showError(
-                        registerError,
+                    errors.push(
                         "Mật khẩu không được vượt quá 30 ký tự."
                     );
-
-                    frontendError = true;
-
-                    if (passwordInput) {
-                        passwordInput.focus();
-                    }
 
                 }
 
@@ -531,32 +418,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (!confirmPassword) {
 
-                    showError(
-                        registerError,
+                    errors.push(
                         "Vui lòng nhập lại mật khẩu."
                     );
-
-                    frontendError = true;
-
-                    if (confirmPasswordInput) {
-                        confirmPasswordInput.focus();
-                    }
 
                 }
                 else if (
                     confirmPassword !== password
                 ) {
 
-                    showError(
-                        registerError,
+                    errors.push(
                         "Mật khẩu xác nhận không khớp."
                     );
-
-                    frontendError = true;
-
-                    if (confirmPasswordInput) {
-                        confirmPasswordInput.focus();
-                    }
 
                 }
 
@@ -570,28 +443,42 @@ document.addEventListener("DOMContentLoaded", function () {
                     !agreeTermsInput.checked
                 ) {
 
-                    showError(
-                        registerError,
+                    errors.push(
                         "Bạn phải đồng ý với điều khoản sử dụng."
                     );
-
-                    frontendError = true;
-
-                    if (agreeTermsInput) {
-                        agreeTermsInput.focus();
-                    }
 
                 }
 
 
                 /* =================================================
-                   KHÔNG RETURN
-
-                   Frontend lỗi vẫn gửi Backend.
+                   HIỂN THỊ TẤT CẢ LỖI
                 ================================================= */
 
+                if (errors.length > 0) {
+
+                    registerError.innerHTML =
+                        errors
+                            .map(
+                                message =>
+                                    `<div>${message}</div>`
+                            )
+                            .join("");
+
+                    registerError.classList.add("show");
+                }
+
+
+                /* =================================================
+                   GỬI BACKEND
+                ================================================= */
 
                 try {
+
+                    const formData =
+                        new FormData(
+                            registerForm
+                        );
+
 
                     const response =
                         await fetch(
@@ -599,62 +486,16 @@ document.addEventListener("DOMContentLoaded", function () {
                             {
                                 method: "POST",
 
-                                headers: {
-                                    "Content-Type":
-                                        "application/x-www-form-urlencoded"
-                                },
-
                                 body:
                                     new URLSearchParams(
-                                        new FormData(registerForm)
+                                        formData
                                     )
                             }
                         );
 
 
                     /* =================================================
-                       SERVER TRẢ JSON
-                    ================================================= */
-
-                    const contentType =
-                        response.headers.get(
-                            "content-type"
-                        );
-
-
-                    if (
-                        contentType &&
-                        contentType.includes(
-                            "application/json"
-                        )
-                    ) {
-
-                        if (!response.ok) {
-
-                            await handleJsonError(
-                                response,
-                                registerError,
-                                "Đăng ký không thành công."
-                            );
-
-                        }
-                        else {
-
-                            try {
-                                await response.json();
-                            }
-                            catch (error) {
-                                // Không làm gì
-                            }
-
-                        }
-
-                        return;
-                    }
-
-
-                    /* =================================================
-                       SERVER REDIRECT / HTML
+                       SERVER REDIRECT
                     ================================================= */
 
                     if (
@@ -670,30 +511,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                     /* =================================================
-                       HTTP 2XX
+                       SERVER TRẢ HTML
                     ================================================= */
 
-                    if (response.ok) {
+                    if (
+                        response.headers
+                            .get("content-type")
+                            ?.includes("text/html")
+                    ) {
+
+                        const html =
+                            await response.text();
+
+                        document.open();
+
+                        document.write(html);
+
+                        document.close();
+
                         return;
                     }
-
-
-                    /* =================================================
-                       HTTP ERROR KHÔNG PHẢI JSON
-                    ================================================= */
-
-                    showError(
-                        registerError,
-                        "Đăng ký không thành công."
-                    );
 
                 }
                 catch (error) {
 
-                    showError(
-                        registerError,
-                        "Không thể kết nối đến máy chủ."
+                    console.error(
+                        "REGISTER ERROR:",
+                        error
                     );
+
+
+                    if (!errors.length) {
+
+                        registerError.innerHTML =
+                            "<div>Không thể kết nối đến máy chủ.</div>";
+
+                        registerError.classList.add("show");
+                    }
 
                 }
 
@@ -705,78 +559,85 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* =========================================================
        FORM QUÊN MẬT KHẨU
-       
-       JustValidate:
-       - Validate email required
-       - Validate email format
-       - Khi hợp lệ thì lấy email
-       - Không bỏ các xử lý Login / Register phía trên
     ========================================================= */
 
     const forgotPasswordForm =
-        document.querySelector("#forgot-password-form");
+        document.querySelector(
+            "#forgot-password-form"
+        );
 
 
     if (forgotPasswordForm) {
 
         const validation =
-            new JustValidate("#forgot-password-form");
+            new JustValidate(
+                "#forgot-password-form"
+            );
 
 
         validation
-            .addField("#email", [
-                {
-                    rule: "required",
-                    errorMessage:
-                        "Vui lòng nhập email của bạn!"
-                },
-                {
-                    rule: "email",
-                    errorMessage:
-                        "Email không đúng định dạng!"
-                }
-            ])
+            .addField(
+                "#email",
+                [
+                    {
+                        rule: "required",
+                        errorMessage:
+                            "Vui lòng nhập email của bạn!"
+                    },
+                    {
+                        rule: "email",
+                        errorMessage:
+                            "Email không đúng định dạng!"
+                    }
+                ]
+            )
             .onSuccess(function (event) {
 
                 const email =
                     event.target.email.value;
 
-                console.log(email);
-
-
-                /* =========================================================
-                   GỬI EMAIL LÊN BACKEND
-                ========================================================= */
 
                 const dataFinal = {
                     email: email
                 };
 
 
-                fetch('/forgot-password', {
+                fetch(
+                    "/forgot-password",
+                    {
+                        method: "POST",
 
-                    method: "POST",
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
 
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-
-                    body: JSON.stringify(dataFinal)
-
-                })
+                        body:
+                            JSON.stringify(
+                                dataFinal
+                            )
+                    }
+                )
 
                 .then(res => res.json())
 
                 .then(data => {
 
-                    if (data.code === "error") {
+                    if (
+                        data.code === "error"
+                    ) {
 
-                        alert(data.message);
+                        alert(
+                            data.message
+                        );
 
+                        return;
                     }
 
 
-                    if (data.code === "success") {
+                    if (
+                        data.code === "success"
+                    ) {
 
                         window.location.href =
                             "/otp-password";
@@ -805,57 +666,54 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* =========================================================
        FORM OTP PASSWORD
-
-       - Nhập OTP
-       - Gửi OTP lên Backend
-       - OTP đúng -> /change-password
     ========================================================= */
 
     const otpPasswordForm =
-        document.querySelector("#otp-password-form");
+        document.querySelector(
+            "#otp-password-form"
+        );
 
 
     if (otpPasswordForm) {
 
         const validation =
-            new JustValidate("#otp-password-form");
+            new JustValidate(
+                "#otp-password-form"
+            );
 
 
         validation
-            .addField("#otp", [
-                {
-                    rule: "required",
-                    errorMessage:
-                        "Vui lòng nhập mã OTP!"
-                },
-                {
-                    rule: "number",
-                    errorMessage:
-                        "OTP phải là số!"
-                },
-                {
-                    rule: "minLength",
-                    value: 6,
-                    errorMessage:
-                        "OTP phải có 6 số!"
-                },
-                {
-                    rule: "maxLength",
-                    value: 6,
-                    errorMessage:
-                        "OTP phải có 6 số!"
-                }
-            ])
+            .addField(
+                "#otp",
+                [
+                    {
+                        rule: "required",
+                        errorMessage:
+                            "Vui lòng nhập mã OTP!"
+                    },
+                    {
+                        rule: "number",
+                        errorMessage:
+                            "OTP phải là số!"
+                    },
+                    {
+                        rule: "minLength",
+                        value: 6,
+                        errorMessage:
+                            "OTP phải có 6 số!"
+                    },
+                    {
+                        rule: "maxLength",
+                        value: 6,
+                        errorMessage:
+                            "OTP phải có 6 số!"
+                    }
+                ]
+            )
             .onSuccess(function (event) {
 
                 const otp =
                     event.target.otp.value.trim();
-
-
-                console.log(
-                    "OTP USER NHẬP:",
-                    otp
-                );
 
 
                 const dataFinal = {
@@ -863,42 +721,42 @@ document.addEventListener("DOMContentLoaded", function () {
                 };
 
 
-                fetch("/verify-otp", {
+                fetch(
+                    "/verify-otp",
+                    {
+                        method: "POST",
 
-                    method: "POST",
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify(dataFinal)
-
-                })
+                        body:
+                            JSON.stringify(
+                                dataFinal
+                            )
+                    }
+                )
 
                 .then(res => res.json())
 
                 .then(data => {
 
-                    console.log(
-                        "VERIFY OTP:",
-                        data
-                    );
-
-
-                    if (data.code === "error") {
+                    if (
+                        data.code === "error"
+                    ) {
 
                         alert(
                             data.message
                         );
 
                         return;
-
                     }
 
 
-                    if (data.code === "success") {
+                    if (
+                        data.code === "success"
+                    ) {
 
                         window.location.href =
                             "/change-password";
@@ -926,246 +784,326 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       FORM ĐỔI MẬT KHẨU SAU OTP
-
-       - Chỉ xử lý khi có resetByOtp
-       - Không ảnh hưởng form đổi mật khẩu cũ
+       FORM ĐỔI MẬT KHẨU
     ========================================================= */
 
     const changePasswordForm =
-        document.querySelector("#changePasswordForm");
+        document.querySelector(
+            "#changePasswordForm"
+        );
 
 
     if (changePasswordForm) {
 
-        const resetByOtpInput =
+        const currentPasswordInput =
             changePasswordForm.querySelector(
-                'input[name="resetByOtp"]'
+                "#change-password-current"
             );
 
 
-        if (resetByOtpInput) {
+        const newPasswordInput =
+            changePasswordForm.querySelector(
+                "#change-password-new"
+            );
 
-            const currentPasswordInput =
-                changePasswordForm.querySelector(
-                    "#change-password-current"
+
+        const confirmPasswordInput =
+            changePasswordForm.querySelector(
+                "#change-password-confirm"
+            );
+
+
+        const changePasswordError =
+            changePasswordForm.querySelector(
+                "#changePasswordFormError"
+            );
+
+
+        changePasswordForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                /* =================================================
+                   KIỂM TRA ELEMENT
+                ================================================= */
+
+                if (
+                    !changePasswordError
+                ) {
+
+                    console.error(
+                        "Không tìm thấy #changePasswordFormError"
+                    );
+
+                    return;
+                }
+
+
+                /* =================================================
+                   LẤY GIÁ TRỊ
+                ================================================= */
+
+                const currentPassword =
+                    currentPasswordInput
+                        ? currentPasswordInput.value
+                        : "";
+
+
+                const newPassword =
+                    newPasswordInput
+                        ? newPasswordInput.value
+                        : "";
+
+
+                const confirmPassword =
+                    confirmPasswordInput
+                        ? confirmPasswordInput.value
+                        : "";
+
+
+                const errors = [];
+
+
+                /* =================================================
+                   MẬT KHẨU HIỆN TẠI
+                ================================================= */
+
+                if (!currentPassword) {
+
+                    errors.push(
+                        "Vui lòng nhập mật khẩu hiện tại."
+                    );
+
+                }
+
+
+                /* =================================================
+                   MẬT KHẨU MỚI
+                ================================================= */
+
+                if (!newPassword) {
+
+                    errors.push(
+                        "Mật khẩu mới không được để trống."
+                    );
+
+                }
+                else if (
+                    newPassword.length < 6
+                ) {
+
+                    errors.push(
+                        "Mật khẩu mới phải có ít nhất 6 ký tự."
+                    );
+
+                }
+                else if (
+                    newPassword.length > 30
+                ) {
+
+                    errors.push(
+                        "Mật khẩu không được vượt quá 30 ký tự."
+                    );
+
+                }
+
+
+                /* =================================================
+                   XÁC NHẬN MẬT KHẨU
+                ================================================= */
+
+                if (!confirmPassword) {
+
+                    errors.push(
+                        "Vui lòng nhập lại mật khẩu."
+                    );
+
+                }
+                else if (
+                    newPassword !==
+                    confirmPassword
+                ) {
+
+                    errors.push(
+                        "Mật khẩu xác nhận không khớp."
+                    );
+
+                }
+
+
+                /* =================================================
+                   HIỂN THỊ LỖI
+                ================================================= */
+
+                if (
+                    errors.length > 0
+                ) {
+
+                    changePasswordError.innerHTML =
+                        errors
+                            .map(
+                                message =>
+                                    `<div>${message}</div>`
+                            )
+                            .join("");
+
+
+                    changePasswordError.classList.add(
+                        "show"
+                    );
+
+                    return;
+                }
+
+
+                /* =================================================
+                   XÓA LỖI
+                ================================================= */
+
+                changePasswordError.innerHTML =
+                    "";
+
+                changePasswordError.classList.remove(
+                    "show"
                 );
 
 
-            const newPasswordInput =
-                changePasswordForm.querySelector(
-                    "#change-password-new"
-                );
+                /* =================================================
+                   GỬI SERVER
+                ================================================= */
 
+                try {
 
-            const confirmPasswordInput =
-                changePasswordForm.querySelector(
-                    "#change-password-confirm"
-                );
+                    const response =
+                        await fetch(
+                            changePasswordForm.action,
+                            {
+                                method: "POST",
 
+                                credentials:
+                                    "same-origin",
 
-            const changePasswordError =
-                changePasswordForm.querySelector(
-                    "#changePasswordFormError"
-                );
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
 
+                                body:
+                                    JSON.stringify({
 
-            changePasswordForm.addEventListener(
-                "submit",
-                async function (event) {
+                                        currentPassword:
+                                            currentPassword,
 
-                    event.preventDefault();
+                                        newPassword:
+                                            newPassword,
 
+                                        confirmPassword:
+                                            confirmPassword
 
-                    if (
-                        resetByOtpInput.value !==
-                        "true"
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    const newPassword =
-                        newPasswordInput
-                            ? newPasswordInput.value
-                            : "";
-
-
-                    const confirmPassword =
-                        confirmPasswordInput
-                            ? confirmPasswordInput.value
-                            : "";
-
-
-                    if (!newPassword) {
-
-                        if (changePasswordError) {
-
-                            changePasswordError.textContent =
-                                "Mật khẩu mới không được để trống.";
-
-                        }
-
-                        return;
-
-                    }
-
-
-                    if (newPassword.length < 6) {
-
-                        if (changePasswordError) {
-
-                            changePasswordError.textContent =
-                                "Mật khẩu phải có ít nhất 6 ký tự.";
-
-                        }
-
-                        return;
-
-                    }
-
-
-                    if (newPassword.length > 30) {
-
-                        if (changePasswordError) {
-
-                            changePasswordError.textContent =
-                                "Mật khẩu không được vượt quá 30 ký tự.";
-
-                        }
-
-                        return;
-
-                    }
-
-
-                    if (
-                        newPassword !==
-                        confirmPassword
-                    ) {
-
-                        if (changePasswordError) {
-
-                            changePasswordError.textContent =
-                                "Mật khẩu xác nhận không khớp.";
-
-                        }
-
-                        return;
-
-                    }
-
-
-                    if (changePasswordError) {
-
-                        changePasswordError.textContent =
-                            "";
-
-                    }
-
-
-                    try {
-
-                        const response =
-                            await fetch(
-                                "/change-password",
-                                {
-                                    method: "POST",
-
-                                    headers: {
-                                        "Content-Type":
-                                            "application/json"
-                                    },
-
-                                    body:
-                                        JSON.stringify({
-
-                                            resetByOtp:
-                                                true,
-
-                                            newPassword:
-                                                newPassword,
-
-                                            confirmPassword:
-                                                confirmPassword
-
-                                        })
-                                }
-                            );
-
-
-                        const data =
-                            await response.json();
-
-
-                        if (
-                            data.code ===
-                            "error"
-                        ) {
-
-                            if (
-                                changePasswordError
-                            ) {
-
-                                changePasswordError
-                                    .textContent =
-                                    data.message;
-
+                                    })
                             }
-
-                            return;
-
-                        }
-
-
-                        if (
-                            data.code ===
-                            "success"
-                        ) {
-
-                            alert(
-                                "Đổi mật khẩu thành công!"
-                            );
-
-
-                            window.location.href =
-                                "/login";
-
-                        }
-
-                    }
-                    catch (error) {
-
-                        console.error(
-                            "CHANGE PASSWORD ERROR:",
-                            error
                         );
 
 
-                        if (
-                            changePasswordError
-                        ) {
+                    /* =================================================
+                       ĐỌC RESPONSE
+                    ================================================= */
 
-                            changePasswordError
-                                .textContent =
-                                "Không thể kết nối đến máy chủ.";
+                    const data =
+                        await response.json();
 
-                        }
 
+                    /* =================================================
+                       SERVER ERROR
+                    ================================================= */
+
+                    if (
+                        !response.ok ||
+                        data.code === "error"
+                    ) {
+
+                        changePasswordError.innerHTML =
+                            `<div>${
+                                data.message ||
+                                "Không thể đổi mật khẩu."
+                            }</div>`;
+
+
+                        changePasswordError.classList.add(
+                            "show"
+                        );
+
+                        return;
                     }
 
-                }
-            );
 
-        }
+                    /* =================================================
+                       THÀNH CÔNG
+                    ================================================= */
+
+                    if (
+                        data.code === "success"
+                    ) {
+
+                        alert(
+                            data.message ||
+                            "Đổi mật khẩu thành công!"
+                        );
+
+
+                        /*
+                         * Không logout.
+                         * Không destroy session.
+                         * Không chuyển về /login.
+                         *
+                         * User vẫn đang đăng nhập.
+                         */
+
+                        window.location.reload();
+
+                        return;
+                    }
+
+
+                    /* =================================================
+                       RESPONSE KHÔNG HỢP LỆ
+                    ================================================= */
+
+                    changePasswordError.innerHTML =
+                        "<div>Phản hồi từ máy chủ không hợp lệ.</div>";
+
+                    changePasswordError.classList.add(
+                        "show"
+                    );
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "CHANGE PASSWORD ERROR:",
+                        error
+                    );
+
+
+                    changePasswordError.innerHTML =
+                        "<div>Không thể kết nối đến máy chủ.</div>";
+
+                    changePasswordError.classList.add(
+                        "show"
+                    );
+                }
+
+            }
+        );
 
     }
 
 
     /* =========================================================
-       DEBUG RESET PASSWORD FLOW
+       HOÀN TẤT
     ========================================================= */
 
     console.log(

@@ -1,19 +1,22 @@
-module.exports = function requireLogin(req, res, next) {
+// =============================================================
+// REQUIRE LOGIN MIDDLEWARE
+// =============================================================
 
-    // Lấy JWT token từ cookie
-    const token = req.cookies.token;
+module.exports = (req, res, next) => {
+    console.log('========================================');
+    console.log('🔐 REQUIRE LOGIN');
+    console.log('Path:', req.path);
+    console.log('Session user:', req.session.user);
+    console.log('========================================');
 
-    // In token ra Terminal
-    console.log('=================================');
-    console.log('🔑 JWT TOKEN:');
-    console.log(token);
-    console.log('=================================');
-
-
-    // Kiểm tra đã đăng nhập chưa
-    if (!req.session.user) {
+    // Kiểm tra session user
+    if (!req.session || !req.session.user) {
+        console.log('❌ NOT LOGGED IN - Redirect to /login');
+        req.session.error = 'Vui lòng đăng nhập để tiếp tục.';
+        req.session.returnTo = req.originalUrl;
         return res.redirect('/login');
     }
 
+    console.log('✅ LOGGED IN - Continue');
     next();
 };

@@ -8416,36 +8416,7 @@ h1 {
 }
 
 
-.auth-checkbox {
-
-    display: flex;
-    align-items: center;
-
-    gap: 8px;
-
-    cursor: pointer;
-
-    color: #555;
-
-    user-select: none;
-
-}
-
-
-.auth-checkbox input {
-
-    width: 16px;
-    height: 16px;
-
-    accent-color: #4b0082;
-
-    cursor: pointer;
-
-}
-
-
-.auth-form-row a,
-.auth-checkbox a {
+.auth-form-row a {
 
     color: #4b0082;
 
@@ -8456,28 +8427,9 @@ h1 {
 }
 
 
-.auth-form-row a:hover,
-.auth-checkbox a:hover {
+.auth-form-row a:hover {
 
     text-decoration: underline;
-
-}
-
-
-.auth-form-error {
-
-    display: none;
-
-    font-size: 13px;
-
-    color: #c62828;
-
-}
-
-
-.auth-form-error.show {
-
-    display: block;
 
 }
 
@@ -8592,4 +8544,251 @@ h1 {
 
     }
 
+}
+
+
+/* =============================================================
+   AUTH VALIDATION / THÔNG BÁO LỖI
+   (đã gộp lại - trước đây .auth-form-error và .auth-checkbox
+   bị khai báo trùng 2-3 lần, đè lẫn nhau, giờ chỉ còn 1 bản
+   duy nhất cho mỗi selector)
+   ============================================================= */
+
+.auth-validation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+
+.auth-alert.auth-alert-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    margin-bottom: 18px;
+}
+
+
+.auth-alert.auth-alert-success {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    margin-bottom: 18px;
+
+    color: #166534;
+}
+
+
+/* ---------------------------------------------------------
+   MỖI LỖI LÀ 1 DÒNG RIÊNG (tự xuống dòng vì là block)
+--------------------------------------------------------- */
+
+.auth-form-error {
+    display: block;
+
+    margin-top: 7px;
+
+    color: #dc2626;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    line-height: 1.5;
+}
+
+
+.auth-form-error div {
+    margin-bottom: 3px;
+}
+
+
+.auth-form-error div:last-child {
+    margin-bottom: 0;
+}
+
+
+.auth-form-error:empty {
+    display: none;
+}
+
+
+.auth-validation-list div {
+    color: #dc2626;
+
+    line-height: 1.5;
+}
+
+
+.auth-checkbox + .auth-form-error {
+    margin-top: 7px;
+
+    margin-bottom: 4px;
+
+    padding-left: 0;
+}
+
+
+/* ---------------------------------------------------------
+   INPUT LỖI
+--------------------------------------------------------- */
+
+.auth-form-group.has-error input {
+    border-color: #dc2626;
+}
+
+
+.auth-form-group.has-error input:focus {
+    border-color: #dc2626;
+
+    box-shadow:
+        0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+
+/* ---------------------------------------------------------
+   CHECKBOX (bản duy nhất - custom box, không dùng checkbox
+   gốc của trình duyệt nữa)
+--------------------------------------------------------- */
+
+.auth-checkbox {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    cursor: pointer;
+
+    user-select: none;
+
+    color: #555;
+
+    font-size: 13px;
+}
+
+
+.auth-checkbox input {
+    position: absolute;
+
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+
+.auth-checkbox-box {
+    width: 18px;
+
+    height: 18px;
+
+    min-width: 18px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 4px;
+
+    background: #fff;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.auth-checkbox input:checked + .auth-checkbox-box {
+    border-color: #5200c9;
+
+    background: #5200c9;
+}
+
+
+.auth-checkbox input:checked + .auth-checkbox-box::after {
+    content: "✓";
+
+    color: #fff;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+.auth-checkbox input:focus-visible + .auth-checkbox-box {
+    outline: 2px solid rgba(82, 0, 201, 0.25);
+
+    outline-offset: 2px;
+}
+
+
+.auth-checkbox.auth-checkbox-error .auth-checkbox-box {
+    border-color: #dc2626;
+}
+
+
+.auth-checkbox.auth-checkbox-error {
+    color: #dc2626;
+}
+
+
+.auth-checkbox a {
+    color: #5200c9;
+
+    text-decoration: none;
+
+    font-weight: 500;
+}
+
+
+.auth-checkbox a:hover {
+    text-decoration: underline;
+}
+
+
+/* =============================================================
+   MOBILE
+   ============================================================= */
+
+@media (max-width: 480px) {
+
+    .auth-form-error {
+        font-size: 13px;
+    }
+
+    .auth-checkbox {
+        align-items: flex-start;
+
+        line-height: 1.5;
+    }
+
+}
+
+
+
+
+/* =============================================================
+   FIX MENU TOGGLE CLICK
+============================================================= */
+
+.menu-toggle {
+    position: relative;
+    z-index: 99999;
+    pointer-events: auto !important;
+    cursor: pointer;
+}
+
+.menu-toggle i {
+    position: relative;
+    z-index: 100000;
+    pointer-events: none !important;
 }
