@@ -28,11 +28,12 @@ const forgotPasswordSchema = new mongoose.Schema(
 
         // =====================================================
         // THỜI GIAN HẾT HẠN
+        // ❌ ĐÃ XÓA index: true Ở ĐÂY
         // =====================================================
         expireAt: {
             type: Date,
-            required: true,
-            index: true
+            required: true
+            // index: true  // ❌ ĐÃ XÓA DÒNG NÀY
         },
 
         // =====================================================
@@ -59,6 +60,7 @@ const forgotPasswordSchema = new mongoose.Schema(
 
 // =============================================================
 // TTL INDEX - MongoDB tự động xóa sau expireAt
+// ✅ CHỈ ĐỊNH NGHĨA 1 LẦN DUY NHẤT Ở ĐÂY
 // =============================================================
 
 forgotPasswordSchema.index(

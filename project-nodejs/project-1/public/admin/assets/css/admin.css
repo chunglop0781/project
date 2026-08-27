@@ -3264,3 +3264,536 @@ input[type="checkbox"].admin-checkbox:checked::after {
     }
 
 }
+
+
+/* =============================================================
+   ADMIN TOPBAR USER
+============================================================= */
+
+.admin-user-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.admin-user-trigger {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+  gap: 8px;
+}
+
+.admin-user-trigger:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.admin-user-trigger .admin-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e8ecf1;
+}
+
+.admin-user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.admin-user-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #2c3e50;
+}
+
+.admin-user-role {
+  font-size: 11px;
+  color: #95a5a6;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+.admin-user-trigger .fa-chevron-down {
+  font-size: 12px;
+  color: #95a5a6;
+  transition: transform 0.2s;
+}
+
+.admin-user-trigger[aria-expanded="true"] .fa-chevron-down {
+  transform: rotate(180deg);
+}
+
+/* ✅ THÊM: Đảm bảo dropdown hiển thị đúng */
+.admin-user-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 200px;
+  background: #fff;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  padding: 8px;
+  z-index: 60;
+}
+
+.admin-user-dropdown.show {
+  display: block;
+}
+
+.admin-user-dropdown a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 6px;
+  color: var(--admin-text);
+  font-size: 13.5px;
+  text-decoration: none;
+}
+
+.admin-user-dropdown a:hover {
+  background: var(--admin-bg);
+}
+
+.admin-user-dropdown-divider {
+  height: 1px;
+  margin: 6px 4px;
+  background: var(--admin-border);
+}
+
+.admin-logout-link {
+  color: var(--admin-danger) !important;
+}
+
+.admin-logout-link:hover {
+  background: var(--admin-danger-bg) !important;
+  color: var(--admin-danger) !important;
+}
+
+/* =============================================================
+   TABLE SCROLL - CHO PHÉP CUỘN NGANG
+============================================================= */
+
+.admin-table-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+}
+
+.admin-table-scroll table {
+  min-width: 700px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Hiển thị thanh cuộn ngang rõ ràng */
+.admin-table-scroll::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+  background: #f1f1f1;
+  border-radius: 5px;
+}
+
+.admin-table-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 5px;
+}
+
+.admin-table-scroll::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 5px;
+}
+
+.admin-table-scroll::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* =============================================================
+   RESPONSIVE - MÀN HÌNH NHỎ
+============================================================= */
+
+/* Khi màn hình nhỏ hơn 768px (tablet, mobile) */
+@media (max-width: 768px) {
+  /* Grid 2 cột chuyển thành 1 cột */
+  .admin-grid-2 {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+
+  /* Đảm bảo card chiếm full width */
+  .admin-card {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  /* Bảng có thể cuộn ngang */
+  .admin-table-scroll {
+    margin: 0 -8px;
+    padding: 0 8px;
+  }
+
+  .admin-table-scroll table {
+    min-width: 580px;
+    font-size: 13px;
+  }
+
+  .admin-table-scroll th,
+  .admin-table-scroll td {
+    padding: 10px 12px;
+    white-space: nowrap;
+  }
+
+  /* Stat cards */
+  .admin-stat-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px;
+  }
+
+  .admin-stat-card {
+    padding: 14px;
+  }
+
+  .admin-stat-info strong {
+    font-size: 16px;
+  }
+
+  /* Chart */
+  .admin-chart-wrap {
+    height: 220px !important;
+  }
+
+  /* Topbar */
+  .admin-topbar {
+    padding: 0 16px;
+  }
+
+  .admin-topbar-title {
+    font-size: 16px;
+  }
+
+  .admin-content {
+    padding: 16px;
+  }
+}
+
+/* Khi màn hình nhỏ hơn 480px (mobile nhỏ) */
+@media (max-width: 480px) {
+  .admin-table-scroll table {
+    min-width: 480px;
+    font-size: 12px;
+  }
+
+  .admin-table-scroll th,
+  .admin-table-scroll td {
+    padding: 8px 10px;
+  }
+
+  .admin-stat-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px;
+  }
+
+  .admin-stat-card {
+    padding: 12px;
+  }
+
+  .admin-stat-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 15px;
+  }
+
+  .admin-stat-info strong {
+    font-size: 14px;
+  }
+
+  .admin-stat-info span {
+    font-size: 11px;
+  }
+
+  .admin-user-name {
+    display: none;
+  }
+
+  .admin-card-head {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* =============================================================
+   17. ADMIN FORM GRID - CĂN CHỈNH ĐẸP (THÊM MỚI)
+============================================================= */
+
+.admin-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.admin-form-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.admin-form-col-side {
+    max-width: 320px;
+}
+
+.admin-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.admin-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.admin-form-group label {
+    font-weight: 600;
+    font-size: 13px;
+    color: #2c3e50;
+}
+
+.admin-form-group label .required {
+    color: #e74c3c;
+    margin-left: 2px;
+}
+
+.admin-input,
+.admin-select,
+.admin-textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #dce1e8;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #2c3e50;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.admin-input:focus,
+.admin-select:focus,
+.admin-textarea:focus {
+    outline: none;
+    border-color: #6c5ce7;
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+}
+
+.admin-textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+}
+
+.admin-form-hint {
+    font-size: 12px;
+    color: #95a5a6;
+    margin-top: 4px;
+}
+
+.admin-form-image-preview {
+    width: 100%;
+    height: 180px;
+    border: 1px dashed #dce1e8;
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+}
+
+.admin-form-image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #eceef2;
+}
+
+.admin-form-actions .admin-btn {
+    padding: 10px 24px;
+}
+
+
+/* =============================================================
+   18. TINYMCE - CĂN CHỈNH TRONG ADMIN (THÊM MỚI)
+============================================================= */
+
+.admin-form-group .tox-tinymce {
+    border-radius: 6px;
+    border-color: #dce1e8;
+}
+
+.admin-form-group .tox-tinymce:focus-within {
+    border-color: #6c5ce7;
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+}
+
+.admin-form-group .tox .tox-toolbar__group {
+    padding: 0 4px;
+}
+
+.admin-form-group .tox .tox-tbtn {
+    width: 32px !important;
+    height: 32px !important;
+}
+
+.admin-form-group .tox .tox-tbtn__icon-wrap svg {
+    width: 20px;
+    height: 20px;
+}
+
+.admin-form-group .tox .tox-toolbar-overlord {
+    background: #f8f9fa;
+    border-bottom: 1px solid #dce1e8;
+}
+
+.admin-form-group .tox .tox-edit-area__iframe {
+    background: #fff;
+}
+
+.admin-form-group .tox .tox-statusbar {
+    background: #f8f9fa;
+    border-top: 1px solid #dce1e8;
+}
+
+/* TinyMCE trong mobile */
+@media (max-width: 768px) {
+    .admin-form-group .tox-tinymce {
+        height: 300px !important;
+    }
+
+    .admin-form-group .tox .tox-toolbar__group {
+        flex-wrap: wrap;
+    }
+}
+
+
+/* =============================================================
+   19. ADMIN FORM - RESPONSIVE BỔ SUNG (THÊM MỚI)
+============================================================= */
+
+@media (max-width: 992px) {
+    .admin-form-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .admin-form-col-side {
+        max-width: 100%;
+    }
+
+    .admin-form-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .admin-form-image-preview {
+        height: 140px;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-form-grid {
+        gap: 12px;
+    }
+
+    .admin-form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-form-actions .admin-btn {
+        justify-content: center;
+    }
+}
+
+/* =============================================================
+   20. TINYMCE - ẨN UPGRADE & TOOLBAR (THÊM MỚI)
+============================================================= */
+
+/* Ẩn "Upgrade" */
+.tox-promotion {
+  display: none !important;
+}
+
+/* Ẩn "Powered by Tiny" */
+.tox-statusbar__branding {
+  display: none !important;
+}
+
+/* Hiển thị đầy đủ toolbar */
+.tox-toolbar-overlord {
+  background: #f8f9fa !important;
+  border-bottom: 1px solid #dce1e8 !important;
+}
+
+.tox-toolbar__primary {
+  flex-wrap: wrap !important;
+}
+
+.tox-toolbar__group {
+  flex-wrap: wrap !important;
+}
+
+/* Đảm bảo toolbar hiển thị đủ */
+.tox-toolbar-overlord .tox-toolbar {
+  display: flex !important;
+  flex-wrap: wrap !important;
+}
+
+/* Fix overflow button */
+.tox-tbtn[data-mce-name="overflow-button"] {
+  display: none !important;
+}
+
+/* Responsive TinyMCE */
+@media (max-width: 768px) {
+  .tox-toolbar__group .tox-tbtn {
+    width: 28px !important;
+    height: 28px !important;
+  }
+}
+
+/* =============================================================
+   TINYMCE - ẨN QUẢNG CÁO (THÊM MỚI)
+============================================================= */
+
+.tox-promotion {
+  display: none !important;
+}
+
+.tox-statusbar__branding {
+  display: none !important;
+}

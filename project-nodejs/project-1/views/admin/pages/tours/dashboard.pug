@@ -74,12 +74,6 @@ block content
 
   //- ===============================================================
   //- BIỂU ĐỒ DOANH THU
-  //-
-  //- Biến truyền vào (ví dụ):
-  //-   revenueChart : {
-  //-     labels: ["T1", "T2", "T3", ..., "T12"],
-  //-     data: [12000000, 18500000, 9000000, ...]
-  //-   }
   //- ===============================================================
 
   .admin-card.admin-chart-card
@@ -121,7 +115,7 @@ block content
   .admin-grid-2
 
     //- =============================================================
-    //- ĐƠN HÀNG GẦN ĐÂY
+    //- ĐƠN HÀNG GẦN ĐÂY - CÓ SCROLL NGANG
     //- =============================================================
 
     .admin-card
@@ -133,7 +127,8 @@ block content
         a.admin-card-link(href="/admin/orders") Xem tất cả →
 
 
-      .admin-table-wrap
+      //- ✅ THÊM CLASS "admin-table-scroll" ĐỂ TẠO SCROLL NGANG
+      .admin-table-wrap.admin-table-scroll
 
         table.admin-table
 
@@ -221,23 +216,13 @@ block scripts
   script(src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js")
 
   script.
-
     (function () {
-
       const canvas = document.querySelector('#revenueChart');
-
       if (!canvas) return;
-
       const rangeSelect = document.querySelector('#revenueChartRange');
       const monthInput = document.querySelector('#revenueChartMonthInput');
       const weekInput = document.querySelector('#revenueChartWeekInput');
 
-      // TODO (backend): route dashboard render nhớ truyền JSON.stringify(revenueChart)
-      // vào đây, ví dụ trong controller:
-      //   res.render('admin/pages/dashboard', {
-      //     stats, recentOrders, topTours,
-      //     revenueChart: { labels: [...], data: [...] }
-      //   })
       const initialRevenueChart = !{typeof revenueChart !== "undefined" ? JSON.stringify(revenueChart) : "{ labels: [], data: [] }"};
 
       const chart = new Chart(canvas.getContext('2d'), {
@@ -282,18 +267,6 @@ block scripts
         }
       });
 
-      // ---------------------------------------------------------------
-      // TODO (backend): tạo route API trả về dữ liệu biểu đồ theo query,
-      // ví dụ GET /admin/api/dashboard/revenue-chart
-      //   - ?range=today      -> doanh thu theo giờ trong hôm nay
-      //   - ?range=week       -> doanh thu theo ngày, 7 ngày gần nhất
-      //   - ?range=month      -> doanh thu theo ngày, 30 ngày gần nhất
-      //   - ?range=year       -> doanh thu theo tháng, 12 tháng gần nhất
-      //   - ?range=pickMonth&month=YYYY-MM  -> doanh thu theo ngày trong tháng đó
-      //   - ?range=pickWeek&week=YYYY-Www   -> doanh thu theo ngày trong tuần đó
-      // Response JSON dạng: { labels: [...], data: [...] }
-      // ---------------------------------------------------------------
-
       let isLoading = false;
 
       function setLoading(state) {
@@ -303,9 +276,7 @@ block scripts
 
       function fetchRevenueData(params) {
         const query = new URLSearchParams(params).toString();
-
         setLoading(true);
-
         return fetch('/admin/api/dashboard/revenue-chart?' + query)
           .then(function (res) {
             if (!res.ok) throw new Error('Không tải được dữ liệu biểu đồ');
@@ -329,13 +300,8 @@ block scripts
 
       rangeSelect.addEventListener('change', function () {
         const value = this.value;
-
         toggleDateInputs(value);
-
-        // Với "chọn tháng cụ thể" / "chọn tuần cụ thể", chờ người dùng
-        // chọn giá trị trong input ngày rồi mới gọi API.
         if (value === 'pickMonth' || value === 'pickWeek') return;
-
         fetchRevenueData({ range: value })
           .then(updateChart)
           .catch(function (err) { console.error(err); });
@@ -343,7 +309,6 @@ block scripts
 
       monthInput.addEventListener('change', function () {
         if (!this.value || isLoading) return;
-
         fetchRevenueData({ range: 'pickMonth', month: this.value })
           .then(updateChart)
           .catch(function (err) { console.error(err); });
@@ -351,11 +316,8 @@ block scripts
 
       weekInput.addEventListener('change', function () {
         if (!this.value || isLoading) return;
-
         fetchRevenueData({ range: 'pickWeek', week: this.value })
           .then(updateChart)
           .catch(function (err) { console.error(err); });
       });
-
     })();
-

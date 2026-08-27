@@ -19,26 +19,28 @@ header.admin-topbar
   .admin-topbar-right
 
     button.admin-topbar-icon(type="button" aria-label="Thông báo")
-
       i.fas.fa-bell
-
       if typeof notificationCount !== "undefined" && notificationCount > 0
         span.admin-topbar-dot
-
 
     .admin-user-menu
 
       button.admin-user-trigger#adminUserTrigger(type="button")
 
         img.admin-user-avatar(
-          src=(typeof adminUser !== "undefined" && adminUser.avatar) ? adminUser.avatar : "/admin/image/avatar-default.png"
-          alt="Admin"
+          src=(adminUser && adminUser.avatar) ? adminUser.avatar : "/admin/image/avatar-default.png"
+          alt=(adminUser && adminUser.fullName) ? adminUser.fullName : "Admin"
         )
 
-        span.admin-user-name= (typeof adminUser !== "undefined" && adminUser.name) ? adminUser.name : "Quản Trị Viên"
+        //- =====================================================
+        //- THÔNG TIN USER
+        //- =====================================================
+        .admin-user-info
+          span.admin-user-name= (adminUser && adminUser.fullName) ? adminUser.fullName : "Quản Trị Viên"
+          if adminUser && adminUser.role
+            span.admin-user-role= adminUser.role.charAt(0).toUpperCase() + adminUser.role.slice(1)
 
         i.fas.fa-chevron-down
-
 
       .admin-user-dropdown#adminUserDropdown
 

@@ -1,11 +1,95 @@
+# =============================================================
+# DEPENDENCIES
+# =============================================================
+
+/node_modules
+.pnp.*
+.pnp.js
+.yarn-integrity
+
+# =============================================================
+# ENVIRONMENT VARIABLES
+# =============================================================
+
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.test
+
+# =============================================================
+# LOGS
+# =============================================================
+
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# =============================================================
+# UPLOADS - KHÔNG TRACK ẢNH
+# =============================================================
+
+public/uploads/
+!public/uploads/.gitkeep
+public/uploads/*
+!public/uploads/.gitkeep
+public/uploads/**/*
+!public/uploads/**/.gitkeep
+
+# =============================================================
+# SEEDERS / DATA
+# =============================================================
 
 seeders/seed-demo-data.js
-/node_modules
-.env
+*.seed.js
+*.demo-data.js
+
+# =============================================================
+# 1.env (EMAIL CONFIG)
+# =============================================================
 
 1.env
-# Email 12 từ https://github.com/mnha-data/acc-claude/blob/main/free/README.md hãy liên hệ ad để ad gửi 1.env
-# example '1.env': MONGODB_URI_1=mongodb+srv://mthn04112009_db_user:passwork@cluster0.06dyyse.mongodb.net/travel_db?appName=Cluster0
+*.env
+1.env.*
+*.1.env
+
+# =============================================================
+# BUILD OUTPUTS
+# =============================================================
+
+dist
+build
+out
+.next
+.nuxt
+.cache
+
+# =============================================================
+# OS FILES
+# =============================================================
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =============================================================
+# IDE FILES
+# =============================================================
+
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.iml
+
+# =============================================================
+# YARN (Zero-Installs)
+# =============================================================
 
 .yarn/*
 !.yarn/patches
@@ -14,11 +98,39 @@ seeders/seed-demo-data.js
 !.yarn/sdks
 !.yarn/versions
 
-
-
 # Swap the comments on the following lines if you wish to use zero-installs
 # In that case, don't forget to run `yarn config set enableGlobalCache false`!
 # Documentation here: https://yarnpkg.com/features/caching#zero-installs
+# !.yarn/cache
 
-#!.yarn/cache
-.pnp.*
+# =============================================================
+# DATABASE
+# =============================================================
+
+*.db
+*.sqlite
+*.sqlite3
+
+# =============================================================
+# TEMP FILES
+# =============================================================
+
+tmp
+temp
+*.tmp
+
+# =============================================================
+# SECURITY
+# =============================================================
+
+*.pem
+*.key
+*.crt
+*.p12
+
+# =============================================================
+# PUG CACHE
+# =============================================================
+
+views/*.html
+*.pug.html

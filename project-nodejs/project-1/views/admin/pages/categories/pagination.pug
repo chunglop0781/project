@@ -1,0 +1,60 @@
+//- =============================================================
+//- PAGINATION
+//- =============================================================
+
+if typeof totalPages !== "undefined" && totalPages > 1
+
+  .admin-pagination
+
+    if typeof currentPage !== "undefined" && currentPage > 1
+
+      a.admin-pagination-btn(href="?page=" + (currentPage - 1) + (filterQuery ? "&" + filterQuery : ""))
+        i.fas.fa-chevron-left
+
+    else
+
+      span.admin-pagination-btn.disabled
+        i.fas.fa-chevron-left
+
+
+    - var startPage = Math.max(1, currentPage - 2);
+    - var endPage = Math.min(totalPages, currentPage + 2);
+
+    if startPage > 1
+
+      a.admin-pagination-btn(href="?page=1" + (filterQuery ? "&" + filterQuery : "")) 1
+
+      if startPage > 2
+
+        span.admin-pagination-btn.disabled ...
+
+
+    - for (var i = startPage; i <= endPage; i++)
+
+      if i === currentPage
+
+        span.admin-pagination-btn.active= i
+
+      else
+
+        a.admin-pagination-btn(href="?page=" + i + (filterQuery ? "&" + filterQuery : ""))= i
+
+
+    if endPage < totalPages
+
+      if endPage < totalPages - 1
+
+        span.admin-pagination-btn.disabled ...
+
+      a.admin-pagination-btn(href="?page=" + totalPages + (filterQuery ? "&" + filterQuery : ""))= totalPages
+
+
+    if typeof currentPage !== "undefined" && currentPage < totalPages
+
+      a.admin-pagination-btn(href="?page=" + (currentPage + 1) + (filterQuery ? "&" + filterQuery : ""))
+        i.fas.fa-chevron-right
+
+    else
+
+      span.admin-pagination-btn.disabled
+        i.fas.fa-chevron-right

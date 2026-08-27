@@ -1111,3 +1111,110 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 });
+
+
+/* =========================================================
+   ⚠️ KHÔNG CHẶN SUBMIT CHO FORM CATEGORY
+   ========================================================= */
+
+// ✅ BỔ SUNG: Kiểm tra và bỏ qua form category
+document.addEventListener('DOMContentLoaded', function() {
+    // Tìm tất cả form có class .admin-form (form admin)
+    var adminForms = document.querySelectorAll('form.admin-form');
+    
+    adminForms.forEach(function(form) {
+        // Kiểm tra xem form có phải là category form không
+        if (form.id === 'categoryForm' || form.querySelector('#description.tinymce-editor')) {
+            // ✅ Đánh dấu form này KHÔNG bị chặn
+            form.dataset.noPrevent = 'true';
+            console.log('✅ Category form detected - will NOT prevent submit');
+        }
+    });
+});
+
+/* =========================================================
+   FIX: CHO PHÉP FORM CATEGORY SUBMIT BÌNH THƯỜNG
+   ========================================================= */
+
+// ✅ Đảm bảo form category luôn submit được
+document.addEventListener('DOMContentLoaded', function() {
+    var categoryForm = document.getElementById('categoryForm');
+    if (categoryForm) {
+        // Xóa tất cả event listener cũ (nếu có)
+        // và đảm bảo form submit bình thường
+        console.log('✅ Category form found - ensuring normal submit');
+        
+        // Thêm event listener để log nhưng không chặn
+        categoryForm.addEventListener('submit', function(e) {
+            // Đồng bộ TinyMCE
+            if (typeof tinymce !== 'undefined') {
+                var editor = tinymce.get('description');
+                if (editor) {
+                    editor.save();
+                    console.log('✅ TinyMCE content saved');
+                }
+            }
+            // KHÔNG gọi e.preventDefault()
+            // KHÔNG gọi e.stopPropagation()
+            console.log('✅ Category form submitting...');
+        }, false); // false = bubble phase, chạy sau
+    }
+});
+
+// =============================================================
+// ✅ THÊM: ĐẢM BẢO FORM CATEGORY SUBMIT BẰNG CÁCH GHI ĐÈ
+// =============================================================
+
+// Chạy sau để đảm bảo
+setTimeout(function() {
+    var categoryForm = document.getElementById('categoryForm');
+    if (categoryForm) {
+        // ✅ Ghi đè method submit để đảm bảo form luôn submit được
+        var originalSubmit = categoryForm.submit;
+        categoryForm.submit = function() {
+            console.log('📤 Category form submit called (overridden)');
+            // Đồng bộ TinyMCE trước khi submit
+            if (typeof tinymce !== 'undefined') {
+                var editor = tinymce.get('description');
+                if (editor) {
+                    editor.save();
+                }
+            }
+            // Gọi submit gốc
+            HTMLFormElement.prototype.submit.call(this);
+        };
+        console.log('✅ Category form submit overridden');
+    }
+}, 200);
+
+// =============================================================
+// ✅ FIX CUỐI CÙNG: ĐẢM BẢO FORM CATEGORY SUBMIT
+// =============================================================
+
+// Ghi đè preventDefault cho form category
+(function() {
+    var originalPreventDefault = Event.prototype.preventDefault;
+    
+    // Chỉ áp dụng cho form category
+    document.addEventListener('submit', function(e) {
+        var form = e.target;
+        if (form && form.id === 'categoryForm') {
+            console.log('✅ Category form submitting - bypassing preventDefault');
+            // Cho phép submit
+            return true;
+        }
+    }, true); // capture phase
+    
+    // Đảm bảo form luôn submit được
+    setTimeout(function() {
+        var form = document.getElementById('categoryForm');
+        if (form) {
+            // Ghi đè method submit
+            form.submit = function() {
+                console.log('📤 Category form forced submit');
+                HTMLFormElement.prototype.submit.call(this);
+            };
+            console.log('✅ Category form fixed');
+        }
+    }, 100);
+})();

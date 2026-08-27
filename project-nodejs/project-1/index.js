@@ -37,6 +37,12 @@ app.set('view engine', 'pug');
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+// ✅ THÊM: Phục vụ file uploads
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
+// ✅ THÊM: Phục vụ file admin assets
+app.use('/admin/assets', express.static(path.join(__dirname, 'public/admin/assets')));
+
 // =============================================================
 // REQUEST BODY PARSER
 // =============================================================
@@ -66,7 +72,7 @@ app.use(
         resave: false,
         saveUninitialized: false,
         cookie: {
-            maxAge: 24 * 60 * 60 * 1000, // 24 hours
+            maxAge: 24 * 60 * 60 * 1000,
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production'
         }
@@ -82,6 +88,19 @@ app.use((req, res, next) => {
     res.locals.isAuthenticated = !!req.session.user;
     res.locals.path = req.path;
     res.locals.isAdmin = req.session.user?.role === 'admin';
+    
+    if (req.session.user) {
+        res.locals.adminUser = {
+            fullName: req.session.user.fullName,
+            avatar: req.session.user.avatar || '/admin/image/avatar-default.png',
+            role: req.session.user.role,
+            email: req.session.user.email,
+            id: req.session.user.id
+        };
+    } else {
+        res.locals.adminUser = null;
+    }
+    
     next();
 });
 
@@ -92,9 +111,25 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
     res.locals.success = req.session.success || null;
     res.locals.error = req.session.error || null;
-    // Clear flash messages after render
     req.session.success = null;
     req.session.error = null;
+    next();
+});
+
+// =============================================================
+// ✅ THÊM: DEBUG MIDDLEWARE - Log tất cả request POST
+// =============================================================
+
+app.use((req, res, next) => {
+    if (req.method === 'POST') {
+        console.log('========================================');
+        console.log('📨 POST REQUEST:');
+        console.log('  - URL:', req.url);
+        console.log('  - Content-Type:', req.headers['content-type']);
+        console.log('  - Body:', req.body);
+        console.log('  - Files:', req.file);
+        console.log('========================================');
+    }
     next();
 });
 
@@ -136,34 +171,46 @@ if (process.env.DEBUG === 'true') {
 
 const startServer = async () => {
     try {
-        // =====================================================
-        // KẾT NỐI DATABASE TRƯỚC
-        // =====================================================
         await database.connect();
         console.log('✅ Database connected successfully');
 
-        // =====================================================
-        // IMPORT ROUTES SAU KHI DB ĐÃ KẾT NỐI
-        // =====================================================
+        // ✅ THÊM: Kiểm tra thư mục uploads và tạo .gitkeep
+        const fs = require('fs');
+        const uploadDirs = [
+            path.join(__dirname, 'public/uploads'),
+            path.join(__dirname, 'public/uploads/tinymce'),
+            path.join(__dirname, 'public/uploads/categories'),
+            path.join(__dirname, 'public/uploads/tours')
+        ];
+        
+        uploadDirs.forEach(dir => {
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+                console.log(`📁 Đã tạo thư mục: ${dir}`);
+            }
+            
+            // ✅ BỔ SUNG: Tạo file .gitkeep trong mỗi thư mục uploads
+            const gitkeepPath = path.join(dir, '.gitkeep');
+            if (!fs.existsSync(gitkeepPath)) {
+                fs.writeFileSync(gitkeepPath, '');
+                console.log(`📄 Đã tạo file: ${gitkeepPath}`);
+            }
+        });
+
         const clientRoutes = require('./routes/client/index.route');
         const adminRoutes = require('./routes/admin/index.route');
         const errorRoutes = require('./routes/error.route');
 
-        // =====================================================
-        // REGISTER ROUTES
-        // =====================================================
         app.use('/', clientRoutes);
         app.use('/admin', adminRoutes);
         app.use(errorRoutes);
 
-        // =====================================================
-        // START SERVER
-        // =====================================================
         app.listen(port, () => {
             console.log('==========================================');
             console.log(`🚀 Website đang chạy trên http://localhost:${port}`);
             console.log(`📁 Environment: ${process.env.NODE_ENV || 'development'}`);
             console.log(`📦 Database: Connected`);
+            console.log(`📁 Uploads: /public/uploads`);
             console.log('==========================================');
         });
 
@@ -186,26 +233,16 @@ const startServer = async () => {
 
 startServer();
 
-// =============================================================
-// HANDLE UNHANDLED REJECTIONS & EXCEPTIONS
-// =============================================================
-
 process.on('unhandledRejection', (err) => {
     console.error('❌ UNHANDLED REJECTION:', err);
-    // Don't exit immediately, log for debugging
 });
 
 process.on('uncaughtException', (err) => {
     console.error('❌ UNCAUGHT EXCEPTION:', err);
-    // Exit to avoid inconsistent state
     if (process.env.NODE_ENV === 'production') {
         process.exit(1);
     }
 });
-
-// =============================================================
-// GRACEFUL SHUTDOWN
-// =============================================================
 
 process.on('SIGINT', async () => {
     console.log('\n🛑 Đang tắt server...');

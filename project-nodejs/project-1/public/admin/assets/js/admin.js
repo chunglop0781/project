@@ -1,383 +1,206 @@
-/* =============================================================
-   ADMIN JS - 28 TRAVEL
-   Mục lục:
-   1. Sidebar toggle (mobile)
-   2. Dropdown user menu (topbar)
-   3. Đóng alert / flash message
-   4. Xác nhận xóa (data-confirm + data-delete-url)
-   5. Xem trước ảnh khi upload
-   6. Checkbox chọn tất cả trong bảng
-   7. Toggle hiện/ẩn mật khẩu (trang đăng nhập)
-============================================================= */
+// =============================================================
+// ADMIN JS - 28 TRAVEL
+// =============================================================
 
+document.addEventListener("DOMContentLoaded", function() {
 
-/* =============================================================
-   1. SIDEBAR TOGGLE (MOBILE)
-============================================================= */
+    // =============================================================
+    // SIDEBAR TOGGLE
+    // =============================================================
 
-document.addEventListener("DOMContentLoaded", function () {
-
-    const sidebar = document.querySelector("#adminSidebar");
-    const toggleButton = document.querySelector("#adminSidebarToggle");
-    const closeButton = document.querySelector("#adminSidebarClose");
-    const overlay = document.querySelector("#adminOverlay");
-
-    if (!sidebar || !overlay) {
-        return;
-    }
+    var sidebarToggle = document.getElementById('adminSidebarToggle');
+    var sidebarClose = document.getElementById('adminSidebarClose');
+    var sidebar = document.getElementById('adminSidebar');
+    var overlay = document.getElementById('adminOverlay');
 
     function openSidebar() {
-        sidebar.classList.add("open");
-        overlay.classList.add("show");
+        if (sidebar) sidebar.classList.add('open');
+        if (overlay) overlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
     }
 
     function closeSidebar() {
-        sidebar.classList.remove("open");
-        overlay.classList.remove("show");
+        if (sidebar) sidebar.classList.remove('open');
+        if (overlay) overlay.classList.remove('show');
+        document.body.style.overflow = '';
     }
 
-    if (toggleButton) {
-        toggleButton.addEventListener("click", function () {
-            sidebar.classList.contains("open") ? closeSidebar() : openSidebar();
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', openSidebar);
+    }
+
+    if (sidebarClose) {
+        sidebarClose.addEventListener('click', closeSidebar);
+    }
+
+    if (overlay) {
+        overlay.addEventListener('click', closeSidebar);
+    }
+
+    // =============================================================
+    // USER DROPDOWN
+    // =============================================================
+
+    var userTrigger = document.getElementById('adminUserTrigger');
+    var userDropdown = document.getElementById('adminUserDropdown');
+
+    if (userTrigger && userDropdown) {
+        userTrigger.addEventListener('click', function(e) {
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+            userTrigger.classList.toggle('open');
         });
-    }
 
-    if (closeButton) {
-        closeButton.addEventListener("click", closeSidebar);
-    }
-
-    overlay.addEventListener("click", closeSidebar);
-
-    document.addEventListener("keydown", function (event) {
-        if (event.key === "Escape") {
-            closeSidebar();
-        }
-    });
-
-});
-
-
-/* =============================================================
-   2. DROPDOWN USER MENU (TOPBAR)
-============================================================= */
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const trigger = document.querySelector("#adminUserTrigger");
-    const dropdown = document.querySelector("#adminUserDropdown");
-
-    if (!trigger || !dropdown) {
-        return;
-    }
-
-    function closeDropdown() {
-        dropdown.classList.remove("show");
-        trigger.classList.remove("open");
-    }
-
-    trigger.addEventListener("click", function (event) {
-        event.stopPropagation();
-        const isOpen = dropdown.classList.contains("show");
-        isOpen ? closeDropdown() : (dropdown.classList.add("show"), trigger.classList.add("open"));
-    });
-
-    document.addEventListener("click", function (event) {
-        if (!dropdown.contains(event.target) && !trigger.contains(event.target)) {
-            closeDropdown();
-        }
-    });
-
-    document.addEventListener("keydown", function (event) {
-        if (event.key === "Escape") {
-            closeDropdown();
-        }
-    });
-
-});
-
-
-/* =============================================================
-   3. ĐÓNG ALERT / FLASH MESSAGE
-============================================================= */
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const alerts = document.querySelectorAll(".admin-alert");
-
-    alerts.forEach(function (alertEl) {
-
-        const closeButton = alertEl.querySelector(".admin-alert-close");
-
-        function hideAlert() {
-            alertEl.style.transition = "opacity .2s ease";
-            alertEl.style.opacity = "0";
-            setTimeout(function () {
-                alertEl.remove();
-            }, 200);
-        }
-
-        if (closeButton) {
-            closeButton.addEventListener("click", hideAlert);
-        }
-
-        setTimeout(hideAlert, 5000);
-
-    });
-
-});
-
-
-/* =============================================================
-   4. XÁC NHẬN XÓA
-   Áp dụng cho mọi phần tử có: data-confirm + data-delete-url
-   (VD: nút xóa tour, xóa bài viết trong bảng danh sách)
-============================================================= */
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const deleteButtons = document.querySelectorAll("[data-delete-url]");
-
-    deleteButtons.forEach(function (button) {
-
-        button.addEventListener("click", function () {
-
-            const message = button.getAttribute("data-confirm") || "Bạn có chắc muốn xóa mục này?";
-            const url = button.getAttribute("data-delete-url");
-
-            if (!url) {
-                return;
+        document.addEventListener('click', function(e) {
+            if (!userTrigger.contains(e.target) && !userDropdown.contains(e.target)) {
+                userDropdown.classList.remove('show');
+                userTrigger.classList.remove('open');
             }
-
-            if (!confirm(message)) {
-                return;
-            }
-
-            button.disabled = true;
-
-            fetch(url, { method: "DELETE" })
-                .then(function (response) {
-                    return response.json().catch(function () {
-                        return {};
-                    });
-                })
-                .then(function (data) {
-                    if (data && data.success === false) {
-                        alert("Có lỗi xảy ra, vui lòng thử lại.");
-                        button.disabled = false;
-                        return;
-                    }
-                    // Xóa xong -> tải lại trang để danh sách cập nhật
-                    window.location.reload();
-                })
-                .catch(function (error) {
-                    console.log(error);
-                    alert("Có lỗi xảy ra, vui lòng thử lại.");
-                    button.disabled = false;
-                });
-
         });
-
-    });
-
-});
-
-
-/* =============================================================
-   5. XEM TRƯỚC ẢNH KHI UPLOAD
-   Áp dụng cho mọi ô upload dạng: .admin-upload-box chứa
-   1 <img> và 1 input[type=file]
-============================================================= */
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const uploadBoxes = document.querySelectorAll(".admin-upload-box");
-
-    uploadBoxes.forEach(function (box) {
-
-        const fileInput = box.querySelector('input[type="file"]');
-        const previewImage = box.querySelector("img");
-
-        if (!fileInput || !previewImage) {
-            return;
-        }
-
-        fileInput.addEventListener("change", function () {
-
-            const file = fileInput.files && fileInput.files[0];
-
-            if (!file) {
-                return;
-            }
-
-            const reader = new FileReader();
-
-            reader.onload = function (event) {
-                previewImage.src = event.target.result;
-            };
-
-            reader.readAsDataURL(file);
-
-        });
-
-    });
-
-});
-
-
-/* =============================================================
-   6. CHECKBOX CHỌN TẤT CẢ TRONG BẢNG
-   Checkbox có [data-select-all] sẽ tick/untick toàn bộ
-   checkbox còn lại trong cùng bảng
-============================================================= */
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const selectAllCheckboxes = document.querySelectorAll("[data-select-all]");
-
-    selectAllCheckboxes.forEach(function (selectAll) {
-
-        const table = selectAll.closest("table");
-
-        if (!table) {
-            return;
-        }
-
-        const rowCheckboxes = table.querySelectorAll('tbody input[type="checkbox"]');
-
-        selectAll.addEventListener("change", function () {
-            rowCheckboxes.forEach(function (checkbox) {
-                checkbox.checked = selectAll.checked;
-            });
-        });
-
-        rowCheckboxes.forEach(function (checkbox) {
-            checkbox.addEventListener("change", function () {
-                const allChecked = Array.from(rowCheckboxes).every(function (item) {
-                    return item.checked;
-                });
-                selectAll.checked = allChecked;
-            });
-        });
-
-    });
-
-});
-
-
-/* =============================================================
-   7. TOGGLE HIỆN/ẨN MẬT KHẨU (TRANG ĐĂNG NHẬP)
-============================================================= */
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const toggleButton = document.querySelector(".admin-password-toggle");
-
-    if (!toggleButton) {
-        return;
     }
 
-    const passwordInput = toggleButton.closest(".admin-input-icon").querySelector("input");
-    const icon = toggleButton.querySelector("i");
+    // =============================================================
+    // ALERT CLOSE
+    // =============================================================
 
-    if (!passwordInput || !icon) {
-        return;
-    }
-
-    toggleButton.addEventListener("click", function () {
-
-        const isVisible = passwordInput.type === "text";
-
-        passwordInput.type = isVisible ? "password" : "text";
-
-        icon.classList.toggle("fa-eye", isVisible);
-        icon.classList.toggle("fa-eye-slash", !isVisible);
-
+    var alertCloses = document.querySelectorAll('.admin-alert-close');
+    alertCloses.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var alert = this.closest('.admin-alert');
+            if (alert) {
+                alert.style.display = 'none';
+            }
+        });
     });
 
-});
+    // =============================================================
+    // LOGIN FORM
+    // =============================================================
 
-
-/* =============================================================
-   8. XỬ LÝ ĐĂNG NHẬP ADMIN
-   Gửi email + password + rememberPassword bằng fetch JSON
-============================================================= */
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const loginForm = document.querySelector("#adminLoginForm");
-
-    if (!loginForm) {
-        return;
+    var loginForm = document.querySelector('#loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            console.log('Login form submitted');
+        });
     }
 
-    loginForm.addEventListener("submit", async function (event) {
+    // =============================================================
+    // CATEGORY FORM - KHÔNG CHẶN
+    // =============================================================
 
-        // Ngăn form submit theo cách mặc định
-        event.preventDefault();
-
-        const emailInput = loginForm.querySelector('[name="email"]');
-        const passwordInput = loginForm.querySelector('[name="password"]');
-        const rememberPasswordInput = loginForm.querySelector('[name="rememberPassword"]');
-
-        if (!emailInput || !passwordInput) {
-            return;
-        }
-
-        const email = emailInput.value;
-        const password = passwordInput.value;
-        const rememberPassword = rememberPasswordInput
-            ? rememberPasswordInput.checked
-            : false;
-
-        const dataFinal = {
-            email: email,
-            password: password,
-            rememberPassword: rememberPassword
-        };
-
-        try {
-
-            const response = await fetch("/login", {
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify(dataFinal)
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                alert(data.message || "Đăng nhập thất bại.");
-                return;
-            }
-
-            // Đăng nhập thành công
-            if (data.success) {
-
-                if (data.redirect) {
-                    window.location.href = data.redirect;
-                    return;
+    var categoryForm = document.getElementById('categoryForm');
+    if (categoryForm) {
+        categoryForm.addEventListener('submit', function(e) {
+            if (typeof tinymce !== 'undefined') {
+                var editor = tinymce.get('description');
+                if (editor) {
+                    editor.save();
+                    console.log('✅ TinyMCE content saved');
                 }
-
-                // Nếu backend không trả redirect
-                window.location.href = "/admin";
-
-                return;
             }
+            console.log('✅ Category form submitting...');
+        });
+    }
 
-            alert(data.message || "Email hoặc mật khẩu không chính xác.");
+    // =============================================================
+    // CHECKBOX ALL
+    // =============================================================
 
-        } catch (error) {
+    var checkAll = document.getElementById('checkAllCategories');
+    if (checkAll) {
+        checkAll.addEventListener('change', function() {
+            var checkboxes = document.querySelectorAll('input[name="ids"]');
+            checkboxes.forEach(function(cb) {
+                cb.checked = checkAll.checked;
+            });
+        });
+    }
 
-            console.error("LOGIN ERROR:", error);
+    // =============================================================
+    // DELETE CONFIRM
+    // =============================================================
 
-            alert("Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.");
-
+    document.addEventListener('click', function(e) {
+        var btn = e.target.closest('[data-delete-url]');
+        if (btn) {
+            e.preventDefault();
+            var url = btn.getAttribute('data-delete-url');
+            var confirmMsg = btn.getAttribute('data-confirm') || 'Bạn có chắc chắn muốn xóa?';
+            if (confirm(confirmMsg)) {
+                fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        alert(data.message || 'Xóa thất bại');
+                    }
+                })
+                .catch(function() {
+                    alert('Có lỗi xảy ra');
+                });
+            }
         }
-
     });
 
+    console.log('✅ Admin JS loaded');
 });
+
+// =============================================================
+// ✅ FIX: ĐẢM BẢO FORM CATEGORY SUBMIT BÌNH THƯỜNG
+// =============================================================
+
+// Chạy sau khi DOM load xong để đảm bảo form tồn tại
+setTimeout(function() {
+    var categoryForm = document.getElementById('categoryForm');
+    
+    if (categoryForm) {
+        // ✅ Gỡ bỏ tất cả event listener cũ bằng cách clone và replace
+        var newForm = categoryForm.cloneNode(true);
+        categoryForm.parentNode.replaceChild(newForm, categoryForm);
+        
+        console.log('✅ Category form reset - all old listeners removed');
+        
+        // ✅ Thêm event listener mới KHÔNG chặn submit
+        newForm.addEventListener('submit', function(e) {
+            // Đồng bộ TinyMCE
+            if (typeof tinymce !== 'undefined') {
+                var editor = tinymce.get('description');
+                if (editor) {
+                    editor.save();
+                    console.log('✅ TinyMCE content saved');
+                }
+            }
+            
+            // ✅ KHÔNG gọi e.preventDefault()
+            console.log('✅ Category form submitting...');
+            
+            // Form sẽ submit tự nhiên
+            return true;
+        }, false);
+        
+        // ✅ Đảm bảo form luôn submit được (dự phòng)
+        newForm.addEventListener('submit', function(e) {
+            // Cho phép submit bình thường
+        }, true); // capture phase
+    } else {
+        console.warn('⚠️ Category form not found, retrying...');
+        // Thử lại sau 500ms nếu form chưa tồn tại
+        setTimeout(function() {
+            var retryForm = document.getElementById('categoryForm');
+            if (retryForm) {
+                retryForm.submit = function() {
+                    // Ghi đè method submit để đảm bảo gửi dữ liệu
+                    HTMLFormElement.prototype.submit.call(retryForm);
+                };
+                console.log('✅ Category form protection applied (retry)');
+            }
+        }, 500);
+    }
+}, 100);

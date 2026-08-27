@@ -1,0 +1,221 @@
+extends ../../layouts/admin-layout.pug
+
+block content
+  .admin-page-head
+    div
+      h2.admin-page-title= (typeof category !== "undefined" && category) ? "Sửa Danh Mục" : "Tạo Danh Mục"
+      p.admin-page-subtitle Điền đầy đủ thông tin bên dưới.
+
+    a.admin-btn.admin-btn-outline(href="/admin/categories")
+      i.fas.fa-arrow-left
+      |  Quay lại danh sách
+
+  if typeof error !== "undefined" && error
+    .admin-alert.admin-alert-error
+      i.fas.fa-circle-exclamation
+      span= error
+
+  .admin-card
+    //- ✅ THÊM onsubmit="return true;" ĐỂ ĐẢM BẢO SUBMIT
+    form#categoryForm.admin-form(
+      method="POST"
+      action=(typeof category !== "undefined" && category) ? "/admin/categories/" + category.id + "/edit" : "/admin/categories/new"
+      enctype="multipart/form-data"
+      onsubmit="return true;"
+    )
+      .admin-form-grid
+        .admin-form-col
+          .admin-form-row
+            .admin-form-group
+              label(for="name") Tên danh mục *
+              input#name.admin-input(
+                type="text"
+                name="name"
+                value=(typeof category !== "undefined" && category) ? category.name : ""
+                placeholder="VD: Tour Biển"
+                required
+              )
+
+            .admin-form-group
+              label(for="parent") Danh mục cha
+              select#parent.admin-input(name="parent")
+                option(value="") -- Chọn danh mục --
+                if typeof parentCategories !== "undefined" && parentCategories.length
+                  each parent in parentCategories
+                    option(
+                      value=parent.id
+                      selected=(typeof category !== "undefined" && category && category.parent === parent.id)
+                    )= parent.name
+
+          .admin-form-row
+            .admin-form-group
+              label(for="position") Vị trí
+              input#position.admin-input(
+                type="number"
+                name="position"
+                min="1"
+                value=(typeof category !== "undefined" && category) ? category.position : ""
+                placeholder="1"
+              )
+
+            .admin-form-group
+              label(for="status") Trạng thái
+              select#status.admin-input(name="status")
+                option(value="active" selected=(typeof category !== "undefined" && category && category.status === "active")) Hoạt động
+                option(value="inactive" selected=(typeof category !== "undefined" && category && category.status === "inactive")) Dừng hoạt động
+
+          .admin-form-group
+            label(for="description") Mô tả
+            textarea#description.tinymce-editor(
+              name="description"
+              rows="10"
+              placeholder="Mô tả chi tiết về danh mục..."
+            )= (typeof category !== "undefined" && category) ? category.description : ""
+
+        .admin-form-col.admin-form-col-side
+          .admin-form-group
+            label Ảnh đại diện
+            .admin-form-image-preview#categoryImagePreview
+              img(
+                src=(typeof category !== "undefined" && category && category.image) ? category.image : "/admin/image/no-image.png"
+                alt="Ảnh danh mục"
+              )
+            input#image.admin-input(
+              type="file"
+              name="image"
+              accept="image/*"
+            )
+            p.admin-form-hint Chưa chọn ảnh mới sẽ giữ nguyên ảnh cũ (khi sửa).
+
+      .admin-form-actions
+        button.admin-btn.admin-btn-primary(type="submit")
+          i.fas.fa-floppy-disk
+          |  #{(typeof category !== "undefined" && category) ? "Cập nhật" : "Tạo mới"}
+        a.admin-btn.admin-btn-outline(href="/admin/categories") Hủy
+
+block scripts
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js")
+  script(src="/admin/assets/js/tinymce-config.js")
+  
+  //- ✅ THÊM SCRIPT KIỂM TRA SUBMIT
+  script.
+    (function() {
+      var form = document.getElementById('categoryForm');
+      if (form) {
+        console.log('✅ Category form found');
+        
+        form.addEventListener('submit', function(e) {
+          console.log('🔍 FORM SUBMIT EVENT FIRED');
+          console.log('  - Action:', form.action);
+          console.log('  - Method:', form.method);
+          console.log('  - Enctype:', form.enctype);
+          
+          // Đồng bộ TinyMCE
+          if (typeof tinymce !== 'undefined') {
+            var editor = tinymce.get('description');
+            if (editor) {
+              editor.save();
+              console.log('✅ TinyMCE content saved');
+              console.log('  - Content:', editor.getContent());
+            }
+          }
+          
+          // Log dữ liệu form
+          var formData = new FormData(form);
+          console.log('📝 FORM DATA:');
+          for (var pair of formData.entries()) {
+            console.log('  - ' + pair[0] + ':', pair[1]);
+          }
+          
+          // ✅ KHÔNG preventDefault - để form submit tự nhiên
+          return true;
+        }, false);
+      }
+      
+      // Preview ảnh
+      var imageInput = document.querySelector('#image');
+      var preview = document.querySelector('#categoryImagePreview img');
+      if (imageInput && preview) {
+        imageInput.addEventListener('change', function() {
+          var file = this.files && this.files[0];
+          if (!file) return;
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            preview.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+    })();
+  
+  //- ✅ THÊM: KIỂM TRA VÀ ĐẢM BẢO FORM SUBMIT (BỔ SUNG)
+  script.
+    (function() {
+      // Tìm form bằng nhiều cách
+      var form = document.getElementById('categoryForm');
+      if (!form) {
+        form = document.querySelector('form.admin-form');
+      }
+      if (!form) {
+        form = document.querySelector('form[action*="categories"]');
+      }
+      
+      if (form) {
+        console.log('✅ Category form found (secondary check):', form);
+        
+        // Đảm bảo form có id
+        if (!form.id) {
+          form.id = 'categoryForm';
+        }
+        
+        // Đồng bộ TinyMCE trước khi submit
+        form.addEventListener('submit', function(e) {
+          console.log('🔍 FORM SUBMIT EVENT FIRED (secondary)');
+          
+          if (typeof tinymce !== 'undefined') {
+            var editor = tinymce.get('description');
+            if (editor) {
+              editor.save();
+              console.log('✅ TinyMCE content saved (secondary)');
+              console.log('  - Content:', editor.getContent());
+            }
+          }
+          
+          var formData = new FormData(form);
+          console.log('📝 FORM DATA (secondary):');
+          var hasData = false;
+          for (var pair of formData.entries()) {
+            console.log('  - ' + pair[0] + ':', pair[1] || '(empty)');
+            hasData = true;
+          }
+          if (!hasData) {
+            console.warn('⚠️ No form data found!');
+          }
+          
+          // ✅ KHÔNG preventDefault
+          return true;
+        });
+        
+        // ✅ THÊM: Nếu form chưa có action, set lại
+        if (!form.action || form.action === '') {
+          form.action = '/admin/categories/new';
+          console.log('✅ Set form action to:', form.action);
+        }
+        
+        // ✅ THÊM: Debug form attributes
+        console.log('📋 Form attributes:');
+        console.log('  - ID:', form.id);
+        console.log('  - Action:', form.action);
+        console.log('  - Method:', form.method);
+        console.log('  - Enctype:', form.enctype);
+        
+      } else {
+        console.error('❌ Category form NOT found!');
+        console.log('🔍 All forms on page:');
+        document.querySelectorAll('form').forEach(function(f, i) {
+          console.log('  - Form ' + i + ':', f);
+          console.log('    ID:', f.id);
+          console.log('    Action:', f.action);
+        });
+      }
+    })();

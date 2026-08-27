@@ -7,7 +7,6 @@ aside.admin-sidebar#adminSidebar
   .admin-sidebar-logo
 
     a(href="/admin/dashboard")
-
       img(src="/admin/image/logo.png" alt="28 Travel")
 
     button.admin-sidebar-close#adminSidebarClose(type="button" aria-label="Đóng menu")
@@ -44,6 +43,19 @@ aside.admin-sidebar#adminSidebar
           i.fas.fa-suitcase-rolling
 
           span Quản Lý Tour
+
+
+      //- ✅ THÊM: QUẢN LÝ DANH MỤC
+      li
+
+        a(
+          href="/admin/categories"
+          class=(activeMenu === "categories" ? "active" : "")
+        )
+
+          i.fas.fa-tags
+
+          span Quản Lý Danh Mục
 
 
       li
