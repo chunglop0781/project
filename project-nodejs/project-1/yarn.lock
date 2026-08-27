@@ -554,6 +554,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"child_process@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "child_process@npm:1.0.2"
+  checksum: 10c0/6e45dff224c704dc5c5edc14532e6c0c5c23a7c5f823574349246082d94a29780a68a46155d8a6989ffa986cb12ed0b01fbfc6c713b6655959fabb6b8cd52e4a
+  languageName: node
+  linkType: hard
+
 "chokidar@npm:^3.5.2":
   version: 3.6.0
   resolution: "chokidar@npm:3.6.0"
@@ -1858,6 +1865,7 @@ __metadata:
     axios: "npm:^1.20.0"
     bcrypt: "npm:^6.0.0"
     bcryptjs: "npm:^3.0.3"
+    child_process: "npm:^1.0.2"
     cloudinary: "npm:^2.10.1"
     cookie-parser: "npm:^1.4.7"
     dotenv: "npm:^17.4.2"

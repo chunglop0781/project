@@ -4,7 +4,7 @@ block content
 
   //- =============================================================
   //- Biến truyền vào:
-  //-   customer : { id, name, phone, email, address, joinedAt, totalOrders, totalSpent }
+  //-   customer : { id, name, phone, email, address, joinedAt, totalOrders, totalSpent, avatar, status, statusLabel }
   //-   orders   : [{ id, code, tourName, total, status, statusLabel, createdAt }]
   //- =============================================================
 
@@ -16,12 +16,14 @@ block content
 
       p.admin-page-subtitle Khách hàng từ #{customer.joinedAt}
 
-    a.admin-btn.admin-btn-outline(href="/admin/customers")
+    div(style="display: flex; gap: 10px;")
+      a.admin-btn.admin-btn-primary(href="/admin/customers/" + customer.id + "/edit")
+        i.fas.fa-pen
+        | Sửa khách hàng
 
-      i.fas.fa-arrow-left
-
-      | Quay lại danh sách
-
+      a.admin-btn.admin-btn-outline(href="/admin/customers")
+        i.fas.fa-arrow-left
+        | Quay lại danh sách
 
   .admin-grid-2
 
@@ -69,7 +71,11 @@ block content
 
                     td
 
-                      span.admin-badge(class="is-" + order.status)= order.statusLabel
+                      span.admin-badge(
+                        class=order.status === "completed" ? "is-success" : 
+                             order.status === "cancelled" ? "is-danger" : 
+                             order.status === "confirmed" ? "is-info" : "is-warning"
+                      )= order.statusLabel
 
               else
 
@@ -84,10 +90,18 @@ block content
 
         .admin-customer-profile
 
-          .admin-avatar-fallback.is-large= customer.name.charAt(0).toUpperCase()
+          img.admin-avatar-large(
+            src=customer.avatar || '/admin/image/no-image.png'
+            alt=customer.name
+            onerror="this.src='/admin/image/no-image.png'"
+          )
 
           h3= customer.name
 
+          span.admin-badge(
+            class=customer.status === "active" ? "is-success" : "is-muted"
+          )
+            = customer.statusLabel
 
         ul.admin-info-list
 

@@ -153,37 +153,37 @@ block content
 
 
     //- ===============================================================
-    //- BẢNG DANH SÁCH
+    //- BẢNG DANH SÁCH - VỚI CSS CĂN ĐỀU
     //- ===============================================================
 
     .admin-table-wrap
 
-      table.admin-table
+      table.admin-table.tour-table
 
         thead
 
           tr
 
-            th(style="width: 36px")
+            th.col-checkbox
               input.admin-checkbox(type="checkbox" id="checkAllTours")
 
-            th Tên tour
+            th.col-name Tên tour
 
-            th Ảnh đại diện
+            th.col-thumbnail Ảnh đại diện
 
-            th Giá
+            th.col-price Giá
 
-            th Còn lại
+            th.col-remaining Còn lại
 
-            th Vị trí
+            th.col-position Vị trí
 
-            th Trạng thái
+            th.col-status Trạng thái
 
-            th Tạo bởi
+            th.col-creator Tạo bởi
 
-            th Cập nhật bởi
+            th.col-updater Cập nhật bởi
 
-            th Hành động
+            th.col-actions Hành động
 
 
         tbody
@@ -194,67 +194,164 @@ block content
 
               tr
 
-                td
+                td.col-checkbox
                   input.admin-checkbox(type="checkbox" name="ids" value=tour.id)
 
-                td= tour.name
+                td.col-name
+                  .tour-name= tour.name
 
-                td
-                  img.admin-table-thumb(src=tour.image alt=tour.name)
+                td.col-thumbnail
+                  img.admin-table-thumb(
+                    src=tour.image || '/admin/image/no-image.png'
+                    alt=tour.name
+                    onerror="this.src='/admin/image/no-image.png'"
+                  )
 
-                td
+                td.col-price
+                  .price-item
+                    span.price-label NL: 
+                    span.price-value= (tour.priceAdult || 0).toLocaleString("vi-VN") + 'đ'
+                  .price-item
+                    span.price-label TE: 
+                    span.price-value= (tour.priceChild || 0).toLocaleString("vi-VN") + 'đ'
+                  .price-item
+                    span.price-label EB: 
+                    span.price-value= (tour.priceInfant || 0).toLocaleString("vi-VN") + 'đ'
 
-                  div NL: #{(tour.priceAdult || 0).toLocaleString("vi-VN")}đ
+                td.col-remaining
+                  .remaining-item
+                    span.remaining-label NL: 
+                    span= tour.remainingAdult || 0
+                  .remaining-item
+                    span.remaining-label TE: 
+                    span= tour.remainingChild || 0
+                  .remaining-item
+                    span.remaining-label EB: 
+                    span= tour.remainingInfant || 0
 
-                  div TE: #{(tour.priceChild || 0).toLocaleString("vi-VN")}đ
+                td.col-position
+                  .position-badge= tour.position || 1
 
-                  div EB: #{(tour.priceInfant || 0).toLocaleString("vi-VN")}đ
-
-                td
-
-                  div NL: #{tour.remainingAdult || 0}
-
-                  div TE: #{tour.remainingChild || 0}
-
-                  div EB: #{tour.remainingInfant || 0}
-
-                td= tour.position
-
-                td
-
-                  span.admin-badge(class=tour.status === "active" ? "is-active" : "is-inactive")
+                td.col-status
+                  span.admin-badge(
+                    class=tour.status === "active" ? "is-success" : "is-muted"
+                  )
                     = tour.statusLabel || (tour.status === "active" ? "Hoạt động" : "Tạm dừng")
 
-                td
+                td.col-creator
+                  .creator-name= tour.createdByName || 'N/A'
+                  .creator-time= tour.createdAt || ''
 
-                  div= tour.createdByName
+                td.col-updater
+                  .updater-name= tour.updatedByName || 'N/A'
+                  .updater-time= tour.updatedAt || ''
 
-                  span.admin-table-sub= tour.createdAt
+                td.col-actions
+                  .admin-table-actions
+                    a.admin-icon-btn(href="/admin/tours/" + tour.id + "/edit" title="Sửa")
+                      i.fas.fa-pen
 
-                td
-
-                  div= tour.updatedByName
-
-                  span.admin-table-sub= tour.updatedAt
-
-                td
-
-                  a.admin-icon-btn(href="/admin/tours/" + tour.id + "/edit" title="Sửa")
-                    i.fas.fa-pen
-
-                  button.admin-icon-btn.admin-icon-btn-danger(
-                    type="button"
-                    data-delete-url="/admin/tours/" + tour.id
-                    data-confirm="Bạn có chắc muốn chuyển tour này vào thùng rác?"
-                    title="Xóa"
-                  )
-                    i.fas.fa-trash
+                    button.admin-icon-btn.admin-icon-btn-danger(
+                      type="button"
+                      data-delete-url="/admin/tours/" + tour.id
+                      data-confirm="Bạn có chắc muốn chuyển tour này vào thùng rác?"
+                      title="Xóa"
+                    )
+                      i.fas.fa-trash
 
           else
 
             tr
 
-              td.admin-table-empty(colspan="10") Chưa có tour nào.
+              td.admin-table-empty(colspan="10")
+                .admin-empty-state
+                  i.fas.fa-plane
+                  p Chưa có tour nào.
+                  a.admin-btn.admin-btn-primary(href="/admin/tours/new")
+                    i.fas.fa-plus
+                    |  Tạo tour đầu tiên
 
 
-    include ../../partials/pagination.pug
+    //- ===============================================================
+    //- PHÂN TRANG
+    //- ===============================================================
+
+    if typeof totalPages !== "undefined" && totalPages > 1
+
+      .admin-pagination
+
+        if typeof currentPage !== "undefined" && currentPage > 1
+
+          a.admin-pagination-btn(
+            href="?page=" + (currentPage - 1) + (baseUrl ? baseUrl.replace(/page=\d+&?/g, '').replace(/\?/g, '') : "")
+          )
+            i.fas.fa-chevron-left
+
+        else
+
+          span.admin-pagination-btn.disabled
+            i.fas.fa-chevron-left
+
+
+        - var startPage = Math.max(1, currentPage - 2);
+        - var endPage = Math.min(totalPages, currentPage + 2);
+
+        if startPage > 1
+
+          a.admin-pagination-btn(
+            href="?page=1" + (baseUrl ? baseUrl.replace(/page=\d+&?/g, '').replace(/\?/g, '') : "")
+          ) 1
+
+          if startPage > 2
+
+            span.admin-pagination-btn.disabled ...
+
+
+        - for (var i = startPage; i <= endPage; i++)
+
+          if i === currentPage
+
+            span.admin-pagination-btn.active= i
+
+          else
+
+            a.admin-pagination-btn(
+              href="?page=" + i + (baseUrl ? baseUrl.replace(/page=\d+&?/g, '').replace(/\?/g, '') : "")
+            )= i
+
+
+        if endPage < totalPages
+
+          if endPage < totalPages - 1
+
+            span.admin-pagination-btn.disabled ...
+
+          a.admin-pagination-btn(
+            href="?page=" + totalPages + (baseUrl ? baseUrl.replace(/page=\d+&?/g, '').replace(/\?/g, '') : "")
+          )= totalPages
+
+
+        if typeof currentPage !== "undefined" && currentPage < totalPages
+
+          a.admin-pagination-btn(
+            href="?page=" + (currentPage + 1) + (baseUrl ? baseUrl.replace(/page=\d+&?/g, '').replace(/\?/g, '') : "")
+          )
+            i.fas.fa-chevron-right
+
+        else
+
+          span.admin-pagination-btn.disabled
+            i.fas.fa-chevron-right
+
+
+    //- ===============================================================
+    //- THÔNG TIN SỐ LƯỢNG
+    //- ===============================================================
+
+    if typeof totalItems !== "undefined"
+
+      .admin-table-footer
+        span.admin-table-count
+          | Tổng cộng: 
+          strong= totalItems
+          |  tour

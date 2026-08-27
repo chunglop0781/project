@@ -3,6 +3,357 @@ extends ../../layouts/admin-layout.pug
 block content
 
   //- =============================================================
+  //- CSS NHÚNG CHO BẢNG KHÁCH HÀNG
+  //- =============================================================
+  style.
+    /* =============================================================
+       CUSTOMER TABLE - CĂN ĐỀU CÁC CỘT
+       ============================================================= */
+
+    .admin-table-customers {
+      width: 100%;
+      min-width: 1100px;
+      table-layout: fixed;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .admin-table-customers thead th {
+      padding: 10px 12px;
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      border-bottom: 2px solid #e2e8f0;
+      white-space: nowrap;
+      text-align: left;
+    }
+
+    .admin-table-customers tbody td {
+      padding: 10px 12px;
+      vertical-align: middle;
+      border-bottom: 1px solid #f1f5f9;
+      color: #2d3748;
+      line-height: 1.5;
+    }
+
+    .admin-table-customers tbody tr:hover td {
+      background: #fafbfc;
+    }
+
+    /* Cột checkbox */
+    .admin-table-customers th:nth-child(1),
+    .admin-table-customers td:nth-child(1) {
+      width: 40px !important;
+      min-width: 40px !important;
+      max-width: 40px !important;
+      text-align: center !important;
+    }
+
+    .admin-table-customers td:nth-child(1) input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: #3b82f6;
+      margin: 0;
+    }
+
+    /* Cột Họ tên */
+    .admin-table-customers th:nth-child(2),
+    .admin-table-customers td:nth-child(2) {
+      width: 16%;
+      min-width: 160px;
+      max-width: 200px;
+    }
+
+    .admin-customer-name {
+      font-weight: 500;
+      color: #0f172a;
+    }
+
+    .admin-customer-name strong {
+      font-weight: 600;
+    }
+
+    /* Cột Ảnh */
+    .admin-table-customers th:nth-child(3),
+    .admin-table-customers td:nth-child(3) {
+      width: 70px !important;
+      min-width: 70px !important;
+      max-width: 70px !important;
+      text-align: center !important;
+    }
+
+    .admin-avatar-small {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #e2e8f0;
+      background: #f1f5f9;
+      display: inline-block;
+    }
+
+    .admin-avatar-fallback-small {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #e2e8f0;
+    }
+
+    /* Cột Email */
+    .admin-table-customers th:nth-child(4),
+    .admin-table-customers td:nth-child(4) {
+      width: 18%;
+      min-width: 170px;
+      max-width: 220px;
+    }
+
+    .admin-customer-email {
+      color: #475569;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Cột Số điện thoại */
+    .admin-table-customers th:nth-child(5),
+    .admin-table-customers td:nth-child(5) {
+      width: 13%;
+      min-width: 120px;
+      max-width: 150px;
+    }
+
+    .admin-customer-phone {
+      color: #0f172a;
+      font-weight: 500;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    /* Cột Địa chỉ */
+    .admin-table-customers th:nth-child(6),
+    .admin-table-customers td:nth-child(6) {
+      width: 15%;
+      min-width: 140px;
+      max-width: 180px;
+    }
+
+    .admin-customer-address {
+      color: #64748b;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Cột Trạng thái */
+    .admin-table-customers th:nth-child(7),
+    .admin-table-customers td:nth-child(7) {
+      width: 11%;
+      min-width: 100px;
+      max-width: 130px;
+      text-align: center !important;
+    }
+
+    .admin-table-customers td:nth-child(7) .admin-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .admin-badge.is-success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .admin-badge.is-active {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .admin-badge.is-muted {
+      background: #f1f5f9;
+      color: #64748b;
+    }
+
+    .admin-badge.is-inactive {
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
+    /* Cột Ngày tạo */
+    .admin-table-customers th:nth-child(8),
+    .admin-table-customers td:nth-child(8) {
+      width: 12%;
+      min-width: 100px;
+      max-width: 130px;
+      text-align: center !important;
+    }
+
+    .admin-customer-date {
+      color: #64748b;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    /* Cột Hành động */
+    .admin-table-customers th:nth-child(9),
+    .admin-table-customers td:nth-child(9) {
+      width: 10%;
+      min-width: 90px;
+      max-width: 110px;
+      text-align: center !important;
+    }
+
+    .admin-table-customers td:nth-child(9) .admin-table-actions {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .admin-table-customers td:nth-child(9) .admin-icon-btn {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      color: #64748b;
+      font-size: 13px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .admin-table-customers td:nth-child(9) .admin-icon-btn:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+
+    .admin-table-customers td:nth-child(9) .admin-icon-btn-danger:hover {
+      background: #fef2f2;
+      border-color: #fca5a5;
+      color: #dc2626;
+    }
+
+    /* =============================================================
+       WRAPPER CUỘN NGANG
+       ============================================================= */
+
+    .admin-table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      width: 100%;
+    }
+
+    .admin-table-wrap::-webkit-scrollbar {
+      height: 10px;
+      background: #f1f1f1;
+      border-radius: 5px;
+    }
+
+    .admin-table-wrap::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 5px;
+    }
+
+    .admin-table-wrap::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
+
+    /* =============================================================
+       RESPONSIVE
+       ============================================================= */
+
+    @media (max-width: 1200px) {
+      .admin-table-customers {
+        min-width: 1000px;
+      }
+
+      .admin-table-customers th:nth-child(4),
+      .admin-table-customers td:nth-child(4) {
+        min-width: 140px;
+      }
+
+      .admin-table-customers th:nth-child(6),
+      .admin-table-customers td:nth-child(6) {
+        min-width: 110px;
+      }
+    }
+
+    @media (max-width: 992px) {
+      .admin-table-customers {
+        min-width: 900px;
+        font-size: 12px;
+      }
+
+      .admin-table-customers thead th,
+      .admin-table-customers tbody td {
+        padding: 8px 8px;
+      }
+
+      .admin-avatar-small,
+      .admin-avatar-fallback-small {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+      }
+
+      .admin-table-customers td:nth-child(9) .admin-icon-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 11px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .admin-table-customers {
+        min-width: 800px;
+        font-size: 11px;
+      }
+
+      .admin-table-customers thead th,
+      .admin-table-customers tbody td {
+        padding: 6px 6px;
+      }
+
+      .admin-customer-email,
+      .admin-customer-address {
+        font-size: 11px;
+      }
+
+      .admin-table-customers td:nth-child(9) .admin-icon-btn {
+        width: 26px;
+        height: 26px;
+        font-size: 10px;
+      }
+    }
+
+    .text-center {
+      text-align: center !important;
+    }
+
+  //- =============================================================
   //- Biến truyền vào:
   //-   customers : [{ id, name, phone, email, address, avatar, status,
   //-                   statusLabel, totalOrders, totalSpent, joinedAt }]
@@ -79,30 +430,30 @@ block content
 
       .admin-table-wrap
 
-        table.admin-table
+        table.admin-table.admin-table-customers
 
           thead
 
             tr
 
-              th(style="width: 40px")
+              th(style="width: 40px; text-align: center;")
                 input#checkAll(type="checkbox")
 
-              th Họ tên
+              th(style="min-width: 160px;") Họ tên
 
-              th Ảnh đại diện
+              th(style="width: 70px; text-align: center;") Ảnh
 
-              th Email
+              th(style="min-width: 170px;") Email
 
-              th Số điện thoại
+              th(style="min-width: 120px;") Số điện thoại
 
-              th Địa chỉ
+              th(style="min-width: 140px;") Địa chỉ
 
-              th Trạng thái
+              th(style="width: 110px; text-align: center;") Trạng thái
 
-              th Ngày tạo
+              th(style="min-width: 100px; text-align: center;") Ngày tạo
 
-              th(style="width: 90px") Hành động
+              th(style="width: 100px; text-align: center;") Hành động
 
 
           tbody
@@ -113,42 +464,52 @@ block content
 
                 tr
 
-                  td
+                  td(style="text-align: center;")
                     input.rowCheck(type="checkbox" name="ids" value=customer.id form="customerBulkForm")
 
-                  td= customer.name
-
                   td
-                    if customer.avatar
-                      img.admin-avatar(src=customer.avatar alt=customer.name)
+                    .admin-customer-name
+                      strong= customer.name
+
+                  td(style="text-align: center;")
+                    if customer.avatar && customer.avatar !== '/admin/image/no-image.png'
+                      img.admin-avatar-small(src=customer.avatar alt=customer.name)
                     else
-                      .admin-avatar-fallback= customer.name.charAt(0).toUpperCase()
-
-                  td= customer.email
-
-                  td= customer.phone
-
-                  td= customer.address || "—"
+                      .admin-avatar-fallback-small= customer.name.charAt(0).toUpperCase()
 
                   td
-                    span.admin-badge(class="is-" + customer.status)= customer.statusLabel
-
-                  td= customer.joinedAt
+                    .admin-customer-email= customer.email
 
                   td
+                    .admin-customer-phone= customer.phone
 
-                    a.admin-icon-btn(href="/admin/customers/" + customer.id title="Xem / sửa")
-                      i.fas.fa-pen
+                  td
+                    .admin-customer-address= customer.address || "—"
 
-                    button.admin-icon-btn(
-                      type="submit"
-                      formaction="/admin/customers/" + customer.id + "/delete"
-                      formmethod="POST"
-                      form="customerBulkForm"
-                      title="Xóa"
-                      onclick="return confirm('Xóa khách hàng này?')"
-                    )
-                      i.fas.fa-trash
+                  td(style="text-align: center;")
+                    span.admin-badge(
+                      class=customer.status === "active" ? "is-success" : "is-muted"
+                    )= customer.statusLabel
+
+                  td(style="text-align: center;")
+                    .admin-customer-date= customer.joinedAt
+
+                  td(style="text-align: center;")
+                    .admin-table-actions
+                      a.admin-icon-btn(href="/admin/customers/" + customer.id title="Xem chi tiết")
+                        i.fas.fa-eye
+
+                      a.admin-icon-btn(href="/admin/customers/" + customer.id + "/edit" title="Sửa")
+                        i.fas.fa-pen
+
+                      button.admin-icon-btn.admin-icon-btn-danger(
+                        type="button"
+                        title="Xóa"
+                        data-confirm="Bạn có chắc muốn xóa khách hàng này?"
+                        data-delete-url="/admin/customers/" + customer.id
+                        data-delete-method="DELETE"
+                      )
+                        i.fas.fa-trash
 
             else
 

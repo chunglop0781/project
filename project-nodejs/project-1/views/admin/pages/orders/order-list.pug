@@ -10,13 +10,356 @@ block content
   //-     tourName, tourImage, passengers: [{ label, quantity, price }], departureDate,
   //-     total, discount, discountCode, paidAmount,
   //-     paymentMethod, paymentMethodLabel,
-  //-     paymentStatus, paymentStatusLabel,   -- TODO: chưa có trong order.model.js, xem ghi chú cuối file
+  //-     paymentStatus, paymentStatusLabel,
   //-     status, statusLabel,
   //-     createdAt
   //-   }]
   //-   currentPage, totalPages, baseUrl
   //-   filter : { status, paymentMethod, paymentStatus, dateFrom, dateTo, keyword }
   //- =============================================================
+
+  //- =============================================================
+  //- CSS NHÚNG CHO BẢNG ĐƠN HÀNG
+  //- =============================================================
+  style.
+    /* Bảng đơn hàng - Căn đều cột */
+    .admin-table-orders {
+      width: 100%;
+      min-width: 1100px;
+      table-layout: fixed;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .admin-table-orders thead th {
+      padding: 10px 12px;
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      border-bottom: 2px solid #e2e8f0;
+      white-space: nowrap;
+      text-align: left;
+    }
+
+    .admin-table-orders tbody td {
+      padding: 10px 12px;
+      vertical-align: middle;
+      border-bottom: 1px solid #f1f5f9;
+      color: #2d3748;
+      line-height: 1.5;
+    }
+
+    .admin-table-orders tbody tr:hover td {
+      background: #fafbfc;
+    }
+
+    /* Cột Mã đơn hàng */
+    .admin-table-orders th:nth-child(1),
+    .admin-table-orders td:nth-child(1) {
+      width: 11%;
+      min-width: 100px;
+      max-width: 130px;
+    }
+
+    .admin-table-orders td:nth-child(1) a {
+      color: #3b82f6;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .admin-table-orders td:nth-child(1) a:hover {
+      text-decoration: underline;
+    }
+
+    /* Cột Khách hàng */
+    .admin-table-orders th:nth-child(2),
+    .admin-table-orders td:nth-child(2) {
+      width: 15%;
+      min-width: 140px;
+      max-width: 180px;
+    }
+
+    .admin-customer-info .customer-name {
+      font-weight: 500;
+      color: #0f172a;
+      font-size: 13px;
+    }
+
+    .admin-customer-info .customer-phone {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .admin-customer-info .customer-note {
+      font-size: 12px;
+      color: #f59e0b;
+      font-style: italic;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 140px;
+    }
+
+    /* Cột Tour */
+    .admin-table-orders th:nth-child(3),
+    .admin-table-orders td:nth-child(3) {
+      width: 27%;
+      min-width: 250px;
+      max-width: 350px;
+    }
+
+    .admin-order-mini {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .admin-order-mini img {
+      width: 50px;
+      height: 50px;
+      border-radius: 6px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      margin-top: 2px;
+    }
+
+    .admin-order-mini .tour-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .admin-order-mini .tour-name {
+      font-weight: 600;
+      color: #0f172a;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .admin-order-mini .tour-meta {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.5;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Cột Thanh toán */
+    .admin-table-orders th:nth-child(4),
+    .admin-table-orders td:nth-child(4) {
+      width: 20%;
+      min-width: 180px;
+      max-width: 240px;
+    }
+
+    .admin-payment-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .admin-payment-info .payment-total {
+      font-weight: 600;
+      color: #0f172a;
+      font-size: 13px;
+    }
+
+    .admin-payment-info .payment-detail {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Cột Trạng thái */
+    .admin-table-orders th:nth-child(5),
+    .admin-table-orders td:nth-child(5) {
+      width: 12%;
+      min-width: 110px;
+      max-width: 140px;
+    }
+
+    .admin-table-orders td:nth-child(5) .admin-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .admin-badge.is-pending {
+      background: #fef3c7;
+      color: #d97706;
+    }
+    .admin-badge.is-confirmed {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+    .admin-badge.is-completed {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .admin-badge.is-cancelled {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+
+    /* Cột Ngày đặt */
+    .admin-table-orders th:nth-child(6),
+    .admin-table-orders td:nth-child(6) {
+      width: 10%;
+      min-width: 100px;
+      max-width: 130px;
+      white-space: nowrap;
+      color: #475569;
+    }
+
+    /* Cột Hành động */
+    .admin-table-orders th:nth-child(7),
+    .admin-table-orders td:nth-child(7) {
+      width: 8%;
+      min-width: 80px;
+      max-width: 100px;
+      text-align: center;
+    }
+
+    .admin-table-orders td:nth-child(7) .admin-table-actions {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .admin-table-orders td:nth-child(7) .admin-icon-btn {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      color: #64748b;
+      font-size: 13px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .admin-table-orders td:nth-child(7) .admin-icon-btn:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+
+    .admin-table-orders td:nth-child(7) .admin-icon-btn-danger:hover {
+      background: #fef2f2;
+      border-color: #fca5a5;
+      color: #dc2626;
+    }
+
+    /* =============================================================
+       RESPONSIVE
+       ============================================================= */
+    .admin-table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      width: 100%;
+    }
+
+    .admin-table-wrap::-webkit-scrollbar {
+      height: 10px;
+      background: #f1f1f1;
+      border-radius: 5px;
+    }
+
+    .admin-table-wrap::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 5px;
+    }
+
+    .admin-table-wrap::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
+
+    @media (max-width: 1200px) {
+      .admin-table-orders {
+        min-width: 1000px;
+      }
+      
+      .admin-table-orders th:nth-child(2),
+      .admin-table-orders td:nth-child(2) {
+        min-width: 120px;
+      }
+      
+      .admin-table-orders th:nth-child(3),
+      .admin-table-orders td:nth-child(3) {
+        min-width: 200px;
+      }
+      
+      .admin-table-orders th:nth-child(4),
+      .admin-table-orders td:nth-child(4) {
+        min-width: 150px;
+      }
+    }
+
+    @media (max-width: 992px) {
+      .admin-table-orders {
+        min-width: 900px;
+        font-size: 12px;
+      }
+      
+      .admin-table-orders thead th,
+      .admin-table-orders tbody td {
+        padding: 8px 8px;
+      }
+      
+      .admin-order-mini img {
+        width: 40px;
+        height: 40px;
+      }
+      
+      .admin-order-mini .tour-name {
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .admin-table-orders {
+        min-width: 800px;
+        font-size: 11px;
+      }
+      
+      .admin-table-orders thead th,
+      .admin-table-orders tbody td {
+        padding: 6px 6px;
+      }
+      
+      .admin-order-mini img {
+        width: 32px;
+        height: 32px;
+      }
+      
+      .admin-table-orders td:nth-child(7) .admin-icon-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 11px;
+      }
+    }
+
+    .text-center {
+      text-align: center !important;
+    }
 
   .admin-page-head
 
@@ -119,22 +462,22 @@ block content
 
 
     //- ===============================================================
-    //- BẢNG DANH SÁCH
+    //- BẢNG DANH SÁCH - ĐÃ SỬA
     //- ===============================================================
 
     .admin-table-wrap
 
-      table.admin-table
+      table.admin-table.admin-table-orders
 
         thead
 
           tr
 
-            th Mã
+            th Mã đơn
 
-            th Thông tin khách
+            th Khách hàng
 
-            th Danh sách tour
+            th Tour
 
             th Thanh toán
 
@@ -142,7 +485,7 @@ block content
 
             th Ngày đặt
 
-            th(style="width: 90px") Hành động
+            th.text-center Hành động
 
 
         tbody
@@ -154,65 +497,46 @@ block content
               tr
 
                 td
-
                   a.admin-table-link(href="/admin/orders/" + order.id)= order.code
 
                 td
-
-                  div= order.customerName
-
-                  span.admin-table-sub SĐT: #{order.phone}
-
-                  if order.note
-                    span.admin-table-sub Ghi chú: #{order.note}
+                  .admin-customer-info
+                    .customer-name= order.customerName
+                    .customer-phone SĐT: #{order.phone}
+                    if order.note
+                      .customer-note Ghi chú: #{order.note}
 
                 td
-
                   .admin-order-mini
-
                     img(src=order.tourImage || "/admin/image/no-image.png" alt=order.tourName)
-
-                    div
-
-                      strong= order.tourName
-
+                    .tour-info
+                      .tour-name= order.tourName
                       each passenger in order.passengers
-
-                        div.admin-table-sub= passenger.label + ": " + passenger.quantity + " x " + passenger.price.toLocaleString("vi-VN") + "đ"
-
+                        .tour-meta= passenger.label + ": " + passenger.quantity + " x " + passenger.price.toLocaleString("vi-VN") + "đ"
                       if order.departureDate
-                        div.admin-table-sub Khởi hành: #{order.departureDate}
+                        .tour-meta Khởi hành: #{order.departureDate}
 
                 td
-
-                  div Tổng tiền: #{order.total.toLocaleString("vi-VN")}đ
-
-                  if order.discount
-                    div.admin-table-sub Giảm: #{order.discount.toLocaleString("vi-VN")}đ
-
-                  if order.discountCode
-                    div.admin-table-sub Mã giảm: #{order.discountCode}
-
-                  div.admin-table-sub Thanh toán: #{(order.paidAmount != null ? order.paidAmount : order.total).toLocaleString("vi-VN")}đ
-
-                  div.admin-table-sub PTTT: #{order.paymentMethodLabel || "—"}
-
-                  div.admin-table-sub TTTT: #{order.paymentStatusLabel || "—"}
+                  .admin-payment-info
+                    .payment-total Tổng: #{order.total.toLocaleString("vi-VN")}đ
+                    if order.discount
+                      .payment-detail Giảm: #{order.discount.toLocaleString("vi-VN")}đ
+                    if order.discountCode
+                      .payment-detail Mã: #{order.discountCode}
+                    .payment-detail Đã TT: #{(order.paidAmount != null ? order.paidAmount : order.total).toLocaleString("vi-VN")}đ
+                    .payment-detail PT: #{order.paymentMethodLabel || "—"}
+                    .payment-detail TT: #{order.paymentStatusLabel || "—"}
 
                 td
-
                   span.admin-badge(class="is-" + order.status)= order.statusLabel
 
-                td= order.createdAt
+                td.order-date= order.createdAt
 
-                td
-
+                td.text-center
                   .admin-table-actions
-
-                    a.admin-icon-btn(href="/admin/orders/" + order.id + "/edit" title="Chỉnh sửa")
+                    a.admin-icon-btn(href="/admin/orders/" + order.id + "/edit" title="Sửa")
                       i.fas.fa-pen
-
-                    button.admin-icon-btn(
+                    button.admin-icon-btn.admin-icon-btn-danger(
                       type="button"
                       title="Xóa"
                       data-confirm="Bạn có chắc muốn xóa đơn hàng " + order.code + "?"

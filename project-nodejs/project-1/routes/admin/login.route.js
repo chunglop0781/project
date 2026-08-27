@@ -45,19 +45,35 @@ router.post('/login', async (req, res) => {
             });
         }
 
+        // ✅ SỬA LẠI: LƯU ĐẦY ĐỦ THÔNG TIN VÀO SESSION
         req.session.user = {
             _id: user._id,
+            id: user._id,  // ✅ THÊM DÒNG NÀY
             fullName: user.fullName,
             email: user.email,
-            role: user.role
+            role: user.role,
+            avatar: user.avatar || '/admin/image/avatar-default.png'  // ✅ THÊM DÒNG NÀY
         };
+
+        console.log('✅ LOGIN SUCCESS - Session user saved:');
+        console.log('  - _id:', req.session.user._id);
+        console.log('  - id:', req.session.user.id);
+        console.log('  - fullName:', req.session.user.fullName);
+        console.log('  - role:', req.session.user.role);
 
         // "Ghi nhớ đăng nhập" -> kéo dài thời gian sống của session cookie
         if (req.body.remember) {
             req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 ngày
         }
 
-        res.redirect('/admin/dashboard');
+        // ✅ LƯU SESSION
+        req.session.save(function(err) {
+            if (err) {
+                console.error('❌ Session save error:', err);
+            }
+            console.log('✅ Session saved successfully');
+            res.redirect('/admin/dashboard');
+        });
 
     } catch (error) {
 

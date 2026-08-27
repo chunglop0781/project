@@ -13,7 +13,7 @@ header.admin-topbar
 
 
   //- =========================================================
-  //- BÊN PHẢI
+  //- BÊN PHẠI
   //- =========================================================
 
   .admin-topbar-right
@@ -27,8 +27,21 @@ header.admin-topbar
 
       button.admin-user-trigger#adminUserTrigger(type="button")
 
-        img.admin-user-avatar(
-          src=(adminUser && adminUser.avatar) ? adminUser.avatar : "/admin/image/avatar-default.png"
+        //- =====================================================
+        //- LẤY ẢNH ĐẠI DIỆN - CHECK TỪ SESSION USER
+        //- =====================================================
+        - var avatarSrc = '/admin/image/avatar-default.png'
+        - if (typeof adminUser !== 'undefined' && adminUser && adminUser.avatar) {
+        -   avatarSrc = adminUser.avatar
+        - } else if (typeof currentUser !== 'undefined' && currentUser && currentUser.avatar) {
+        -   avatarSrc = currentUser.avatar
+        - }
+        - if (avatarSrc === '/admin/image/avatar-default.png' || avatarSrc === '' || avatarSrc === null) {
+        -   avatarSrc = '/admin/image/avatar-default.png'
+        - }
+        
+        img#adminAvatar.admin-user-avatar(
+          src=avatarSrc
           alt=(adminUser && adminUser.fullName) ? adminUser.fullName : "Admin"
         )
 
@@ -54,6 +67,34 @@ header.admin-topbar
 
         .admin-user-dropdown-divider
 
-        a.admin-logout-link(href="/logout")
+        a.admin-logout-link(href="/admin/logout")
           i.fas.fa-right-from-bracket
           | Đăng xuất
+
+
+  //- =========================================================
+  //- CSS TRỰC TIẾP - FIX ẢNH ĐẠI DIỆN
+  //- =========================================================
+  style.
+    /* Avatar style */
+    #adminAvatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #e8ecf1;
+      display: inline-block;
+      background: linear-gradient(135deg, #5200c9, #7a3fe0);
+    }
+    
+    /* Nếu ảnh lỗi, hiển thị chữ cái đầu */
+    #adminAvatar[src="/admin/image/avatar-default.png"] {
+      background: linear-gradient(135deg, #5200c9, #7a3fe0);
+      border-color: #5200c9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 16px;
+    }

@@ -10,7 +10,7 @@ const requireAdmin = require('../../middlewares/requireAdmin');
 const loginRoutes = require('./login.route');
 const dashboardRoutes = require('./dashboard.route');
 const toursRoutes = require('./tours.route');
-const categoriesRoutes = require('./categories.route'); // ✅ PHẢI IMPORT
+const categoriesRoutes = require('./categories.route');
 const ordersRoutes = require('./orders.route');
 const customersRoutes = require('./customers.route');
 const newsRoutes = require('./news.route');
@@ -89,13 +89,13 @@ router.use(function(req, res, next) {
 router.use('/', loginRoutes);
 router.use('/', dashboardRoutes);
 
-// ✅ Các route cần admin - KIỂM TRA TỪNG DÒNG
-router.use('/tours', requireAdmin, toursRoutes);       // ✅ toursRoutes phải tồn tại
-router.use('/categories', requireAdmin, categoriesRoutes); // ✅ categoriesRoutes phải tồn tại
-router.use('/orders', requireAdmin, ordersRoutes);     // ✅ ordersRoutes phải tồn tại
-router.use('/customers', requireAdmin, customersRoutes); // ✅ customersRoutes phải tồn tại
-router.use('/news', requireAdmin, newsRoutes);         // ✅ newsRoutes phải tồn tại
+// Các route cần admin
+router.use('/tours', requireAdmin, toursRoutes);
+router.use('/categories', requireAdmin, categoriesRoutes);
+router.use('/orders', requireAdmin, ordersRoutes);
+router.use('/customers', requireAdmin, customersRoutes);
+router.use('/news', requireAdmin, newsRoutes);
+router.use('/profile', requireAdmin, profileRoutes); // <-- CHỈ SỬA DÒNG NÀY
 router.use('/', settingsRoutes);
-router.use('/', profileRoutes);
 
 module.exports = router;

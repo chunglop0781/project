@@ -1,0 +1,621 @@
+doctype html
+html(lang="vi")
+
+    head
+
+        meta(charset="UTF-8")
+
+        meta(
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+        )
+
+        title= (pageTitle ? pageTitle + " - " : "") + "Thông Tin Cá Nhân - Website Du Lịch"
+
+        link(
+            rel="icon"
+            href="/assets/image/logo.png"
+            type="image/png"
+        )
+
+        link(
+            rel="preconnect"
+            href="https://fonts.googleapis.com"
+        )
+
+        link(
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        )
+
+        link(
+            rel="stylesheet"
+            href="/assets/css/style.css"
+        )
+
+        style.
+            .profile-wrapper {
+                max-width: 900px;
+                margin: 40px auto;
+                padding: 0 20px;
+            }
+
+            .profile-card {
+                background: #fff;
+                border-radius: 12px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+                padding: 30px;
+                margin-bottom: 30px;
+            }
+
+            .profile-card-head {
+                border-bottom: 2px solid #f0f0f0;
+                padding-bottom: 15px;
+                margin-bottom: 25px;
+            }
+
+            .profile-title {
+                font-size: 24px;
+                font-weight: 700;
+                color: #333;
+                margin: 0;
+            }
+
+            .profile-subtitle {
+                font-size: 14px;
+                color: #888;
+                margin: 5px 0 0;
+            }
+
+            .profile-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+
+            .profile-grid-full {
+                grid-column: 1 / -1;
+            }
+
+            .profile-form-group {
+                margin-bottom: 20px;
+            }
+
+            .profile-form-group label {
+                display: block;
+                font-weight: 600;
+                font-size: 14px;
+                color: #333;
+                margin-bottom: 6px;
+            }
+
+            .profile-form-group .profile-input {
+                width: 100%;
+                padding: 10px 14px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                font-size: 14px;
+                transition: border-color 0.3s;
+                background: #fff;
+            }
+
+            .profile-form-group .profile-input:focus {
+                outline: none;
+                border-color: #007bff;
+                box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+            }
+
+            .profile-form-group .profile-input:disabled {
+                background: #f5f5f5;
+                cursor: not-allowed;
+            }
+
+            .profile-form-group .profile-hint {
+                font-size: 12px;
+                color: #888;
+                margin-top: 4px;
+            }
+
+            .profile-avatar-section {
+                text-align: center;
+                padding: 10px;
+            }
+
+            .profile-avatar-section .avatar-preview {
+                width: 150px;
+                height: 150px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 3px solid #ddd;
+                margin-bottom: 15px;
+                transition: all 0.3s;
+                background: #f0f0f0;
+            }
+
+            .profile-avatar-section .avatar-preview:hover {
+                border-color: #007bff;
+            }
+
+            .profile-avatar-section .avatar-input {
+                display: block;
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                font-size: 14px;
+                background: #fff;
+                cursor: pointer;
+            }
+
+            .profile-avatar-section .avatar-input:hover {
+                border-color: #007bff;
+            }
+
+            .profile-avatar-section .avatar-hint {
+                font-size: 12px;
+                color: #888;
+                margin-top: 4px;
+            }
+
+            .profile-actions {
+                display: flex;
+                gap: 12px;
+                justify-content: flex-end;
+                margin-top: 20px;
+                padding-top: 20px;
+                border-top: 2px solid #f0f0f0;
+            }
+
+            .profile-btn {
+                padding: 10px 24px;
+                border: none;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                text-decoration: none;
+            }
+
+            .profile-btn-primary {
+                background: #007bff;
+                color: #fff;
+            }
+
+            .profile-btn-primary:hover {
+                background: #0069d9;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+            }
+
+            .profile-btn-outline {
+                background: transparent;
+                color: #007bff;
+                border: 2px solid #007bff;
+            }
+
+            .profile-btn-outline:hover {
+                background: #007bff;
+                color: #fff;
+            }
+
+            .profile-alert {
+                padding: 12px 16px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 14px;
+            }
+
+            .profile-alert-error {
+                background: #fde8e8;
+                color: #d9534f;
+                border: 1px solid #f5c6cb;
+            }
+
+            .profile-alert-success {
+                background: #e8f5e9;
+                color: #28a745;
+                border: 1px solid #c3e6cb;
+            }
+
+            .profile-alert i {
+                font-size: 18px;
+            }
+
+            .profile-password-section {
+                margin-top: 30px;
+            }
+
+            .profile-password-section .profile-card-head {
+                border-bottom-color: #f0f0f0;
+            }
+
+            @media (max-width: 768px) {
+                .profile-grid {
+                    grid-template-columns: 1fr;
+                }
+                
+                .profile-avatar-section .avatar-preview {
+                    width: 120px;
+                    height: 120px;
+                }
+                
+                .profile-actions {
+                    flex-direction: column;
+                }
+                
+                .profile-actions .profile-btn {
+                    width: 100%;
+                    justify-content: center;
+                }
+            }
+
+
+    body
+
+        include ../../partials/header.pug
+
+
+        // =========================================================
+        // TRANG THÔNG TIN CÁ NHÂN
+        // =========================================================
+
+        main.profile-page
+
+            .profile-wrapper
+
+
+                // =====================================================
+                // ERROR
+                // =====================================================
+
+                if typeof error !== "undefined" && error
+
+                    .profile-alert.profile-alert-error
+
+                        i.fas.fa-circle-exclamation
+
+                        span= error
+
+
+                // =====================================================
+                // SUCCESS
+                // =====================================================
+
+                if typeof success !== "undefined" && success
+
+                    .profile-alert.profile-alert-success
+
+                        i.fas.fa-circle-check
+
+                        span= success
+
+
+                // =====================================================
+                // THÔNG TIN CÁ NHÂN
+                // =====================================================
+
+                .profile-card
+
+                    .profile-card-head
+
+                        h1.profile-title
+                            i.fas.fa-user.me-2
+                            | Thông Tin Cá Nhân
+
+                        p.profile-subtitle Quản lý thông tin tài khoản của bạn
+
+
+                    form#profileForm(
+                        action="/info"
+                        method="POST"
+                        enctype="multipart/form-data"
+                    )
+
+                        .profile-grid
+
+                            //- Họ và tên
+                            .profile-form-group
+
+                                label(for="fullName") Họ và tên *
+
+                                input#fullName.profile-input(
+                                    type="text"
+                                    name="fullName"
+                                    value=user.fullName
+                                    placeholder="Nhập họ và tên"
+                                    required
+                                )
+
+
+                            //- Số điện thoại
+                            .profile-form-group
+
+                                label(for="phone") Số điện thoại
+
+                                input#phone.profile-input(
+                                    type="text"
+                                    name="phone"
+                                    value=user.phone || ''
+                                    placeholder="Nhập số điện thoại"
+                                )
+
+
+                            //- Email (disabled)
+                            .profile-form-group.profile-grid-full
+
+                                label(for="email") Email
+
+                                input#email.profile-input(
+                                    type="email"
+                                    value=user.email
+                                    disabled
+                                    title="Email dùng để đăng nhập, không thể thay đổi"
+                                )
+
+                                p.profile-hint Email được sử dụng để đăng nhập, không thể thay đổi.
+
+
+                            //- Địa chỉ
+                            .profile-form-group.profile-grid-full
+
+                                label(for="address") Địa chỉ
+
+                                textarea#address.profile-input(
+                                    name="address"
+                                    rows="2"
+                                    placeholder="Nhập địa chỉ của bạn"
+                                )= user.address || ''
+
+
+                            //- Ảnh đại diện - FIX: dùng ảnh cố định 1 lần
+                            .profile-form-group.profile-grid-full
+
+                                .profile-avatar-section
+
+                                    img#avatarPreview.avatar-preview(
+                                        src=user.avatar || '/assets/image/avatar-default.png'
+                                        alt="Ảnh đại diện"
+                                        onerror="this.onerror=null; this.src='/assets/image/avatar-default.png';"
+                                    )
+
+                                    input#avatar.avatar-input(
+                                        type="file"
+                                        name="avatar"
+                                        accept="image/*"
+                                    )
+
+                                    p.avatar-hint Chọn ảnh mới để thay đổi ảnh đại diện
+
+
+                        .profile-actions
+
+                            button#submitBtn.profile-btn.profile-btn-primary(
+                                type="submit"
+                            )
+
+                                i.fas.fa-save
+
+                                | Lưu thay đổi
+
+
+                // =====================================================
+                // ĐỔI MẬT KHẨU
+                // =====================================================
+
+                .profile-card.profile-password-section
+
+                    .profile-card-head
+
+                        h1.profile-title
+                            i.fas.fa-key.me-2
+                            | Đổi Mật Khẩu
+
+                        p.profile-subtitle Cập nhật mật khẩu để bảo mật tài khoản
+
+
+                    form#passwordForm(
+                        action="/info/password"
+                        method="POST"
+                    )
+
+                        .profile-grid
+
+                            //- Mật khẩu hiện tại
+                            .profile-form-group.profile-grid-full
+
+                                label(for="currentPassword") Mật khẩu hiện tại *
+
+                                input#currentPassword.profile-input(
+                                    type="password"
+                                    name="currentPassword"
+                                    required
+                                    minlength="6"
+                                    placeholder="Nhập mật khẩu hiện tại"
+                                )
+
+
+                            //- Mật khẩu mới
+                            .profile-form-group
+
+                                label(for="newPassword") Mật khẩu mới *
+
+                                input#newPassword.profile-input(
+                                    type="password"
+                                    name="newPassword"
+                                    required
+                                    minlength="6"
+                                    placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)"
+                                )
+
+
+                            //- Xác nhận mật khẩu
+                            .profile-form-group
+
+                                label(for="confirmPassword") Xác nhận mật khẩu mới *
+
+                                input#confirmPassword.profile-input(
+                                    type="password"
+                                    name="confirmPassword"
+                                    required
+                                    minlength="6"
+                                    placeholder="Nhập lại mật khẩu mới"
+                                )
+
+
+                        .profile-actions
+
+                            button.profile-btn.profile-btn-outline(
+                                type="submit"
+                            )
+
+                                i.fas.fa-key
+
+                                | Đổi Mật Khẩu
+
+
+        script(
+            src="/assets/js/script.js"
+        )
+
+        script.
+            (function() {
+                'use strict';
+
+                // =============================================
+                // HẰNG SỐ - ẢNH DEFAULT CỐ ĐỊNH
+                // =============================================
+                
+                var DEFAULT_AVATAR = '/assets/image/avatar-default.png';
+                var avatarInput = document.querySelector('#avatar');
+                var preview = document.querySelector('#avatarPreview');
+                
+                // Lưu ảnh hiện tại (nếu có) hoặc dùng default
+                var currentAvatar = preview ? (preview.src || DEFAULT_AVATAR) : DEFAULT_AVATAR;
+
+                // =============================================
+                // PREVIEW ẢNH - CHỈ 1 LẦN DUY NHẤT
+                // =============================================
+                
+                if (avatarInput && preview) {
+                    avatarInput.addEventListener('change', function() {
+                        var file = this.files && this.files[0];
+                        if (!file) {
+                            // Không chọn file -> quay về ảnh hiện tại
+                            preview.src = currentAvatar;
+                            return;
+                        }
+
+                        // Kiểm tra kích thước file (tối đa 5MB)
+                        if (file.size > 5 * 1024 * 1024) {
+                            alert('File ảnh quá lớn. Vui lòng chọn ảnh nhỏ hơn 5MB.');
+                            this.value = '';
+                            preview.src = currentAvatar;
+                            return;
+                        }
+
+                        // Kiểm tra loại file
+                        var allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                        if (!allowedTypes.includes(file.type)) {
+                            alert('Chỉ chấp nhận file ảnh (JPEG, PNG, GIF, WEBP)');
+                            this.value = '';
+                            preview.src = currentAvatar;
+                            return;
+                        }
+
+                        // Đọc và hiển thị ảnh mới
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                            preview.src = e.target.result;
+                            // Lưu vào sessionStorage để giữ khi reload
+                            try {
+                                sessionStorage.setItem('avatarPreview', e.target.result);
+                            } catch (err) {
+                                // Bỏ qua
+                            }
+                        };
+                        reader.onerror = function() {
+                            alert('Không thể đọc file. Vui lòng thử lại.');
+                            preview.src = currentAvatar;
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                }
+
+                // =============================================
+                // KHÔI PHỤC ẢNH TỪ SESSION STORAGE (CHỈ 1 LẦN)
+                // =============================================
+                
+                (function restoreAvatar() {
+                    try {
+                        var savedPreview = sessionStorage.getItem('avatarPreview');
+                        if (savedPreview && preview) {
+                            preview.src = savedPreview;
+                            // Xóa ngay sau khi khôi phục để không bị lưu mãi
+                            sessionStorage.removeItem('avatarPreview');
+                        }
+                    } catch (err) {
+                        // Bỏ qua
+                    }
+                })();
+
+                // =============================================
+                // SUBMIT FORM
+                // =============================================
+
+                var profileForm = document.getElementById('profileForm');
+                var submitBtn = document.getElementById('submitBtn');
+
+                if (profileForm) {
+                    profileForm.addEventListener('submit', function(e) {
+                        console.log('🔍 FORM SUBMIT:');
+                        console.log('  - Action:', profileForm.action);
+                        console.log('  - Method:', profileForm.method);
+                        console.log('  - Enctype:', profileForm.enctype);
+                        
+                        // Hiển thị loading
+                        if (submitBtn) {
+                            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+                            submitBtn.disabled = true;
+                        }
+
+                        return true;
+                    });
+                }
+
+                // =============================================
+                // XỬ LÝ FORM ĐỔI MẬT KHẨU
+                // =============================================
+
+                var passwordForm = document.getElementById('passwordForm');
+                if (passwordForm) {
+                    passwordForm.addEventListener('submit', function(e) {
+                        var newPass = document.getElementById('newPassword');
+                        var confirmPass = document.getElementById('confirmPassword');
+                        
+                        if (newPass && confirmPass) {
+                            if (newPass.value !== confirmPass.value) {
+                                e.preventDefault();
+                                alert('Mật khẩu xác nhận không khớp.');
+                                return false;
+                            }
+                            
+                            if (newPass.value.length < 6) {
+                                e.preventDefault();
+                                alert('Mật khẩu mới phải có ít nhất 6 ký tự.');
+                                return false;
+                            }
+                        }
+                        return true;
+                    });
+                }
+
+                console.log('✅ Info page loaded - Default avatar: ' + DEFAULT_AVATAR);
+
+            })();

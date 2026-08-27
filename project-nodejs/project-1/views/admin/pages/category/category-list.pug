@@ -21,9 +21,13 @@ block content
 
       p.admin-page-subtitle Danh sách tất cả các danh mục tour hiện có.
 
-    a.admin-btn.admin-btn-primary(href="/admin/categories/new")
-      i.fas.fa-plus
-      |  Tạo mới
+    div(style="display: flex; gap: 10px;")
+      a.admin-btn.admin-btn-primary(href="/admin/categories/new")
+        i.fas.fa-plus
+        |  Tạo mới
+      a.admin-btn.admin-btn-outline(href="/admin/categories/trash")
+        i.fas.fa-trash
+        |  Thùng rác
 
 
   .admin-card
@@ -120,7 +124,7 @@ block content
     //- BẢNG DANH SÁCH
     //- ===============================================================
 
-    .admin-table-wrap
+    .admin-table-scroll
 
       table.admin-table
 
@@ -177,8 +181,8 @@ block content
 
                 td
 
-                  div= category.updatedByName
-
+                  //- ✅ ĐÃ SỬA: Dùng updatedByName (đồng bộ với controller)
+                  div= category.updatedByName || 'N/A'
                   span.admin-table-sub= category.updatedAt
 
                 td

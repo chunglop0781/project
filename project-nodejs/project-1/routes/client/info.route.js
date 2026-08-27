@@ -1,8 +1,8 @@
 const router = require('express').Router();
 const path = require('path');
 const multer = require('multer');
-const requireAdmin = require('../../middlewares/requireAdmin');
-const profileController = require('../../controllers/admin/profile.controller');
+const requireAuth = require('../../middlewares/requireAuth');
+const infoController = require('../../controllers/client/info.controller');
 
 // =============================================================
 // CẤU HÌNH UPLOAD ẢNH ĐẠI DIỆN
@@ -24,16 +24,16 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // =============================================================
-// PROFILE ROUTES
+// INFO ROUTES
 // =============================================================
 
-// Trang hồ sơ
-router.get('/', requireAdmin, profileController.detail);
+// Trang thông tin cá nhân
+router.get('/', requireAuth, infoController.detail);
 
-// Cập nhật hồ sơ (có upload ảnh)
-router.post('/', requireAdmin, upload.single('avatar'), profileController.update);
+// Cập nhật thông tin (có upload ảnh)
+router.post('/', requireAuth, upload.single('avatar'), infoController.update);
 
 // Đổi mật khẩu
-router.post('/password', requireAdmin, profileController.updatePassword);
+router.post('/password', requireAuth, infoController.updatePassword);
 
 module.exports = router;

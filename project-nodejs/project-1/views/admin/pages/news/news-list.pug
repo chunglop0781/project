@@ -17,26 +17,31 @@ block content
       p.admin-page-subtitle Quản lý bài viết tin tức trên website.
 
     a.admin-btn.admin-btn-primary(href="/admin/news/new")
-
       i.fas.fa-plus
-
       | Viết Bài Mới
 
 
   .admin-card
 
+    //- ===============================================================
+    //- TOOLBAR: TÌM KIẾM
+    //- ===============================================================
+
     .admin-toolbar
 
       form.admin-search-form(action="/admin/news" method="GET")
-
         i.fas.fa-magnifying-glass
-
         input(
           type="text"
           name="keyword"
           placeholder="Tìm theo tiêu đề bài viết..."
+          value=(filter && filter.keyword) ? filter.keyword : ""
         )
 
+
+    //- ===============================================================
+    //- BẢNG DANH SÁCH
+    //- ===============================================================
 
     .admin-table-wrap
 
@@ -56,7 +61,7 @@ block content
 
             th Trạng thái
 
-            th(style="width: 120px") Thao tác
+            th(style="text-align: center;") Thao tác
 
 
         tbody
@@ -68,35 +73,40 @@ block content
               tr
 
                 td
-
                   .admin-table-item
-
-                    img(src=post.thumbnail alt=post.title)
-
-                    span= post.title
-
-                td= post.category
-
-                td= post.author
-
-                td= post.publishedAt
+                    img.admin-table-thumb(
+                      src=post.thumbnail || '/admin/image/no-image.png'
+                      alt=post.title
+                      onerror="this.src='/admin/image/no-image.png'"
+                    )
+                    span.admin-post-title= post.title
 
                 td
+                  span.admin-post-category= post.category || 'Chưa phân loại'
 
-                  span.admin-badge(class=post.status === "published" ? "is-success" : "is-muted")= post.statusLabel
+                td= post.author || 'N/A'
+
+                td= post.publishedAt || '—'
 
                 td
+                  span.admin-badge(
+                    class=post.status === "published" ? "is-success" : "is-muted"
+                  )
+                    = post.statusLabel || post.status || 'Nháp'
 
+                td(style="text-align: center;")
                   .admin-table-actions
-
-                    a.admin-icon-btn(href="/admin/news/" + post.id + "/edit" title="Sửa")
+                    a.admin-icon-btn(
+                      href="/admin/news/" + post.id + "/edit"
+                      title="Sửa"
+                    )
                       i.fas.fa-pen
 
-                    button.admin-icon-btn.is-danger(
+                    button.admin-icon-btn.admin-icon-btn-danger(
                       type="button"
                       title="Xóa"
                       data-confirm="Bạn có chắc muốn xóa bài viết này?"
-                      data-delete-url=("/admin/news/" + post.id + "/delete")
+                      data-delete-url="/admin/news/" + post.id + "/delete"
                     )
                       i.fas.fa-trash
 
@@ -104,7 +114,93 @@ block content
 
             tr
 
-              td.admin-table-empty(colspan="6") Chưa có bài viết nào.
+              td.admin-table-empty(colspan="6")
+                .admin-empty-state
+                  i.fas.fa-newspaper
+                  p Chưa có bài viết nào.
+                  a.admin-btn.admin-btn-sm(href="/admin/news/new")
+                    i.fas.fa-plus
+                    |  Viết bài đầu tiên
 
 
-    include ../../partials/pagination.pug
+    //- ===============================================================
+    //- PHÂN TRANG
+    //- ===============================================================
+
+    if typeof totalPages !== "undefined" && totalPages > 1
+
+      .admin-pagination
+
+        if typeof currentPage !== "undefined" && currentPage > 1
+
+          a.admin-pagination-btn(
+            href="?page=" + (currentPage - 1) + (baseUrl ? "&" + baseUrl.replace(/\?/g, '').replace(/page=\d+&?/g, '') : "")
+          )
+            i.fas.fa-chevron-left
+
+        else
+
+          span.admin-pagination-btn.disabled
+            i.fas.fa-chevron-left
+
+
+        - var startPage = Math.max(1, currentPage - 2);
+        - var endPage = Math.min(totalPages, currentPage + 2);
+
+        if startPage > 1
+
+          a.admin-pagination-btn(href="?page=1" + (baseUrl ? "&" + baseUrl.replace(/\?/g, '').replace(/page=\d+&?/g, '') : "")) 1
+
+          if startPage > 2
+
+            span.admin-pagination-btn.disabled ...
+
+
+        - for (var i = startPage; i <= endPage; i++)
+
+          if i === currentPage
+
+            span.admin-pagination-btn.active= i
+
+          else
+
+            a.admin-pagination-btn(
+              href="?page=" + i + (baseUrl ? "&" + baseUrl.replace(/\?/g, '').replace(/page=\d+&?/g, '') : "")
+            )= i
+
+
+        if endPage < totalPages
+
+          if endPage < totalPages - 1
+
+            span.admin-pagination-btn.disabled ...
+
+          a.admin-pagination-btn(
+            href="?page=" + totalPages + (baseUrl ? "&" + baseUrl.replace(/\?/g, '').replace(/page=\d+&?/g, '') : "")
+          )= totalPages
+
+
+        if typeof currentPage !== "undefined" && currentPage < totalPages
+
+          a.admin-pagination-btn(
+            href="?page=" + (currentPage + 1) + (baseUrl ? "&" + baseUrl.replace(/\?/g, '').replace(/page=\d+&?/g, '') : "")
+          )
+            i.fas.fa-chevron-right
+
+        else
+
+          span.admin-pagination-btn.disabled
+            i.fas.fa-chevron-right
+
+
+    //- ===============================================================
+    //- THÔNG TIN SỐ LƯỢNG
+    //- ===============================================================
+
+    if typeof totalItems !== "undefined"
+
+      .admin-table-footer
+        span.admin-table-count
+          | Tổng cộng: 
+          strong= totalItems
+          |  bài viết

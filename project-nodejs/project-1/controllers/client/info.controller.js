@@ -63,7 +63,7 @@ async function uploadToGitHub(filePath, fileName) {
 }
 
 // =============================================================
-// TRANG HỒ SƠ CÁ NHÂN
+// TRANG THÔNG TIN CÁ NHÂN (CLIENT)
 // =============================================================
 
 exports.detail = async (req, res) => {
@@ -71,56 +71,58 @@ exports.detail = async (req, res) => {
         const user = await User.findById(req.session.user.id);
 
         if (!user) {
-            return req.session.destroy(() => res.redirect('/admin/login'));
+            return req.session.destroy(() => res.redirect('/login'));
         }
 
-        res.render('admin/pages/profile', {
+        res.render('client/pages/info', {
             user,
-            pageTitle: 'Hồ sơ cá nhân',
-            activeMenu: 'profile'
+            pageTitle: 'Thông tin cá nhân',
+            activeMenu: 'info'
         });
 
     } catch (error) {
-        console.error('❌ DETAIL ERROR:', error);
+        console.log(error);
 
-        res.render('admin/pages/profile', {
+        res.render('client/pages/info', {
             user: req.session.user,
-            pageTitle: 'Hồ sơ cá nhân',
-            activeMenu: 'profile',
+            pageTitle: 'Thông tin cá nhân',
+            activeMenu: 'info',
             error: 'Có lỗi xảy ra, vui lòng thử lại.'
         });
     }
 };
 
 // =============================================================
-// CẬP NHẬT HỒ SƠ - CÓ UPLOAD ẢNH LÊN GITHUB
+// CẬP NHẬT THÔNG TIN (CLIENT) - CÓ UPLOAD ẢNH LÊN GITHUB
 // =============================================================
 
 exports.update = async (req, res) => {
     try {
-        const { fullName, phone } = req.body;
+        const { fullName, phone, address } = req.body;
 
         console.log('========================================');
-        console.log('📝 UPDATE PROFILE - DỮ LIỆU NHẬN ĐƯỢC:');
+        console.log('📝 UPDATE CLIENT INFO - DỮ LIỆU NHẬN ĐƯỢC:');
         console.log('  - fullName:', fullName);
         console.log('  - phone:', phone);
+        console.log('  - address:', address);
         console.log('  - File:', req.file);
         console.log('========================================');
 
         // Validate dữ liệu
         if (!fullName || fullName.trim() === '') {
             const user = await User.findById(req.session.user.id);
-            return res.render('admin/pages/profile', {
+            return res.render('client/pages/info', {
                 user,
-                pageTitle: 'Hồ sơ cá nhân',
-                activeMenu: 'profile',
+                pageTitle: 'Thông tin cá nhân',
+                activeMenu: 'info',
                 error: 'Vui lòng nhập họ và tên.'
             });
         }
 
         const updateData = {
             fullName: fullName.trim(),
-            phone: phone || ''
+            phone: phone || '',
+            address: address || ''
         };
 
         // Xử lý upload ảnh đại diện
@@ -166,17 +168,17 @@ exports.update = async (req, res) => {
             { new: true }
         );
 
-        // Đồng bộ lại session để header/topbar hiển thị tên và avatar mới ngay
+        // Đồng bộ lại session để header hiển thị tên và avatar mới ngay
         req.session.user.fullName = user.fullName;
         if (user.avatar) {
             req.session.user.avatar = user.avatar;
         }
 
-        res.render('admin/pages/profile', {
+        res.render('client/pages/info', {
             user,
-            pageTitle: 'Hồ sơ cá nhân',
-            activeMenu: 'profile',
-            success: 'Cập nhật hồ sơ thành công.'
+            pageTitle: 'Thông tin cá nhân',
+            activeMenu: 'info',
+            success: 'Cập nhật thông tin thành công.'
         });
 
     } catch (error) {
@@ -184,17 +186,17 @@ exports.update = async (req, res) => {
 
         const user = await User.findById(req.session.user.id);
 
-        res.render('admin/pages/profile', {
+        res.render('client/pages/info', {
             user,
-            pageTitle: 'Hồ sơ cá nhân',
-            activeMenu: 'profile',
+            pageTitle: 'Thông tin cá nhân',
+            activeMenu: 'info',
             error: 'Có lỗi xảy ra: ' + (error.message || 'Vui lòng thử lại.')
         });
     }
 };
 
 // =============================================================
-// ĐỔI MẬT KHẨU
+// ĐỔI MẬT KHẨU (CLIENT)
 // =============================================================
 
 exports.updatePassword = async (req, res) => {
@@ -204,15 +206,15 @@ exports.updatePassword = async (req, res) => {
         const user = await User.findById(req.session.user.id);
 
         if (!user) {
-            return res.redirect('/admin/login');
+            return res.redirect('/login');
         }
 
         // Validate
         if (!currentPassword || !newPassword || !confirmPassword) {
-            return res.render('admin/pages/profile', {
+            return res.render('client/pages/info', {
                 user,
-                pageTitle: 'Hồ sơ cá nhân',
-                activeMenu: 'profile',
+                pageTitle: 'Thông tin cá nhân',
+                activeMenu: 'info',
                 error: 'Vui lòng điền đầy đủ thông tin.'
             });
         }
@@ -221,29 +223,29 @@ exports.updatePassword = async (req, res) => {
         const isMatch = await bcrypt.compare(currentPassword, user.password);
 
         if (!isMatch) {
-            return res.render('admin/pages/profile', {
+            return res.render('client/pages/info', {
                 user,
-                pageTitle: 'Hồ sơ cá nhân',
-                activeMenu: 'profile',
+                pageTitle: 'Thông tin cá nhân',
+                activeMenu: 'info',
                 error: 'Mật khẩu hiện tại không đúng.'
             });
         }
 
         // Kiểm tra mật khẩu mới và xác nhận
         if (newPassword !== confirmPassword) {
-            return res.render('admin/pages/profile', {
+            return res.render('client/pages/info', {
                 user,
-                pageTitle: 'Hồ sơ cá nhân',
-                activeMenu: 'profile',
+                pageTitle: 'Thông tin cá nhân',
+                activeMenu: 'info',
                 error: 'Mật khẩu xác nhận không khớp.'
             });
         }
 
         if (newPassword.length < 6) {
-            return res.render('admin/pages/profile', {
+            return res.render('client/pages/info', {
                 user,
-                pageTitle: 'Hồ sơ cá nhân',
-                activeMenu: 'profile',
+                pageTitle: 'Thông tin cá nhân',
+                activeMenu: 'info',
                 error: 'Mật khẩu mới phải có ít nhất 6 ký tự.'
             });
         }
@@ -252,10 +254,10 @@ exports.updatePassword = async (req, res) => {
         user.password = await bcrypt.hash(newPassword, 10);
         await user.save();
 
-        res.render('admin/pages/profile', {
+        res.render('client/pages/info', {
             user,
-            pageTitle: 'Hồ sơ cá nhân',
-            activeMenu: 'profile',
+            pageTitle: 'Thông tin cá nhân',
+            activeMenu: 'info',
             success: 'Đổi mật khẩu thành công.'
         });
 
@@ -264,10 +266,10 @@ exports.updatePassword = async (req, res) => {
 
         const user = await User.findById(req.session.user.id);
 
-        res.render('admin/pages/profile', {
+        res.render('client/pages/info', {
             user,
-            pageTitle: 'Hồ sơ cá nhân',
-            activeMenu: 'profile',
+            pageTitle: 'Thông tin cá nhân',
+            activeMenu: 'info',
             error: 'Có lỗi xảy ra: ' + (error.message || 'Vui lòng thử lại.')
         });
     }

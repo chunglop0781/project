@@ -1,56 +1,159 @@
 extends ../layouts/admin-layout
 
 block content
+  .admin-page-head
+    div
+      h2.admin-page-title Hồ sơ cá nhân
+      p.admin-page-subtitle Quản lý thông tin tài khoản của bạn.
 
-  a.admin-form-back-link(href="/admin/dashboard")
-    i.fas.fa-arrow-left
-    | Quay lại trang chủ
+  if typeof error !== "undefined" && error
+    .admin-alert.admin-alert-error
+      i.fas.fa-circle-exclamation
+      span= error
 
-  h2 Hồ sơ cá nhân
-
-  //- error/success đã được admin-layout.pug tự render sẵn (block content
-  //- nằm sau đoạn flash message chung) - không cần lặp lại ở đây.
+  if typeof success !== "undefined" && success
+    .admin-alert.admin-alert-success
+      i.fas.fa-check-circle
+      span= success
 
   //- ===========================================================
   //- THÔNG TIN CƠ BẢN
   //- ===========================================================
-  form.admin-form(method="POST" action="/admin/profile")
+  .admin-card
+    h3.admin-card-title Thông tin cá nhân
 
-    .admin-form-row
-      .admin-form-group
-        label Họ và tên
-        input(type="text" name="fullName" value=user.fullName required)
+    form.admin-form(method="POST" action="/admin/profile" enctype="multipart/form-data")
+      .admin-form-grid
+        .admin-form-col
+          .admin-form-row
+            .admin-form-group
+              label(for="fullName") Họ và tên *
+              input#fullName.admin-input(
+                type="text"
+                name="fullName"
+                value=user.fullName
+                placeholder="VD: Nguyễn Văn A"
+                required
+              )
 
-      .admin-form-group
-        label Số điện thoại
-        input(type="text" name="phone" value=user.phone)
+            .admin-form-group
+              label(for="phone") Số điện thoại
+              input#phone.admin-input(
+                type="text"
+                name="phone"
+                value=user.phone || ''
+                placeholder="VD: 0912345678"
+              )
 
-    .admin-form-group
-      label Email
-      input(type="email" value=user.email disabled title="Email dùng để đăng nhập, không thể thay đổi ở đây")
+          .admin-form-group
+            label(for="email") Email
+            input#email.admin-input(
+              type="email"
+              value=user.email
+              disabled
+              title="Email dùng để đăng nhập, không thể thay đổi ở đây"
+            )
+            p.admin-form-hint Email được sử dụng để đăng nhập, không thể thay đổi.
 
-    .admin-form-actions
-      button.admin-btn.admin-btn-primary(type="submit") Lưu thay đổi
+        .admin-form-col.admin-form-col-side
+          .admin-form-group
+            label Ảnh đại diện
+            .admin-form-image-preview#avatarPreview
+              img(
+                src=user.avatar || '/admin/image/no-image.png'
+                alt="Ảnh đại diện"
+                onerror="this.src='/admin/image/no-image.png'"
+              )
+            input#avatar.admin-input(
+              type="file"
+              name="avatar"
+              accept="image/*"
+            )
+            p.admin-form-hint Chọn ảnh mới để thay đổi ảnh đại diện.
+
+      .admin-form-actions
+        button.admin-btn.admin-btn-primary(type="submit")
+          i.fas.fa-floppy-disk
+          |  Lưu thay đổi
 
   //- ===========================================================
   //- ĐỔI MẬT KHẨU
   //- ===========================================================
-  h2 Đổi mật khẩu
+  .admin-card
+    h3.admin-card-title Đổi mật khẩu
 
-  form.admin-form(method="POST" action="/admin/profile/password")
+    form.admin-form(method="POST" action="/admin/profile/password")
+      .admin-form-row
+        .admin-form-group
+          label(for="currentPassword") Mật khẩu hiện tại
+          input#currentPassword.admin-input(
+            type="password"
+            name="currentPassword"
+            required
+            minlength="6"
+            placeholder="Nhập mật khẩu hiện tại"
+          )
 
-    .admin-form-group
-      label Mật khẩu hiện tại
-      input(type="password" name="currentPassword" required)
+      .admin-form-row
+        .admin-form-group
+          label(for="newPassword") Mật khẩu mới
+          input#newPassword.admin-input(
+            type="password"
+            name="newPassword"
+            required
+            minlength="6"
+            placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)"
+          )
 
-    .admin-form-row
-      .admin-form-group
-        label Mật khẩu mới
-        input(type="password" name="newPassword" required minlength="6")
+        .admin-form-group
+          label(for="confirmPassword") Xác nhận mật khẩu mới
+          input#confirmPassword.admin-input(
+            type="password"
+            name="confirmPassword"
+            required
+            minlength="6"
+            placeholder="Nhập lại mật khẩu mới"
+          )
 
-      .admin-form-group
-        label Xác nhận mật khẩu mới
-        input(type="password" name="confirmPassword" required minlength="6")
+      .admin-form-actions
+        button.admin-btn.admin-btn-outline(type="submit")
+          i.fas.fa-key
+          |  Đổi mật khẩu
 
-    .admin-form-actions
-      button.admin-btn.admin-btn-outline(type="submit") Đổi mật khẩu
+block scripts
+  script.
+    (function() {
+      // Preview ảnh khi chọn file
+      var avatarInput = document.querySelector('#avatar');
+      var preview = document.querySelector('#avatarPreview img');
+      if (avatarInput && preview) {
+        avatarInput.addEventListener('change', function() {
+          var file = this.files && this.files[0];
+          if (!file) return;
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            preview.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      // Debug form submit
+      var form = document.querySelector('form[action="/admin/profile"]');
+      if (form) {
+        console.log('✅ Profile form found');
+        form.addEventListener('submit', function(e) {
+          console.log('🔍 FORM SUBMIT EVENT FIRED');
+          console.log('  - Action:', form.action);
+          console.log('  - Method:', form.method);
+          console.log('  - Enctype:', form.enctype);
+          
+          var formData = new FormData(form);
+          console.log('📝 FORM DATA:');
+          for (var pair of formData.entries()) {
+            console.log('  - ' + pair[0] + ':', pair[1]);
+          }
+          return true;
+        });
+      }
+    })();
