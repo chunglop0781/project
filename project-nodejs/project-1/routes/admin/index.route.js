@@ -4,6 +4,7 @@ const multer = require('multer');
 const fs = require('fs');
 
 // Import middleware
+const requireLogin = require('../../middlewares/requireLogin');
 const requireAdmin = require('../../middlewares/requireAdmin');
 
 // Import routes
@@ -16,6 +17,8 @@ const customersRoutes = require('./customers.route');
 const newsRoutes = require('./news.route');
 const settingsRoutes = require('./settings.route');
 const profileRoutes = require('./profile.route');
+const uploadRoute = require('./upload.route');
+
 
 // =============================================================
 // UPLOAD ẢNH CHO TINYMCE
@@ -49,7 +52,7 @@ var upload = multer({
     }
 });
 
-// API upload ảnh cho TinyMCE
+// API upload ảnh cho TinyMCE (không cần middleware vì có thể dùng public)
 router.post('/admin/api/upload-image', upload.single('file'), function(req, res) {
     try {
         if (!req.file) {
@@ -89,13 +92,16 @@ router.use(function(req, res, next) {
 router.use('/', loginRoutes);
 router.use('/', dashboardRoutes);
 
-// Các route cần admin
+// ✅ Route upload cần đăng nhập admin (dùng requireLogin)
+router.use('/', requireLogin, uploadRoute);
+
+// Các route cần admin (role = admin)
 router.use('/tours', requireAdmin, toursRoutes);
 router.use('/categories', requireAdmin, categoriesRoutes);
 router.use('/orders', requireAdmin, ordersRoutes);
 router.use('/customers', requireAdmin, customersRoutes);
 router.use('/news', requireAdmin, newsRoutes);
-router.use('/profile', requireAdmin, profileRoutes); // <-- CHỈ SỬA DÒNG NÀY
+router.use('/profile', requireAdmin, profileRoutes);
 router.use('/', settingsRoutes);
 
 module.exports = router;

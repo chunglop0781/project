@@ -1,13 +1,10 @@
-const path = require('path');
-const fs = require('fs');
-const axios = require('axios');
-const bcrypt = require('bcrypt');
 const User = require('../../models/user.model');
+const bcrypt = require('bcryptjs');
+const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 
-// =============================================================
-// CẤU HÌNH GITHUB
-// =============================================================
-
+// Cấu hình GitHub
 const GITHUB_CONFIG = {
     owner: process.env.GITHUB_OWNER || 'chunglop0781',
     repo: process.env.GITHUB_REPO || 'project-cache',
@@ -16,29 +13,15 @@ const GITHUB_CONFIG = {
     path: 'project-nodejs/project-1/public/uploads/profiles/'
 };
 
-// =============================================================
-// UPLOAD ẢNH LÊN GITHUB (CÓ KIỂM TRA FILE TỒN TẠI)
-// =============================================================
-
-async function uploadToGitHub(filePath, fileName) {
+async function uploadToGitHub(fileUrl, fileName) {
     try {
-        // Kiểm tra file tồn tại
-        if (!fs.existsSync(filePath)) {
-            console.warn('⚠️ File not found at path:', filePath);
-            return null;
-        }
+        const response = await axios.get(fileUrl, { responseType: 'arraybuffer' });
+        const buffer = Buffer.from(response.data, 'binary');
+        const contentBase64 = buffer.toString('base64');
 
-        if (!process.env.GITHUB_TOKEN) {
-            console.warn('⚠️ GITHUB_TOKEN not found. Skipping GitHub upload.');
-            return null;
-        }
-
-        const fileBuffer = fs.readFileSync(filePath);
-        const contentBase64 = fileBuffer.toString('base64');
-        
         const githubPath = `${GITHUB_CONFIG.path}${fileName}`;
-        
-        const response = await axios.put(
+
+        await axios.put(
             `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${githubPath}`,
             {
                 message: `Upload profile avatar: ${fileName}`,
@@ -52,225 +35,148 @@ async function uploadToGitHub(filePath, fileName) {
                 }
             }
         );
-        
-        console.log('✅ Uploaded avatar to GitHub:', response.data.content.download_url);
-        return response.data.content.download_url || response.data.content.html_url;
-        
+
+        const rawUrl = `https://raw.githubusercontent.com/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/${GITHUB_CONFIG.branch}/${githubPath}`;
+        console.log('✅ Uploaded to GitHub:', rawUrl);
+        return rawUrl;
     } catch (error) {
-        console.error('❌ Upload to GitHub failed:', error.response?.data?.message || error.message);
+        console.error('❌ GitHub upload error:', error.response?.data?.message || error.message);
         return null;
     }
 }
 
 // =============================================================
-// TRANG THÔNG TIN CÁ NHÂN (CLIENT)
+// TRANG THÔNG TIN CÁ NHÂN
 // =============================================================
 
-exports.detail = async (req, res) => {
+module.exports.detail = async (req, res) => {
     try {
-        const user = await User.findById(req.session.user.id);
-
-        if (!user) {
-            return req.session.destroy(() => res.redirect('/login'));
+        const userData = await User.findById(req.session.user.id);
+        if (!userData) {
+            req.flash('error', 'Không tìm thấy người dùng');
+            return res.redirect('/');
         }
 
+        if (!userData.avatar) {
+            userData.avatar = '/assets/image/avatar-default.png';
+        }
+
+        // Không gọi req.flash() ở đây vì middleware đã gán vào res.locals
         res.render('client/pages/info', {
-            user,
-            pageTitle: 'Thông tin cá nhân',
+            pageTitle: 'Thông Tin Cá Nhân',
+            user: userData,
+            error: res.locals.error,    // Lấy từ res.locals
+            success: res.locals.success,
+            validationErrors: [],
             activeMenu: 'info'
         });
-
     } catch (error) {
-        console.log(error);
-
-        res.render('client/pages/info', {
-            user: req.session.user,
-            pageTitle: 'Thông tin cá nhân',
-            activeMenu: 'info',
-            error: 'Có lỗi xảy ra, vui lòng thử lại.'
-        });
+        console.error('❌ INFO PAGE ERROR:', error);
+        req.flash('error', 'Lỗi tải trang thông tin');
+        res.redirect('/');
     }
 };
 
 // =============================================================
-// CẬP NHẬT THÔNG TIN (CLIENT) - CÓ UPLOAD ẢNH LÊN GITHUB
+// CẬP NHẬT THÔNG TIN (CÓ UPLOAD AVATAR + GITHUB)
 // =============================================================
 
-exports.update = async (req, res) => {
+module.exports.update = async (req, res) => {
     try {
-        const { fullName, phone, address } = req.body;
+        const body = req.body || {};
+        const { fullName, phone, address } = body;
 
-        console.log('========================================');
-        console.log('📝 UPDATE CLIENT INFO - DỮ LIỆU NHẬN ĐƯỢC:');
-        console.log('  - fullName:', fullName);
-        console.log('  - phone:', phone);
-        console.log('  - address:', address);
-        console.log('  - File:', req.file);
-        console.log('========================================');
-
-        // Validate dữ liệu
         if (!fullName || fullName.trim() === '') {
-            const user = await User.findById(req.session.user.id);
-            return res.render('client/pages/info', {
-                user,
-                pageTitle: 'Thông tin cá nhân',
-                activeMenu: 'info',
-                error: 'Vui lòng nhập họ và tên.'
-            });
+            req.flash('error', 'Vui lòng nhập họ và tên.');
+            return res.redirect('/info');
         }
+
+        const userId = req.session.user.id;
 
         const updateData = {
             fullName: fullName.trim(),
-            phone: phone || '',
-            address: address || ''
+            phone: phone ? phone.trim() : '',
+            address: address ? address.trim() : ''
         };
 
-        // Xử lý upload ảnh đại diện
-        let avatarUrl = null;
-        if (req.file) {
-            const localPath = req.file.path;
-            const fileName = req.file.filename;
+        if (req.file && req.file.secure_url) {
+            const cloudinaryUrl = req.file.secure_url;
+            const fileName = req.file.filename || `${Date.now()}-${req.file.originalname || 'avatar.jpg'}`;
             
-            console.log('📤 Uploading avatar to GitHub:', fileName);
-            console.log('📁 Local path:', localPath);
+            console.log('📤 Upload avatar to GitHub from Cloudinary:', cloudinaryUrl);
             
-            // Kiểm tra file tồn tại trước khi upload
-            if (fs.existsSync(localPath)) {
-                // Upload lên GitHub
-                avatarUrl = await uploadToGitHub(localPath, fileName);
-                
-                if (avatarUrl) {
-                    updateData.avatar = avatarUrl;
-                    console.log('✅ Updated avatar URL to GitHub:', avatarUrl);
-                    
-                    // Xóa ảnh local sau khi upload thành công
-                    try {
-                        if (fs.existsSync(localPath)) {
-                            fs.unlinkSync(localPath);
-                            console.log('🗑️ Đã xóa ảnh local:', localPath);
-                        }
-                    } catch (unlinkError) {
-                        console.warn('⚠️ Không thể xóa ảnh local:', unlinkError.message);
-                    }
-                } else {
-                    // Fallback: giữ ảnh local
-                    updateData.avatar = '/uploads/profiles/' + fileName;
-                    console.warn('⚠️ GitHub upload failed, keeping local avatar.');
-                }
+            const githubUrl = await uploadToGitHub(cloudinaryUrl, fileName);
+            
+            if (githubUrl) {
+                updateData.avatar = githubUrl;
+                console.log('✅ Avatar stored on GitHub:', githubUrl);
             } else {
-                console.warn('⚠️ File not found, skipping upload:', localPath);
+                updateData.avatar = cloudinaryUrl;
+                console.log('⚠️ GitHub upload failed, using Cloudinary URL:', cloudinaryUrl);
             }
         }
 
-        const user = await User.findByIdAndUpdate(
-            req.session.user.id,
-            updateData,
-            { new: true }
-        );
+        const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
 
-        // Đồng bộ lại session để header hiển thị tên và avatar mới ngay
-        req.session.user.fullName = user.fullName;
-        if (user.avatar) {
-            req.session.user.avatar = user.avatar;
+        req.session.user.fullName = updatedUser.fullName;
+        if (updateData.avatar) {
+            req.session.user.avatar = updateData.avatar;
         }
 
-        res.render('client/pages/info', {
-            user,
-            pageTitle: 'Thông tin cá nhân',
-            activeMenu: 'info',
-            success: 'Cập nhật thông tin thành công.'
-        });
-
+        req.flash('success', 'Cập nhật thông tin thành công!');
+        res.redirect('/info');
     } catch (error) {
-        console.error('❌ UPDATE ERROR:', error);
-
-        const user = await User.findById(req.session.user.id);
-
-        res.render('client/pages/info', {
-            user,
-            pageTitle: 'Thông tin cá nhân',
-            activeMenu: 'info',
-            error: 'Có lỗi xảy ra: ' + (error.message || 'Vui lòng thử lại.')
-        });
+        console.error('❌ UPDATE INFO ERROR:', error);
+        req.flash('error', 'Lỗi cập nhật thông tin: ' + error.message);
+        res.redirect('/info');
     }
 };
 
 // =============================================================
-// ĐỔI MẬT KHẨU (CLIENT)
+// ĐỔI MẬT KHẨU
 // =============================================================
 
-exports.updatePassword = async (req, res) => {
+module.exports.updatePassword = async (req, res) => {
     try {
         const { currentPassword, newPassword, confirmPassword } = req.body;
+        const userId = req.session.user.id;
 
-        const user = await User.findById(req.session.user.id);
-
-        if (!user) {
-            return res.redirect('/login');
-        }
-
-        // Validate
         if (!currentPassword || !newPassword || !confirmPassword) {
-            return res.render('client/pages/info', {
-                user,
-                pageTitle: 'Thông tin cá nhân',
-                activeMenu: 'info',
-                error: 'Vui lòng điền đầy đủ thông tin.'
-            });
+            req.flash('error', 'Vui lòng điền đầy đủ thông tin.');
+            return res.redirect('/info');
         }
 
-        // Kiểm tra mật khẩu hiện tại
-        const isMatch = await bcrypt.compare(currentPassword, user.password);
-
-        if (!isMatch) {
-            return res.render('client/pages/info', {
-                user,
-                pageTitle: 'Thông tin cá nhân',
-                activeMenu: 'info',
-                error: 'Mật khẩu hiện tại không đúng.'
-            });
-        }
-
-        // Kiểm tra mật khẩu mới và xác nhận
         if (newPassword !== confirmPassword) {
-            return res.render('client/pages/info', {
-                user,
-                pageTitle: 'Thông tin cá nhân',
-                activeMenu: 'info',
-                error: 'Mật khẩu xác nhận không khớp.'
-            });
+            req.flash('error', 'Mật khẩu xác nhận không khớp.');
+            return res.redirect('/info');
         }
 
         if (newPassword.length < 6) {
-            return res.render('client/pages/info', {
-                user,
-                pageTitle: 'Thông tin cá nhân',
-                activeMenu: 'info',
-                error: 'Mật khẩu mới phải có ít nhất 6 ký tự.'
-            });
+            req.flash('error', 'Mật khẩu mới phải có ít nhất 6 ký tự.');
+            return res.redirect('/info');
         }
 
-        // Hash mật khẩu mới
-        user.password = await bcrypt.hash(newPassword, 10);
-        await user.save();
+        const userData = await User.findById(userId);
+        if (!userData) {
+            req.flash('error', 'Không tìm thấy tài khoản');
+            return res.redirect('/login');
+        }
 
-        res.render('client/pages/info', {
-            user,
-            pageTitle: 'Thông tin cá nhân',
-            activeMenu: 'info',
-            success: 'Đổi mật khẩu thành công.'
-        });
+        const isMatch = await bcrypt.compare(currentPassword, userData.password);
+        if (!isMatch) {
+            req.flash('error', 'Mật khẩu hiện tại không đúng.');
+            return res.redirect('/info');
+        }
 
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        userData.password = hashedPassword;
+        await userData.save();
+
+        req.flash('success', 'Đổi mật khẩu thành công!');
+        res.redirect('/info');
     } catch (error) {
-        console.error('❌ PASSWORD ERROR:', error);
-
-        const user = await User.findById(req.session.user.id);
-
-        res.render('client/pages/info', {
-            user,
-            pageTitle: 'Thông tin cá nhân',
-            activeMenu: 'info',
-            error: 'Có lỗi xảy ra: ' + (error.message || 'Vui lòng thử lại.')
-        });
+        console.error('❌ UPDATE PASSWORD ERROR:', error);
+        req.flash('error', 'Lỗi đổi mật khẩu: ' + error.message);
+        res.redirect('/info');
     }
 };

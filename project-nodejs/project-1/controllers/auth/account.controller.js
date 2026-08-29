@@ -32,10 +32,22 @@ module.exports.loginPage = async (req, res) => {
             return res.redirect('/');
         }
 
+        // Lấy flash messages từ session
+        const success = req.session.success || null;
+        const error = req.session.error || null;
+        const verificationEmail = req.session.verificationEmail || null;
+
+        // Xóa sau khi đọc
+        req.session.success = null;
+        req.session.error = null;
+        req.session.verificationEmail = null;
+
         return res.render('client/pages/login', {
             pageTitle: 'Đăng Nhập',
             validationErrors: [],
-            error: null,
+            error: error,
+            success: success,
+            verificationEmail: verificationEmail,
             formData: {}
         });
     } catch (error) {
@@ -65,6 +77,7 @@ module.exports.login = async (req, res) => {
                 pageTitle: 'Đăng Nhập',
                 validationErrors: req.validationErrors,
                 error: null,
+                success: null,
                 formData: {
                     email: req.body.email || '',
                     rememberPassword: req.body.rememberPassword || false
@@ -89,6 +102,7 @@ module.exports.login = async (req, res) => {
                 pageTitle: 'Đăng Nhập',
                 validationErrors: [],
                 error: error,
+                success: null,
                 formData: { email, rememberPassword }
             });
         }
@@ -109,6 +123,7 @@ module.exports.login = async (req, res) => {
                 pageTitle: 'Đăng Nhập',
                 validationErrors: [],
                 error: error,
+                success: null,
                 formData: { email, rememberPassword }
             });
         }
@@ -128,6 +143,7 @@ module.exports.login = async (req, res) => {
                 pageTitle: 'Đăng Nhập',
                 validationErrors: [],
                 error: error,
+                success: null,
                 formData: { email, rememberPassword }
             });
         }
@@ -146,6 +162,7 @@ module.exports.login = async (req, res) => {
                 pageTitle: 'Đăng Nhập',
                 validationErrors: [],
                 error: error,
+                success: null,
                 formData: { email, rememberPassword }
             });
         }
@@ -200,6 +217,7 @@ module.exports.login = async (req, res) => {
             pageTitle: 'Đăng Nhập',
             validationErrors: [],
             error: 'Đã xảy ra lỗi. Vui lòng thử lại sau.',
+            success: null,
             formData: {
                 email: req.body?.email || '',
                 rememberPassword: req.body?.rememberPassword || false
@@ -231,7 +249,7 @@ module.exports.registerPage = async (req, res) => {
 };
 
 // =============================================================
-// ĐĂNG KÝ - HỖ TRỢ CẢ HTML VÀ JSON
+// ĐĂNG KÝ - HỖ TRỢ CẢ HTML VÀ JSON (CÓ GỬI OTP)
 // =============================================================
 
 module.exports.register = async (req, res) => {
@@ -263,6 +281,7 @@ module.exports.register = async (req, res) => {
         const { fullName, email, phone, password, confirmPassword, agreeTerms } = req.body;
         const normalizedEmail = email ? email.trim().toLowerCase() : '';
 
+        // Validate các trường bắt buộc
         if (!fullName || !normalizedEmail || !password || !confirmPassword) {
             const error = 'Vui lòng điền đầy đủ thông tin.';
             
@@ -281,6 +300,7 @@ module.exports.register = async (req, res) => {
             });
         }
 
+        // Kiểm tra mật khẩu xác nhận
         if (password !== confirmPassword) {
             const error = 'Mật khẩu xác nhận không khớp.';
             
@@ -299,6 +319,7 @@ module.exports.register = async (req, res) => {
             });
         }
 
+        // Kiểm tra độ dài mật khẩu
         if (password.length < 6) {
             const error = 'Mật khẩu phải có ít nhất 6 ký tự.';
             
@@ -317,6 +338,7 @@ module.exports.register = async (req, res) => {
             });
         }
 
+        // Kiểm tra email đã tồn tại
         const existingUser = await User.findOne({ email: normalizedEmail });
         if (existingUser) {
             const error = 'Email này đã được sử dụng.';
@@ -336,6 +358,7 @@ module.exports.register = async (req, res) => {
             });
         }
 
+        // Kiểm tra đồng ý điều khoản
         if (!agreeTerms) {
             const error = 'Vui lòng đồng ý với điều khoản và điều kiện.';
             
@@ -354,22 +377,46 @@ module.exports.register = async (req, res) => {
             });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-
+        // ✅ Tạo user với status = 'active' (khớp với enum trong model)
         const user = new User({
             fullName: fullName.trim(),
             email: normalizedEmail,
             phone: phone ? phone.trim() : '',
-            password: hashedPassword,
+            password: password, // Sẽ được hash bởi middleware pre('save') trong model
             role: 'customer',
-            status: 'active'
+            status: 'active' // ✅ Dùng 'active' (khớp với enum trong model)
         });
 
         await user.save();
+        console.log('✅ User saved successfully:', user.email);
+
+        // Tạo OTP xác minh email (nếu cần)
+        const otp = generateHelper.generateRandomNumber(6);
+        const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 phút
+
+        // ✅ SỬA: dùng 'expireAt' (khớp với model ForgotPassword)
+        const forgotPasswordRecord = new ForgotPassword({
+            email: normalizedEmail,
+            otp: otp,
+            expireAt: expiresAt, // ✅ ĐÚNG: dùng 'expireAt'
+            isUsed: false
+        });
+        await forgotPasswordRecord.save();
+        console.log(`🔐 OTP created for ${normalizedEmail}: ${otp}`);
+
+        // Gửi email OTP (nếu đã cấu hình)
+        try {
+            await sendOtpEmail(normalizedEmail, otp, 'Xác minh email đăng ký');
+            console.log(`📧 OTP email sent to ${normalizedEmail}`);
+        } catch (emailError) {
+            console.error('❌ Failed to send OTP email:', emailError);
+            // Vẫn cho phép đăng ký nhưng thông báo lỗi gửi email
+        }
 
         if (isAjax) {
             return res.json({
                 code: 'success',
+                message: 'Đăng ký thành công! Vui lòng kiểm tra email để xác minh.',
                 redirect: '/login'
             });
         }
@@ -378,7 +425,8 @@ module.exports.register = async (req, res) => {
         return res.redirect('/login');
 
     } catch (error) {
-        console.error('REGISTER ERROR:', error);
+        console.error('❌ REGISTER ERROR:', error);
+        console.error('❌ Stack:', error.stack);
         
         if (isAjaxRequest(req)) {
             return res.status(500).json({
