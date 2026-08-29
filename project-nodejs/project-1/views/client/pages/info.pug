@@ -36,6 +36,8 @@ html(lang="vi")
             .profile-alert-error { background: #fde8e8; color: #d9534f; border: 1px solid #f5c6cb; }
             .profile-alert-success { background: #e8f5e9; color: #28a745; border: 1px solid #c3e6cb; }
             .profile-alert i { font-size: 18px; }
+            .profile-alert-close { background: none; border: none; color: inherit; opacity: 0.6; font-size: 18px; cursor: pointer; padding: 4px; transition: opacity 0.2s; }
+            .profile-alert-close:hover { opacity: 1; }
             .profile-password-section { margin-top: 30px; }
             .profile-password-section .profile-card-head { border-bottom-color: #f0f0f0; }
             .avatar-upload-wrapper { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 10px; width: 100%; }
@@ -53,15 +55,20 @@ html(lang="vi")
 
         main.profile-page
             .profile-wrapper
-                //- Flash messages
-                if typeof error !== "undefined" && error
+                //- Flash messages (đã thêm điều kiện length và nút đóng)
+                if typeof error !== "undefined" && error && error.length
                     .profile-alert.profile-alert-error
                         i.fas.fa-circle-exclamation
                         span= error
-                if typeof success !== "undefined" && success
+                        button.profile-alert-close(type="button" aria-label="Đóng")
+                            i.fas.fa-xmark
+
+                if typeof success !== "undefined" && success && success.length
                     .profile-alert.profile-alert-success
                         i.fas.fa-circle-check
                         span= success
+                        button.profile-alert-close(type="button" aria-label="Đóng")
+                            i.fas.fa-xmark
 
                 .profile-card
                     .profile-card-head
@@ -163,4 +170,23 @@ html(lang="vi")
                         reader.readAsDataURL(file);
                     });
                 }
+
+                // =============================================
+                // ĐÓNG ALERT KHI BẤM NÚT X
+                // =============================================
+                document.querySelectorAll('.profile-alert-close').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        var alert = this.closest('.profile-alert');
+                        if (alert) {
+                            alert.style.display = 'none';
+                        }
+                    });
+                });
+
+                // Tự động ẩn alert sau 5 giây (tuỳ chọn)
+                setTimeout(function() {
+                    document.querySelectorAll('.profile-alert').forEach(function(alert) {
+                        alert.style.display = 'none';
+                    });
+                }, 5000);
             })();

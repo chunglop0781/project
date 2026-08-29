@@ -47,28 +47,20 @@ html(lang="vi")
         main.admin-content
 
           //- =================================================
-          //- FLASH MESSAGE
+          //- FLASH MESSAGE (đã thêm điều kiện length)
           //- =================================================
 
-          if typeof success !== "undefined" && success
-
+          if typeof success !== "undefined" && success && success.length
             .admin-alert.admin-alert-success
-
               i.fas.fa-circle-check
-
               span= success
-
               button.admin-alert-close(type="button" aria-label="Đóng")
                 i.fas.fa-xmark
 
-          if typeof error !== "undefined" && error
-
+          if typeof error !== "undefined" && error && error.length
             .admin-alert.admin-alert-error
-
               i.fas.fa-circle-exclamation
-
               span= error
-
               button.admin-alert-close(type="button" aria-label="Đóng")
                 i.fas.fa-xmark
 
