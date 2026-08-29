@@ -5,6 +5,17 @@
 document.addEventListener("DOMContentLoaded", function() {
 
     // =============================================================
+    // ẨN ALERT KHI KHÔNG CÓ NỘI DUNG
+    // =============================================================
+
+    document.querySelectorAll('.admin-alert').forEach(function(alert) {
+        var span = alert.querySelector('span');
+        if (span && span.textContent.trim() === '') {
+            alert.style.display = 'none';
+        }
+    });
+
+    // =============================================================
     // SIDEBAR TOGGLE
     // =============================================================
 
