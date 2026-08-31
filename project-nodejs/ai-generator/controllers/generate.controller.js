@@ -1,11 +1,14 @@
 
 const tts = require('google-tts-api');
+
 const {
-    octokit,
+    getOctokit,
     owner,
     repo,
     branch
 } = require('../config/github.config');
+
+
 
 // =========================================================
 // HÀM PHÁT HIỆN NGÔN NGỮ TỪ TEXT
@@ -34,7 +37,6 @@ function detectLanguage(text) {
 
     // -----------------------------------------------------
     // Tiếng Nhật
-    // Hiragana / Katakana
     // -----------------------------------------------------
     if (/[\u3040-\u30FF]/.test(text)) {
         return 'ja';
@@ -73,6 +75,8 @@ function detectLanguage(text) {
     // -----------------------------------------------------
     return 'en';
 }
+
+
 
 // =========================================================
 // CHUẨN HÓA LANGUAGE CHO GOOGLE TTS
@@ -150,6 +154,8 @@ function normalizeLanguage(lang) {
     return normalized;
 }
 
+
+
 // =========================================================
 // HÀM UPLOAD FILE LÊN GITHUB
 // =========================================================
@@ -183,6 +189,12 @@ const uploadToGithub = async (
             '📤 Upload GitHub:',
             githubPath
         );
+
+        // =================================================
+        // LOAD OCTOKIT KHI CẦN
+        // Tránh ERR_REQUIRE_ESM trên Vercel
+        // =================================================
+        const octokit = await getOctokit();
 
         const response =
             await octokit.repos.createOrUpdateFileContents({
@@ -228,6 +240,8 @@ const uploadToGithub = async (
         );
     }
 };
+
+
 
 // =========================================================
 // TẠO AUDIO + UPLOAD GITHUB
@@ -365,6 +379,8 @@ const generateAudioAndUpload = async (
     }
 };
 
+
+
 // =========================================================
 // TẠO ẢNH PLACEHOLDER
 // =========================================================
@@ -376,6 +392,8 @@ const generateImageAndUpload = async (
         'Chức năng tạo ảnh chưa được cấu hình'
     );
 };
+
+
 
 // =========================================================
 // CONTROLLER CHÍNH
@@ -471,12 +489,7 @@ exports.generate = async (
                 detectLanguage(content);
 
             // -------------------------------------------------
-            // Chuẩn hóa:
-            //
-            // en-US → en
-            // vi-VN → vi
-            // ja-JP → ja
-            // ko-KR → ko
+            // Chuẩn hóa
             // -------------------------------------------------
             const lang =
                 normalizeLanguage(
