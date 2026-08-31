@@ -1,0 +1,86 @@
+doctype html
+html(lang="vi")
+
+    head
+
+        meta(charset="UTF-8")
+        meta(
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+        )
+
+        title AI Generator
+
+        link(
+            rel="stylesheet"
+            href="/css/style.css"
+        )
+
+
+    body
+
+        .container
+
+            h1 ✨ AI Generator
+
+            p
+                | Tạo ảnh, video hoặc âm thanh bằng prompt
+
+
+            .types
+
+                button.type-btn.active(
+                    data-type="image"
+                )
+                    | 🖼️ Ảnh
+
+                button.type-btn(
+                    data-type="video"
+                )
+                    | 🎬 Video
+
+                button.type-btn(
+                    data-type="audio"
+                )
+                    | 🔊 Âm thanh
+
+
+            textarea#prompt(
+                placeholder="Nhập prompt của bạn..."
+            )
+
+            //- ===== DROPDOWN NGÔN NGỮ =====
+            .lang-select-wrap
+                label(for="languageSelect") 🌐 Ngôn ngữ giọng nói:
+                select#languageSelect
+                    option(value="auto") 🤖 Tự động phát hiện
+                    option(value="vi-VN") Tiếng Việt (miền Nam)
+                    option(value="vi") Tiếng Việt (chuẩn)
+                    option(value="en-US") Tiếng Anh (Mỹ)
+                    option(value="en-GB") Tiếng Anh (Anh)
+                    option(value="fr-FR") Tiếng Pháp
+                    option(value="de-DE") Tiếng Đức
+                    option(value="es-ES") Tiếng Tây Ban Nha
+                    option(value="ja-JP") Tiếng Nhật
+                    option(value="zh-CN") Tiếng Trung (Giản thể)
+                    option(value="zh-TW") Tiếng Trung (Phồn thể)
+                    option(value="ko-KR") Tiếng Hàn
+                    option(value="it-IT") Tiếng Ý
+                    option(value="pt-BR") Tiếng Bồ Đào Nha (Brazil)
+                    option(value="ru-RU") Tiếng Nga
+                    option(value="ar-SA") Tiếng Ả Rập
+                    option(value="hi-IN") Tiếng Hindi
+
+            button#generateBtn
+                | ✨ Tạo nội dung
+
+
+            .result
+
+                h2 Kết quả
+
+                #resultBox
+                    | Chưa có kết quả.
+
+
+        script(src="/js/app.js")

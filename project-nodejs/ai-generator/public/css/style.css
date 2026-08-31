@@ -1,0 +1,415 @@
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f5f7fa;
+  color: #30343b;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   MAIN CONTAINER
+========================================================= */
+
+.container {
+  width: calc(100% - 32px);
+  max-width: 760px;
+
+  margin: 50px auto;
+  padding: 32px;
+
+  background: #ffffff;
+
+  border: 1px solid #e3e6ea;
+  border-radius: 12px;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+
+/* =========================================================
+   TYPOGRAPHY
+========================================================= */
+
+h1 {
+  margin-bottom: 8px;
+
+  text-align: center;
+
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.25;
+
+  color: #2f3338;
+}
+
+.subhead {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+
+  text-align: center;
+
+  font-size: 15px;
+  color: #777d85;
+
+  border-bottom: 1px solid #eceef1;
+}
+
+
+/* =========================================================
+   TYPE SELECTOR
+========================================================= */
+
+.types {
+  display: flex;
+  gap: 8px;
+
+  margin-bottom: 20px;
+}
+
+.type-btn {
+  flex: 1;
+
+  min-height: 44px;
+  padding: 10px 14px;
+
+  background: #f7f8fa;
+  color: #626870;
+
+  border: 1px solid #dfe3e7;
+  border-radius: 7px;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.type-btn:hover {
+  background: #ffffff;
+  border-color: #c8cdd3;
+  color: #30343b;
+}
+
+.type-btn.active {
+  background: #eef7ff;
+
+  border-color: #2684d9;
+
+  color: #1475c5;
+}
+
+.type-btn .icon {
+  margin-right: 5px;
+  font-size: 16px;
+}
+
+
+/* =========================================================
+   TEXTAREA
+========================================================= */
+
+textarea {
+  display: block;
+
+  width: 100%;
+  min-height: 150px;
+
+  padding: 14px 15px;
+
+  background: #ffffff;
+  color: #30343b;
+
+  border: 1px solid #d8dce1;
+  border-radius: 7px;
+
+  outline: none;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+
+  resize: vertical;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+textarea::placeholder {
+  color: #a0a5ab;
+}
+
+textarea:hover {
+  border-color: #c6cbd1;
+}
+
+textarea:focus {
+  border-color: #2684d9;
+
+  box-shadow: 0 0 0 2px rgba(38, 132, 217, 0.1);
+}
+
+
+/* =========================================================
+   GENERATE BUTTON
+========================================================= */
+
+#generateBtn {
+  display: block;
+
+  width: 100%;
+
+  margin-top: 18px;
+  padding: 12px 20px;
+
+  background: #2583d7;
+  color: #ffffff;
+
+  border: 1px solid #2583d7;
+  border-radius: 7px;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+#generateBtn:hover {
+  background: #1975c7;
+  border-color: #1975c7;
+}
+
+#generateBtn:active {
+  background: #1269b7;
+  border-color: #1269b7;
+}
+
+#generateBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   RESULT
+========================================================= */
+
+.result {
+  margin-top: 28px;
+  padding: 20px;
+
+  background: #fafbfc;
+
+  border: 1px solid #e3e6ea;
+  border-radius: 8px;
+
+  min-height: 130px;
+}
+
+.result h2 {
+  margin-bottom: 12px;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  color: #444950;
+}
+
+#resultBox {
+  color: #555b63;
+
+  font-size: 14px;
+  line-height: 1.6;
+
+  word-break: break-word;
+}
+
+
+/* =========================================================
+   RESULT MEDIA
+========================================================= */
+
+#resultBox img {
+  display: block;
+
+  max-width: 100%;
+
+  margin: 10px 0;
+
+  border: 1px solid #e1e4e8;
+  border-radius: 7px;
+}
+
+#resultBox audio {
+  display: block;
+
+  width: 100%;
+
+  margin: 10px 0;
+}
+
+#resultBox a {
+  color: #1676c8;
+
+  font-weight: 500;
+
+  text-decoration: none;
+}
+
+#resultBox a:hover {
+  text-decoration: underline;
+}
+
+#resultBox .status-message {
+  color: #888f97;
+  font-style: normal;
+}
+
+
+/* =========================================================
+   SMALL STATUS / HELPER TEXT
+========================================================= */
+
+.status-message {
+  color: #858b92;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+  body {
+    background: #ffffff;
+  }
+
+  .container {
+    width: 100%;
+
+    margin: 0;
+    padding: 22px 16px;
+
+    border: none;
+    border-radius: 0;
+
+    box-shadow: none;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+
+  .subhead {
+    font-size: 14px;
+    margin-bottom: 22px;
+  }
+
+  .types {
+    flex-wrap: wrap;
+  }
+
+  .type-btn {
+    flex: 1 0 calc(50% - 4px);
+  }
+
+  textarea {
+    min-height: 120px;
+  }
+
+  #generateBtn {
+    padding: 12px;
+  }
+
+  .result {
+    padding: 16px;
+  }
+}
+
+
+/* =========================================================
+   SIMPLE ANIMATION
+========================================================= */
+
+.fade-in {
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+
+
+/* ===== LANGUAGE SELECT ===== */
+.lang-select-wrap {
+    margin: 1rem 0 0.25rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.lang-select-wrap label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #0b0c0e; /* đen */
+}
+
+.lang-select-wrap select {
+    padding: 0.5rem 2rem 0.5rem 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.12); /* viền đen nhạt */
+    background: #ffffff; /* nền trắng */
+    color: #0b0c0e; /* chữ đen */
+    font-size: 0.95rem;
+    font-family: inherit;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%230b0c0e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    min-width: 180px;
+}
+
+.lang-select-wrap select:hover {
+    border-color: rgba(0, 0, 0, 0.3);
+}
+
+.lang-select-wrap select:focus {
+    outline: none;
+    border-color: rgba(3, 140, 244, 0.5);
+}
