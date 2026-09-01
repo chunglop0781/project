@@ -1,0 +1,136 @@
+extends ../../layouts/admin-layout.pug
+
+block content
+  .admin-page-head
+    div
+      h2.admin-page-title Thùng rác đơn hàng
+      p.admin-page-subtitle Các đơn hàng đã bị xóa, có thể khôi phục hoặc xóa vĩnh viễn.
+    a.admin-btn.admin-btn-outline(href="/admin/orders")
+      i.fas.fa-arrow-left
+      |  Quay lại danh sách đơn hàng
+
+  .admin-card
+    //- TOOLBAR: BULK + TÌM KIẾM
+    .admin-toolbar
+      form#trashBulkForm.admin-bulk-form(action="/admin/orders/trash/bulk" method="POST")
+        select.admin-select(name="bulkAction")
+          option(value="") -- Hành động --
+          option(value="restore") Khôi phục
+          option(value="delete") Xóa vĩnh viễn
+        button.admin-btn.admin-btn-outline(type="submit") Áp dụng
+
+      form.admin-search-form(action="/admin/orders/trash" method="GET")
+        i.fas.fa-magnifying-glass
+        input(
+          type="text"
+          name="keyword"
+          placeholder="Tìm mã đơn, tên khách hàng..."
+          value=(typeof filter !== "undefined" && filter.keyword) ? filter.keyword : ""
+        )
+
+    //- BẢNG
+    .admin-table-scroll
+      table.admin-table.admin-table-orders
+        thead
+          tr
+            th(style="width: 36px")
+              input.admin-checkbox(type="checkbox" id="checkAllTrashOrders")
+            th Mã đơn
+            th Khách hàng
+            th Tour
+            th Tổng tiền
+            th Trạng thái
+            th Ngày đặt
+            th Người xóa
+            th Ngày xóa
+            th Hành động
+        tbody
+          if typeof orders !== "undefined" && orders.length
+            each order in orders
+              tr
+                td
+                  input.admin-checkbox(type="checkbox" name="ids" value=order.id form="trashBulkForm")
+                td
+                  a.admin-table-link(href="/admin/orders/" + order.id)= order.code
+                td
+                  .admin-customer-info
+                    .customer-name= order.customerName
+                    .customer-phone= order.phone
+                td
+                  .admin-order-mini
+                    img(src=order.tourImage || "/admin/image/no-image.png" alt=order.tourName)
+                    .tour-info
+                      .tour-name= order.tourName
+                      .tour-meta= order.departureDate
+                td= order.total.toLocaleString("vi-VN") + "đ"
+                td
+                  span.admin-badge(class="is-" + order.status)= order.statusLabel
+                td= order.createdAt
+                td= order.deletedByName || "Hệ thống"
+                td= order.deletedAt
+                td
+                  button.admin-icon-btn(
+                    type="button"
+                    data-restore-url="/admin/orders/" + order.id + "/restore"
+                    data-confirm="Khôi phục đơn hàng này?"
+                    title="Khôi phục"
+                  )
+                    i.fas.fa-rotate-left
+                  button.admin-icon-btn.admin-icon-btn-danger(
+                    type="button"
+                    data-delete-url="/admin/orders/" + order.id + "/force"
+                    data-confirm="Xóa vĩnh viễn đơn hàng này? Hành động không thể hoàn tác."
+                    title="Xóa vĩnh viễn"
+                  )
+                    i.fas.fa-trash
+          else
+            tr
+              td.admin-table-empty(colspan="10") Thùng rác trống.
+
+    include ../../partials/pagination.pug
+
+  script.
+    // Check all
+    document.getElementById('checkAllTrashOrders').addEventListener('change', function (e) {
+      document.querySelectorAll('#trashBulkForm input[type="checkbox"]').forEach(function (cb) {
+        cb.checked = e.target.checked;
+      });
+    });
+
+    // Khôi phục
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-restore-url]');
+      if (!btn) return;
+      var url = btn.getAttribute('data-restore-url');
+      var confirmMsg = btn.getAttribute('data-confirm');
+      if (confirmMsg && !window.confirm(confirmMsg)) return;
+      fetch(url, { method: 'POST' })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data && data.success) {
+            window.location.reload();
+          } else {
+            alert((data && data.message) || 'Khôi phục thất bại.');
+          }
+        })
+        .catch(function () { alert('Có lỗi xảy ra.'); });
+    });
+
+    // Xóa vĩnh viễn
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-delete-url]');
+      if (!btn) return;
+      var url = btn.getAttribute('data-delete-url');
+      var confirmMsg = btn.getAttribute('data-confirm');
+      if (confirmMsg && !window.confirm(confirmMsg)) return;
+      fetch(url, { method: 'DELETE' })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data && data.success) {
+            window.location.reload();
+          } else {
+            alert((data && data.message) || 'Xóa vĩnh viễn thất bại.');
+          }
+        })
+        .catch(function () { alert('Có lỗi xảy ra.'); });
+    });

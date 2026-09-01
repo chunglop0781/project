@@ -12,6 +12,15 @@ const flash = require('connect-flash');
 
 require('dotenv').config();
 
+// =============================================================
+// 🆕 ĐĂNG KÝ MONGOOSE-SLUG-UPDATER
+// =============================================================
+const mongoose = require('mongoose');
+const slug = require('mongoose-slug-updater');
+mongoose.plugin(slug);
+
+// =============================================================
+
 const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({

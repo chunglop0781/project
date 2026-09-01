@@ -960,6 +960,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"deepdash@npm:^5.3.5":
+  version: 5.3.9
+  resolution: "deepdash@npm:5.3.9"
+  dependencies:
+    lodash: "npm:^4.17.21"
+    lodash-es: "npm:^4.17.21"
+  checksum: 10c0/d9e076803279969510cd079a93ec4f664a309c817acf447a51166bc7c07dcdcf79d04f19141065170173d7a79fdfe3783d1926f026d3fe2267a4c19fbc6dce14
+  languageName: node
+  linkType: hard
+
 "deepmerge@npm:^4.2.2":
   version: 4.3.1
   resolution: "deepmerge@npm:4.3.1"
@@ -1758,6 +1768,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash-es@npm:^4.17.21":
+  version: 4.18.1
+  resolution: "lodash-es@npm:4.18.1"
+  checksum: 10c0/35d4dcf87ef07f8d090f409447575800108057e360b445f590d0d25d09e3d1e33a163d2fc100d4d072b0f901d5e2fc533cd7c4bfd8eeb38a06abec693823c8b8
+  languageName: node
+  linkType: hard
+
 "lodash.camelcase@npm:^4.3.0":
   version: 4.3.0
   resolution: "lodash.camelcase@npm:4.3.0"
@@ -1814,7 +1831,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.23":
+"lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.23":
   version: 4.18.1
   resolution: "lodash@npm:4.18.1"
   checksum: 10c0/757228fc68805c59789e82185135cf85f05d0b2d3d54631d680ca79ec21944ec8314d4533639a14b8bcfbd97a517e78960933041a5af17ecb693ec6eecb99a27
@@ -1992,6 +2009,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mongoose-slug-updater@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "mongoose-slug-updater@npm:3.3.0"
+  dependencies:
+    deepdash: "npm:^5.3.5"
+    lodash: "npm:^4.17.20"
+    shortid: "npm:^2.2.16"
+    speakingurl: "npm:^14.0.1"
+  checksum: 10c0/a8c6d0706aa5f887ace016ba63dfd08303e40a278649690e3e7faaeaf957d43e064871a9c80bf62c3ffb006d13d24e33aaea2f0125e5f8df67b4a8c20bace997
+  languageName: node
+  linkType: hard
+
 "mongoose@npm:^9.9.2":
   version: 9.9.4
   resolution: "mongoose@npm:9.9.4"
@@ -2044,6 +2073,15 @@ __metadata:
     concat-stream: "npm:^2.0.0"
     type-is: "npm:^1.6.18"
   checksum: 10c0/e78fe6b1fe2132cdd33eeec4146643b906046edc1bbbcc90a43ea3d3aed6a7271272897a6d2e40e711e595a156d99b6761848a76fecca6ae3b9a7ee4892ee30c
+  languageName: node
+  linkType: hard
+
+"nanoid@npm:^3.3.8":
+  version: 3.3.18
+  resolution: "nanoid@npm:3.3.18"
+  bin:
+    nanoid: bin/nanoid.cjs
+  checksum: 10c0/b994b4e396730f8be2520923284e2040d61eaee55cc6d4935ef6d38d34bafdc46133eda4d3faea5073bda545aa6079d82b886caeac5c731cf9ac18bcc1301425
   languageName: node
   linkType: hard
 
@@ -2283,6 +2321,7 @@ __metadata:
     jsonwebtoken: "npm:^9.0.3"
     method-override: "npm:^3.0.0"
     mongoose: "npm:^9.9.2"
+    mongoose-slug-updater: "npm:^3.3.0"
     multer: "npm:^2.2.0"
     nodemailer: "npm:^9.0.5"
     nodemon: "npm:^3.1.14"
@@ -2706,6 +2745,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"shortid@npm:^2.2.16":
+  version: 2.2.17
+  resolution: "shortid@npm:2.2.17"
+  dependencies:
+    nanoid: "npm:^3.3.8"
+  checksum: 10c0/f063b5cd251821594856a4b120389e67997b66e7b03294225ca34951dcdeada35eaaf6eb53a2c93dcbf7f8ed926031b43767f7ebfdb3a6ca3482f694c925ba33
+  languageName: node
+  linkType: hard
+
 "sib-api-v3-sdk@npm:^8.5.0":
   version: 8.5.0
   resolution: "sib-api-v3-sdk@npm:8.5.0"
@@ -2786,6 +2834,13 @@ __metadata:
   dependencies:
     memory-pager: "npm:^1.0.2"
   checksum: 10c0/248c6ff7b5e354735e1daac4059222a29c9d291dfcf265daf675d13515eeaac454cfcccd687c8d134f86698b39abd7ad4d7434f7272dd6f8e41a00f21aae4194
+  languageName: node
+  linkType: hard
+
+"speakingurl@npm:^14.0.1":
+  version: 14.0.1
+  resolution: "speakingurl@npm:14.0.1"
+  checksum: 10c0/1de1d1b938a7c4d9e79593ff7a26d312ec04a7c3234ca40b7f9b8106daf74ea9d2110a077f5db97ecf3762b83069e3ccbf9694431b51d4fcfd863f0b3333c342
   languageName: node
   linkType: hard
 

@@ -36,7 +36,7 @@ function parseVNDate(str, endOfDay) {
 }
 
 // =============================================================
-// DANH SÁCH ĐƠN HÀNG
+// DANH SÁCH ĐƠN HÀNG (chỉ lấy chưa xóa)
 // =============================================================
 
 exports.index = async (req, res) => {
@@ -49,7 +49,7 @@ exports.index = async (req, res) => {
         const dateTo = req.query.dateTo || '';
         const page = parseInt(req.query.page) || 1;
 
-        const mongoFilter = {};
+        const mongoFilter = { isDeleted: false }; // CHỈ LẤY CHƯA XÓA
 
         if (activeStatus !== 'all') {
             mongoFilter.status = activeStatus;
@@ -75,7 +75,6 @@ exports.index = async (req, res) => {
             ];
         }
 
-        // Lọc theo ngày
         const fromDateObj = parseVNDate(dateFrom, false);
         const toDateObj = parseVNDate(dateTo, true);
         if (fromDateObj || toDateObj) {
@@ -342,7 +341,6 @@ exports.edit = async (req, res) => {
 
         await Order.findByIdAndUpdate(req.params.id, update);
 
-        // Cập nhật thông tin khách hàng
         if (orderRaw.user && (customerName || customerPhone)) {
             const userUpdate = {};
             if (customerName) userUpdate.fullName = customerName;
@@ -384,16 +382,174 @@ exports.updateStatus = async (req, res) => {
 };
 
 // =============================================================
-// XÓA ĐƠN HÀNG
+// XÓA ĐƠN HÀNG (XÓA MỀM – ĐƯA VÀO THÙNG RÁC)
 // =============================================================
 
 exports.delete = async (req, res) => {
     try {
-        await Order.findByIdAndDelete(req.params.id);
-        res.json({ success: true });
+        const order = await Order.findById(req.params.id);
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy đơn hàng' });
+        }
+
+        order.isDeleted = true;
+        order.deletedAt = new Date();
+        if (req.user && req.user._id) {
+            order.deletedBy = req.user._id;
+        }
+        await order.save();
+
+        res.json({ success: true, message: 'Đã chuyển vào thùng rác' });
     } catch (error) {
-        console.error('❌ ORDER DELETE ERROR:', error);
-        res.status(500).json({ success: false });
+        console.error('❌ ORDER DELETE (SOFT) ERROR:', error);
+        res.status(500).json({ success: false, message: 'Có lỗi xảy ra' });
+    }
+};
+
+// =============================================================
+// THÙNG RÁC – DANH SÁCH ĐƠN HÀNG ĐÃ XÓA
+// =============================================================
+
+exports.getTrash = async (req, res) => {
+    try {
+        const keyword = (req.query.keyword || '').trim();
+        const page = parseInt(req.query.page) || 1;
+
+        const mongoFilter = { isDeleted: true };
+
+        if (keyword) {
+            const matchedUsers = await User.find({
+                $or: [
+                    { fullName: { $regex: keyword, $options: 'i' } },
+                    { phone: { $regex: keyword, $options: 'i' } }
+                ]
+            }).select('_id');
+
+            const userIds = matchedUsers.map(u => u._id);
+
+            mongoFilter.$or = [
+                { code: { $regex: keyword, $options: 'i' } },
+                { user: { $in: userIds } }
+            ];
+        }
+
+        const totalOrders = await Order.countDocuments(mongoFilter);
+        const totalPages = Math.max(Math.ceil(totalOrders / PAGE_SIZE), 1);
+        const currentPage = Math.min(Math.max(page, 1), totalPages);
+
+        const ordersRaw = await Order.find(mongoFilter)
+            .populate('user')
+            .populate('tour')
+            .populate('deletedBy', 'fullName')
+            .sort({ deletedAt: -1 })
+            .skip((currentPage - 1) * PAGE_SIZE)
+            .limit(PAGE_SIZE);
+
+        const orders = ordersRaw.map(order => ({
+            id: order._id,
+            code: order.code,
+            customerName: order.user ? order.user.fullName : 'N/A',
+            phone: order.user ? order.user.phone : '',
+            tourName: order.tour ? order.tour.name : 'N/A',
+            tourImage: order.tour ? order.tour.image : '',
+            total: order.total,
+            status: order.status,
+            statusLabel: STATUS_LABELS[order.status] || order.status,
+            createdAt: order.createdAt.toLocaleDateString('vi-VN'),
+            deletedAt: order.deletedAt ? order.deletedAt.toLocaleString('vi-VN') : '',
+            deletedByName: order.deletedBy ? order.deletedBy.fullName : 'Hệ thống'
+        }));
+
+        res.render('admin/pages/orders/order-trash', {
+            activeMenu: 'orders',
+            orders,
+            currentPage,
+            totalPages,
+            filter: { keyword }
+        });
+    } catch (error) {
+        console.error('❌ ORDER TRASH ERROR:', error);
+        res.render('admin/pages/orders/order-trash', {
+            activeMenu: 'orders',
+            orders: [],
+            currentPage: 1,
+            totalPages: 1,
+            filter: { keyword: '' }
+        });
+    }
+};
+
+// =============================================================
+// KHÔI PHỤC ĐƠN HÀNG
+// =============================================================
+
+exports.restore = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy đơn hàng' });
+        }
+
+        order.isDeleted = false;
+        order.deletedAt = null;
+        order.deletedBy = null;
+        await order.save();
+
+        res.json({ success: true, message: 'Khôi phục thành công' });
+    } catch (error) {
+        console.error('❌ RESTORE ORDER ERROR:', error);
+        res.status(500).json({ success: false, message: 'Có lỗi xảy ra' });
+    }
+};
+
+// =============================================================
+// XÓA VĨNH VIỄN ĐƠN HÀNG (đã sửa lỗi)
+// =============================================================
+
+exports.forceDelete = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy đơn hàng' });
+        }
+        await Order.findByIdAndDelete(req.params.id); // SỬA LỖI Ở ĐÂY
+        res.json({ success: true, message: 'Đã xóa vĩnh viễn' });
+    } catch (error) {
+        console.error('❌ FORCE DELETE ORDER ERROR:', error);
+        res.status(500).json({ success: false, message: 'Có lỗi xảy ra' });
+    }
+};
+
+// =============================================================
+// HÀNH ĐỘNG HÀNG LOẠT TRONG THÙNG RÁC
+// =============================================================
+
+exports.bulkAction = async (req, res) => {
+    try {
+        const { ids, bulkAction } = req.body;
+        if (!ids || !ids.length) {
+            req.session.error = 'Vui lòng chọn ít nhất một đơn hàng.';
+            return res.redirect('/admin/orders/trash');
+        }
+
+        if (bulkAction === 'restore') {
+            await Order.updateMany(
+                { _id: { $in: ids } },
+                { isDeleted: false, deletedAt: null, deletedBy: null }
+            );
+            req.session.success = 'Đã khôi phục các đơn hàng được chọn.';
+        } else if (bulkAction === 'delete') {
+            await Order.deleteMany({ _id: { $in: ids } });
+            req.session.success = 'Đã xóa vĩnh viễn các đơn hàng được chọn.';
+        } else {
+            req.session.error = 'Hành động không hợp lệ.';
+        }
+
+        res.redirect('/admin/orders/trash');
+    } catch (error) {
+        console.error('❌ BULK ACTION ERROR:', error);
+        req.session.error = 'Có lỗi xảy ra khi thực hiện hành động hàng loạt.';
+        res.redirect('/admin/orders/trash');
     }
 };
 

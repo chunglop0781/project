@@ -3,6 +3,14 @@ const bcrypt = require('bcryptjs');
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
+const cloudinary = require('cloudinary').v2;
+
+// Cấu hình Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 // Cấu hình GitHub
 const GITHUB_CONFIG = {
@@ -13,6 +21,9 @@ const GITHUB_CONFIG = {
     path: 'project-nodejs/project-1/public/uploads/profiles/'
 };
 
+/**
+ * Upload ảnh từ Cloudinary lên GitHub
+ */
 async function uploadToGitHub(fileUrl, fileName) {
     try {
         const response = await axios.get(fileUrl, { responseType: 'arraybuffer' });
@@ -45,10 +56,47 @@ async function uploadToGitHub(fileUrl, fileName) {
     }
 }
 
+/**
+ * Xóa ảnh trên Cloudinary theo public_id
+ * @param {string} publicId - Public ID của ảnh
+ * @param {string} resourceType - 'image' (mặc định) | 'video' | 'raw'
+ * @returns {Promise<boolean>}
+ */
+async function deleteFromCloudinary(publicId, resourceType = 'image') {
+    try {
+        if (!publicId) {
+            console.warn('⚠️ public_id trống, bỏ qua xóa');
+            return false;
+        }
+
+        console.log(`📌 Đang xóa Cloudinary: ${publicId} (${resourceType})`);
+
+        const result = await cloudinary.uploader.destroy(publicId, {
+            resource_type: resourceType,
+            invalidate: true   // Xóa cache CDN
+        });
+
+        console.log('📊 Cloudinary response:', result);
+
+        if (result.result === 'ok') {
+            console.log(`✅ Đã xóa thành công: ${publicId}`);
+            return true;
+        } else if (result.result === 'not found') {
+            console.warn(`⚠️ Không tìm thấy ảnh với public_id: ${publicId}`);
+            return false;
+        } else {
+            console.warn(`⚠️ Cloudinary trả về: ${result.result}`);
+            return false;
+        }
+    } catch (error) {
+        console.error('❌ Lỗi xóa Cloudinary:', error.message);
+        return false;
+    }
+}
+
 // =============================================================
 // TRANG THÔNG TIN CÁ NHÂN
 // =============================================================
-
 module.exports.detail = async (req, res) => {
     try {
         const userData = await User.findById(req.session.user.id);
@@ -61,11 +109,10 @@ module.exports.detail = async (req, res) => {
             userData.avatar = '/assets/image/avatar-default.png';
         }
 
-        // Không gọi req.flash() ở đây vì middleware đã gán vào res.locals
         res.render('client/pages/info', {
             pageTitle: 'Thông Tin Cá Nhân',
             user: userData,
-            error: res.locals.error,    // Lấy từ res.locals
+            error: res.locals.error,
             success: res.locals.success,
             validationErrors: [],
             activeMenu: 'info'
@@ -80,7 +127,6 @@ module.exports.detail = async (req, res) => {
 // =============================================================
 // CẬP NHẬT THÔNG TIN (CÓ UPLOAD AVATAR + GITHUB)
 // =============================================================
-
 module.exports.update = async (req, res) => {
     try {
         const body = req.body || {};
@@ -99,25 +145,44 @@ module.exports.update = async (req, res) => {
             address: address ? address.trim() : ''
         };
 
+        // Nếu có file upload
         if (req.file && req.file.secure_url) {
             const cloudinaryUrl = req.file.secure_url;
+            // Lấy public_id từ Cloudinary (quan trọng)
+            const publicId = req.file.public_id;
+
+            // Tạo tên file cho GitHub
             const fileName = req.file.filename || `${Date.now()}-${req.file.originalname || 'avatar.jpg'}`;
-            
+
             console.log('📤 Upload avatar to GitHub from Cloudinary:', cloudinaryUrl);
-            
+            console.log('📌 Public ID từ Cloudinary:', publicId);
+
             const githubUrl = await uploadToGitHub(cloudinaryUrl, fileName);
-            
+
             if (githubUrl) {
                 updateData.avatar = githubUrl;
                 console.log('✅ Avatar stored on GitHub:', githubUrl);
+
+                // Xóa ảnh trên Cloudinary sau khi upload GitHub thành công
+                if (publicId) {
+                    const deleted = await deleteFromCloudinary(publicId, 'image');
+                    if (!deleted) {
+                        console.warn('⚠️ Không xóa được ảnh Cloudinary, nhưng vẫn tiếp tục');
+                    }
+                } else {
+                    console.warn('⚠️ Không tìm thấy public_id, bỏ qua xóa Cloudinary');
+                }
             } else {
+                // Nếu upload GitHub thất bại, giữ lại URL Cloudinary
                 updateData.avatar = cloudinaryUrl;
                 console.log('⚠️ GitHub upload failed, using Cloudinary URL:', cloudinaryUrl);
+                // Không xóa ảnh Cloudinary vì vẫn đang sử dụng
             }
         }
 
         const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
 
+        // Cập nhật session
         req.session.user.fullName = updatedUser.fullName;
         if (updateData.avatar) {
             req.session.user.avatar = updateData.avatar;
@@ -135,7 +200,6 @@ module.exports.update = async (req, res) => {
 // =============================================================
 // ĐỔI MẬT KHẨU
 // =============================================================
-
 module.exports.updatePassword = async (req, res) => {
     try {
         const { currentPassword, newPassword, confirmPassword } = req.body;

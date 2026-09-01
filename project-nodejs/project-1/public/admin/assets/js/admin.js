@@ -215,3 +215,47 @@ setTimeout(function() {
         }, 500);
     }
 }, 100);
+
+// =============================================================
+// 🆕 XỬ LÝ KHÔI PHỤC VÀ XÓA VĨNH VIỄN (ORDER TRASH)
+// =============================================================
+
+document.addEventListener('click', function (e) {
+    // Xử lý khôi phục
+    var restoreBtn = e.target.closest('[data-restore-url]');
+    if (restoreBtn) {
+        e.preventDefault();
+        var url = restoreBtn.getAttribute('data-restore-url');
+        var confirmMsg = restoreBtn.getAttribute('data-confirm') || 'Bạn có chắc?';
+        if (!confirm(confirmMsg)) return;
+        fetch(url, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Khôi phục thất bại');
+                }
+            })
+            .catch(() => alert('Có lỗi xảy ra'));
+    }
+
+    // Xóa vĩnh viễn (chỉ những nút có data-delete-url chứa "/force")
+    var forceBtn = e.target.closest('[data-delete-url*="/force"]');
+    if (forceBtn) {
+        e.preventDefault();
+        var url = forceBtn.getAttribute('data-delete-url');
+        var confirmMsg = forceBtn.getAttribute('data-confirm') || 'Xóa vĩnh viễn?';
+        if (!confirm(confirmMsg)) return;
+        fetch(url, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Xóa thất bại');
+                }
+            })
+            .catch(() => alert('Có lỗi xảy ra'));
+    }
+});

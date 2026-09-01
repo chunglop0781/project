@@ -1,17 +1,13 @@
-// =============================================================
-// CATEGORY CONTROLLER
-// =============================================================
+// controllers/admin/category.controller.js
 
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
 const axios = require('axios');
-const { exec } = require('child_process');
+const { Octokit } = require('@octokit/rest');
 const Category = require('../../models/category.model');
 const User = require('../../models/user.model');
-
-// ✅ BỔ SUNG: Octokit cho GitHub Issue
-const { Octokit } = require('@octokit/rest');
+const categoryHelper = require('../../helpers/category.helper');
 
 const PAGE_SIZE = 10;
 
@@ -32,32 +28,28 @@ const GITHUB_CONFIG = {
     path: 'project-nodejs/project-1/public/uploads/categories/'
 };
 
-// ✅ BỔ SUNG: Khởi tạo Octokit
-const octokit = new Octokit({
-    auth: process.env.GITHUB_TOKEN
-});
+const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
 // =============================================================
-// UPLOAD ẢNH - TÊN FILE NGẪU NHIÊN
+// CẤU HÌNH UPLOAD
 // =============================================================
 
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
+    destination: (req, file, cb) => {
         cb(null, path.join(__dirname, '../../public/uploads/categories'));
     },
-    filename: function (req, file, cb) {
+    filename: (req, file, cb) => {
         const timestamp = Date.now();
         const random = Math.round(Math.random() * 1e9);
         const ext = path.extname(file.originalname);
-        const uniqueName = `${timestamp}-${random}${ext}`;
-        cb(null, uniqueName);
+        cb(null, `${timestamp}-${random}${ext}`);
     }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
 // =============================================================
-// HELPER FUNCTIONS
+// HELPER FUNCTIONS (nội bộ)
 // =============================================================
 
 function normalizeIds(ids) {
@@ -69,8 +61,10 @@ function toSlug(str) {
     return (str || '')
         .toString()
         .toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .replace(/đ/g, 'd').replace(/Đ/g, 'D')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D')
         .replace(/[^a-z0-9\s-]/g, '')
         .trim()
         .replace(/\s+/g, '-')
@@ -89,44 +83,24 @@ function parseVNDate(str, endOfDay) {
 }
 
 // =============================================================
-// ✅ HÀM TỰ ĐỘNG CHẠY SCRIPT FIX
-// =============================================================
-
-function runFixScript() {
-    console.log('🔄 Đang chạy script fix-category-updatedBy.js...');
-    exec('yarn node scripts/fix-category-updatedBy.js', (error, stdout, stderr) => {
-        if (error) {
-            console.error(`❌ Lỗi khi chạy script fix: ${error.message}`);
-            return;
-        }
-        if (stderr) {
-            console.error(`❌ Script fix stderr: ${stderr}`);
-            return;
-        }
-        console.log(`✅ Script fix output: ${stdout}`);
-    });
-}
-
-// =============================================================
-// ✅ UPLOAD ẢNH LÊN GITHUB
+// UPLOAD ẢNH LÊN GITHUB
 // =============================================================
 
 async function uploadToGitHub(filePath, fileName) {
+    if (!fs.existsSync(filePath)) {
+        console.warn('⚠️ File not found:', filePath);
+        return null;
+    }
+    if (!process.env.GITHUB_TOKEN) {
+        console.warn('⚠️ GITHUB_TOKEN not set.');
+        return null;
+    }
+
+    const fileBuffer = fs.readFileSync(filePath);
+    const contentBase64 = fileBuffer.toString('base64');
+    const githubPath = `${GITHUB_CONFIG.path}${fileName}`;
+
     try {
-        if (!fs.existsSync(filePath)) {
-            console.warn('⚠️ File not found at path:', filePath);
-            return null;
-        }
-
-        if (!process.env.GITHUB_TOKEN) {
-            console.warn('⚠️ GITHUB_TOKEN not found.');
-            return null;
-        }
-
-        const fileBuffer = fs.readFileSync(filePath);
-        const contentBase64 = fileBuffer.toString('base64');
-        const githubPath = `${GITHUB_CONFIG.path}${fileName}`;
-        
         const response = await axios.put(
             `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${githubPath}`,
             {
@@ -136,91 +110,25 @@ async function uploadToGitHub(filePath, fileName) {
             },
             {
                 headers: {
-                    'Authorization': `token ${GITHUB_CONFIG.token}`,
-                    'Accept': 'application/vnd.github.v3+json'
+                    Authorization: `token ${GITHUB_CONFIG.token}`,
+                    Accept: 'application/vnd.github.v3+json'
                 }
             }
         );
-        
         console.log('✅ Uploaded to GitHub:', response.data.content.download_url);
         return response.data.content.download_url || response.data.content.html_url;
-        
     } catch (error) {
-        console.error('❌ Upload to GitHub failed:', error.response?.data?.message || error.message);
+        console.error('❌ GitHub upload failed:', error.response?.data?.message || error.message);
         return null;
     }
 }
 
-// =============================================================
-// ✅ UPLOAD ẢNH LÊN GITHUB ISSUE (DỰ PHÒNG)
-// =============================================================
-
-async function uploadToGitHubIssue(filePath, fileName) {
-    try {
-        if (!process.env.GITHUB_TOKEN) {
-            console.warn('⚠️ GITHUB_TOKEN not found.');
-            return null;
-        }
-        const fileBuffer = fs.readFileSync(filePath);
-        const contentBase64 = fileBuffer.toString('base64');
-        const issue = await octokit.issues.create({
-            owner: GITHUB_CONFIG.owner,
-            repo: GITHUB_CONFIG.repo,
-            title: `Image: ${fileName}`,
-            body: `![${fileName}](data:image/png;base64,${contentBase64})`
-        });
-        console.log('✅ Uploaded to GitHub Issue:', issue.data.html_url);
-        return issue.data.html_url;
-    } catch (error) {
-        console.error('❌ Upload to GitHub Issue failed:', error.message);
-        return null;
-    }
+async function uploadImage(filePath, fileName) {
+    return await uploadToGitHub(filePath, fileName);
 }
 
 // =============================================================
-// ✅ UPLOAD ẢNH LÊN GITHUB GIST (DỰ PHÒNG)
-// =============================================================
-
-async function uploadToGist(filePath, fileName) {
-    try {
-        if (!process.env.GITHUB_TOKEN) {
-            console.warn('⚠️ GITHUB_TOKEN not found.');
-            return null;
-        }
-        const fileBuffer = fs.readFileSync(filePath);
-        const contentBase64 = fileBuffer.toString('base64');
-        const response = await axios.post(
-            'https://api.github.com/gists',
-            {
-                description: `Image: ${fileName}`,
-                public: false,
-                files: { [fileName]: { content: contentBase64 } }
-            },
-            {
-                headers: {
-                    'Authorization': `token ${process.env.GITHUB_TOKEN}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                }
-            }
-        );
-        console.log('✅ Uploaded to Gist:', response.data.html_url);
-        return response.data.html_url;
-    } catch (error) {
-        console.error('❌ Upload to Gist failed:', error.response?.data?.message || error.message);
-        return null;
-    }
-}
-
-async function uploadImage(filePath, fileName, method = 'github') {
-    switch (method) {
-        case 'issue': return await uploadToGitHubIssue(filePath, fileName);
-        case 'gist': return await uploadToGist(filePath, fileName);
-        default: return await uploadToGitHub(filePath, fileName);
-    }
-}
-
-// =============================================================
-// DANH SÁCH DANH MỤC (GIỮ NGUYÊN LOGIC CŨ)
+// 1. DANH SÁCH DANH MỤC (có filter, phân trang)
 // =============================================================
 
 exports.index = async (req, res) => {
@@ -257,27 +165,27 @@ exports.index = async (req, res) => {
             .skip((currentPage - 1) * PAGE_SIZE)
             .limit(PAGE_SIZE);
 
-        const categories = categoriesRaw.map(function (cat) {
-            return {
-                id: cat._id,
-                name: cat.name,
-                image: cat.image || '/admin/image/no-image.png',
-                position: cat.position || 1,
-                status: cat.status,
-                statusLabel: STATUS_LABELS[cat.status] || cat.status,
-                createdByName: cat.createdBy ? cat.createdBy.fullName : 'N/A',
-                createdAt: cat.createdAt ? cat.createdAt.toLocaleString('vi-VN') : '',
-                updatedByName: cat.updatedBy ? cat.updatedBy.fullName : 'N/A',
-                updatedAt: cat.updatedAt ? cat.updatedAt.toLocaleString('vi-VN') : ''
-            };
-        });
+        const categories = categoriesRaw.map(cat => ({
+            id: cat._id,
+            name: cat.name,
+            image: cat.image || '/admin/image/no-image.png',
+            position: cat.position || 1,
+            status: cat.status,
+            statusLabel: STATUS_LABELS[cat.status] || cat.status,
+            createdByName: cat.createdBy ? cat.createdBy.fullName : 'N/A',
+            createdAt: cat.createdAt ? cat.createdAt.toLocaleString('vi-VN') : '',
+            updatedByName: cat.updatedBy ? cat.updatedBy.fullName : 'N/A',
+            updatedAt: cat.updatedAt ? cat.updatedAt.toLocaleString('vi-VN') : ''
+        }));
 
-        let baseUrl = '/admin/categories?';
-        if (status) baseUrl += 'status=' + status + '&';
-        if (creator) baseUrl += 'creator=' + creator + '&';
-        if (dateFrom) baseUrl += 'dateFrom=' + encodeURIComponent(dateFrom) + '&';
-        if (dateTo) baseUrl += 'dateTo=' + encodeURIComponent(dateTo) + '&';
-        if (keyword) baseUrl += 'keyword=' + encodeURIComponent(keyword) + '&';
+        // Xây dựng baseUrl để giữ filter khi phân trang
+        const queryParams = [];
+        if (status) queryParams.push(`status=${status}`);
+        if (creator) queryParams.push(`creator=${creator}`);
+        if (dateFrom) queryParams.push(`dateFrom=${encodeURIComponent(dateFrom)}`);
+        if (dateTo) queryParams.push(`dateTo=${encodeURIComponent(dateTo)}`);
+        if (keyword) queryParams.push(`keyword=${encodeURIComponent(keyword)}`);
+        const baseUrl = '/admin/categories?' + queryParams.join('&');
 
         res.render('admin/pages/category/category-list', {
             categories,
@@ -289,9 +197,8 @@ exports.index = async (req, res) => {
             pageTitle: 'Quản Lý Danh Mục',
             activeMenu: 'categories'
         });
-
     } catch (error) {
-        console.log(error);
+        console.error('❌ INDEX ERROR:', error);
         res.render('admin/pages/category/category-list', {
             categories: [],
             creators: [],
@@ -306,336 +213,265 @@ exports.index = async (req, res) => {
 };
 
 // =============================================================
-// TRANG TẠO DANH MỤC
+// 2. TRANG TẠO DANH MỤC (SỬA DÙNG HELPER)
 // =============================================================
 
 exports.createPage = async (req, res) => {
     try {
-        const parentCategories = await Category.find({ isDeleted: false }).sort({ position: 1 });
-        console.log('🔍 CREATE PAGE - parentCategories:', parentCategories.length);
+        const allCategories = await Category.find({ isDeleted: false })
+            .sort({ position: 1, name: 1 });
+
+        const flatCategories = allCategories.map(cat => ({
+            id: cat._id,
+            parent: cat.parent ? cat.parent.toString() : null,
+            name: cat.name
+        }));
+
+        // Tạo options có phân cấp (không có excludeId)
+        const categoryOptions = categoryHelper.getParentOptions(flatCategories);
+
+        // Tạo parentCategories từ options để view dùng (đã có indent)
+        const parentCategories = categoryOptions.map(opt => ({
+            id: opt.value,
+            name: opt.label
+        }));
+
+        // Cây danh mục (có thể dùng sau)
+        const categoryTree = categoryHelper.buildCategoryTree(flatCategories);
+
         res.render('admin/pages/category/category-form', {
-            parentCategories,
+            category: null,
+            parentCategories,       // view sẽ dùng biến này
+            categoryOptions,        // giữ lại nếu cần
+            categoryTree,
             pageTitle: 'Tạo Danh Mục',
-            activeMenu: 'categories'
+            activeMenu: 'categories',
+            error: null,
+            success: null
         });
     } catch (error) {
-        console.log('❌ CREATE PAGE ERROR:', error);
+        console.error('❌ CREATE PAGE ERROR:', error);
         res.render('admin/pages/category/category-form', {
+            category: null,
             parentCategories: [],
+            categoryOptions: [],
+            categoryTree: [],
             pageTitle: 'Tạo Danh Mục',
-            activeMenu: 'categories'
+            activeMenu: 'categories',
+            error: 'Có lỗi xảy ra, vui lòng thử lại.'
         });
     }
 };
 
 // =============================================================
-// TẠO DANH MỤC (GIỮ NGUYÊN LOGIC CŨ - req.session.user._id)
+// 3. XỬ LÝ TẠO DANH MỤC
 // =============================================================
 
 exports.create = async (req, res) => {
     try {
-        console.log('========================================');
-        console.log('🔍 CONTROLLER CREATE - REQUEST RECEIVED');
-        console.log('  - Method:', req.method);
-        console.log('  - URL:', req.url);
-        console.log('  - Content-Type:', req.headers['content-type']);
-        console.log('  - Body:', req.body);
-        console.log('  - File:', req.file);
-        console.log('  - Session user:', req.session.user);
-        console.log('========================================');
+        const { name, parent, position, status, description } = req.body;
+        const trimmedName = (name || '').trim();
 
-        if (!req.body || Object.keys(req.body).length === 0) {
-            console.warn('⚠️ req.body rỗng! Kiểm tra form submit.');
-            
-            const parentCategories = await Category.find({ isDeleted: false }).sort({ position: 1 });
-            
-            return res.render('admin/pages/category/category-form', {
-                parentCategories,
-                error: 'Không nhận được dữ liệu từ form. Vui lòng thử lại.',
-                pageTitle: 'Tạo Danh Mục',
-                activeMenu: 'categories',
-                category: {}
-            });
+        if (!trimmedName) {
+            return res.redirect('/admin/categories/new');
         }
 
-        const name = (req.body.name || '').trim();
-        const parent = req.body.parent || null;
-        const position = parseInt(req.body.position) || 1;
-        const status = req.body.status || 'active';
-        const description = req.body.description || '';
-
-        console.log('📝 TẠO DANH MỤC - DỮ LIỆU NHẬN ĐƯỢC:');
-        console.log('  - name:', name);
-        console.log('  - parent:', parent);
-        console.log('  - position:', position);
-        console.log('  - status:', status);
-        console.log('  - description (TinyMCE):', description);
-        console.log('  - description length:', description?.length || 0);
-        console.log('========================================');
-
-        if (!name) {
-            const parentCategories = await Category.find({ isDeleted: false }).sort({ position: 1 });
-            return res.render('admin/pages/category/category-form', {
-                parentCategories,
-                error: 'Vui lòng nhập tên danh mục.',
-                pageTitle: 'Tạo Danh Mục',
-                activeMenu: 'categories',
-                category: req.body || {}
-            });
-        }
-
-        let slug = toSlug(name);
-        const existingSlug = await Category.findOne({ slug: slug, isDeleted: false });
-        if (existingSlug) {
-            slug = slug + '-' + Date.now();
-        }
+        let slug = toSlug(trimmedName);
+        const existingSlug = await Category.findOne({ slug, isDeleted: false });
+        if (existingSlug) slug += '-' + Date.now();
 
         const userId = req.session.user?._id || null;
 
         const newCategory = await Category.create({
-            name: name,
-            slug: slug,
+            name: trimmedName,
+            slug,
             parent: parent || null,
-            position: position || 1,
+            position: parseInt(position) || 1,
             status: status === 'inactive' ? 'inactive' : 'active',
             description: description || '',
-            image: req.file ? '/uploads/categories/' + req.file.filename : undefined,
             createdBy: userId,
             updatedBy: userId,
             isDeleted: false
         });
 
-        console.log('✅ Tạo danh mục thành công:', newCategory._id);
-
+        // Xử lý upload ảnh nếu có
         if (req.file) {
             const localPath = req.file.path;
             const fileName = req.file.filename;
-            
-            console.log('📤 Uploading to GitHub repository:', fileName);
-            console.log('📁 Local path:', localPath);
-            
-            if (fs.existsSync(localPath)) {
-                const githubImageUrl = await uploadImage(localPath, fileName, 'github');
-                
-                if (githubImageUrl) {
-                    await Category.findByIdAndUpdate(newCategory._id, {
-                        image: githubImageUrl
-                    });
-                    console.log('✅ Updated image URL to GitHub:', githubImageUrl);
-                    
-                    try {
-                        if (fs.existsSync(localPath)) {
-                            fs.unlinkSync(localPath);
-                            console.log('🗑️ Đã xóa ảnh local:', localPath);
-                        }
-                    } catch (unlinkError) {
-                        console.warn('⚠️ Không thể xóa ảnh local:', unlinkError.message);
-                    }
-                } else {
-                    console.warn('⚠️ GitHub upload failed, keeping local image.');
-                }
+            const githubUrl = await uploadImage(localPath, fileName);
+            if (githubUrl) {
+                await Category.findByIdAndUpdate(newCategory._id, { image: githubUrl });
+                fs.unlinkSync(localPath);
             } else {
-                console.warn('⚠️ File not found, skipping upload:', localPath);
+                // giữ ảnh local
+                await Category.findByIdAndUpdate(newCategory._id, {
+                    image: '/uploads/categories/' + fileName
+                });
             }
         }
 
         req.session.success = 'Tạo danh mục thành công!';
         res.redirect('/admin/categories');
-
     } catch (error) {
-        console.error('❌ CREATE CATEGORY ERROR:', error);
-        
-        const parentCategories = await Category.find({ isDeleted: false }).sort({ position: 1 });
-        res.render('admin/pages/category/category-form', {
-            parentCategories,
-            error: 'Có lỗi xảy ra: ' + (error.message || 'Vui lòng thử lại.'),
-            pageTitle: 'Tạo Danh Mục',
-            activeMenu: 'categories',
-            category: req.body || {}
-        });
+        console.error('❌ CREATE ERROR:', error);
+        req.session.error = 'Có lỗi xảy ra khi tạo danh mục.';
+        res.redirect('/admin/categories/new');
     }
 };
 
 // =============================================================
-// BULK ACTION - DANH SÁCH CHÍNH
-// =============================================================
-
-exports.bulkAction = async (req, res) => {
-    try {
-        const bulkAction = req.body.bulkAction;
-        const ids = normalizeIds(req.body.ids);
-
-        const userId = req.session.user?._id || null;
-
-        if (ids.length) {
-            if (bulkAction === 'activate') {
-                await Category.updateMany({ _id: { $in: ids } }, { status: 'active', updatedBy: userId });
-            } else if (bulkAction === 'deactivate') {
-                await Category.updateMany({ _id: { $in: ids } }, { status: 'inactive', updatedBy: userId });
-            } else if (bulkAction === 'delete') {
-                await Category.updateMany(
-                    { _id: { $in: ids } },
-                    {
-                        isDeleted: true,
-                        deletedAt: new Date(),
-                        deletedBy: userId
-                    }
-                );
-            }
-        }
-
-        res.redirect('/admin/categories');
-    } catch (error) {
-        console.log(error);
-        res.redirect('/admin/categories');
-    }
-};
-
-// =============================================================
-// TRANG SỬA DANH MỤC
+// 4. TRANG SỬA DANH MỤC (SỬA DÙNG HELPER)
 // =============================================================
 
 exports.editPage = async (req, res) => {
     try {
-        const categoryRaw = await Category.findOne({ _id: req.params.id, isDeleted: false });
+        const category = await Category.findOne({
+            _id: req.params.id,
+            isDeleted: false
+        });
 
-        if (!categoryRaw) {
+        if (!category) {
             return res.redirect('/admin/categories');
         }
 
-        const parentCategories = await Category.find({ _id: { $ne: categoryRaw._id }, isDeleted: false }).sort({ position: 1 });
+        // Lấy tất cả danh mục (không loại trừ) để xây dựng options
+        const allCategories = await Category.find({ isDeleted: false })
+            .sort({ position: 1, name: 1 });
 
-        const category = {
-            id: categoryRaw._id,
-            name: categoryRaw.name,
-            slug: categoryRaw.slug,
-            parent: categoryRaw.parent ? categoryRaw.parent.toString() : '',
-            position: categoryRaw.position || 1,
-            status: categoryRaw.status || 'active',
-            image: categoryRaw.image || '/admin/image/no-image.png',
-            description: categoryRaw.description || '',
-            createdBy: categoryRaw.createdBy,
-            updatedBy: categoryRaw.updatedBy
+        const flatCategories = allCategories.map(cat => ({
+            id: cat._id,
+            parent: cat.parent ? cat.parent.toString() : null,
+            name: cat.name
+        }));
+
+        // Tạo options có phân cấp, loại bỏ chính nó và các con
+        const categoryOptions = categoryHelper.getParentOptions(
+            flatCategories,
+            category._id   // excludeId
+        );
+
+        // Tạo parentCategories từ options để view dùng (đã có indent)
+        const parentCategories = categoryOptions.map(opt => ({
+            id: opt.value,
+            name: opt.label
+        }));
+
+        const categoryTree = categoryHelper.buildCategoryTree(flatCategories);
+
+        const categoryData = {
+            id: category._id,
+            name: category.name,
+            slug: category.slug,
+            parent: category.parent ? category.parent.toString() : '',
+            position: category.position || 1,
+            status: category.status || 'active',
+            image: category.image || '/admin/image/no-image.png',
+            description: category.description || ''
         };
 
         res.render('admin/pages/category/category-form', {
-            category,
-            parentCategories,
+            category: categoryData,
+            parentCategories,    // view sẽ dùng biến này
+            categoryOptions,     // giữ lại nếu cần
+            categoryTree,
             pageTitle: 'Sửa Danh Mục',
-            activeMenu: 'categories'
+            activeMenu: 'categories',
+            error: null,
+            success: null
         });
-
     } catch (error) {
-        console.log(error);
+        console.error('❌ EDIT PAGE ERROR:', error);
         res.redirect('/admin/categories');
     }
 };
 
 // =============================================================
-// SỬA DANH MỤC (GIỮ NGUYÊN LOGIC CŨ - req.session.user._id)
+// 5. XỬ LÝ CẬP NHẬT DANH MỤC
 // =============================================================
 
 exports.edit = async (req, res) => {
     try {
-        if (!req.body || Object.keys(req.body).length === 0) {
-            console.warn('⚠️ req.body rỗng! Kiểm tra form submit.');
+        const { name, parent, position, status, description } = req.body;
+        const trimmedName = (name || '').trim();
+
+        if (!trimmedName) {
             return res.redirect('/admin/categories/' + req.params.id + '/edit');
         }
 
-        const name = (req.body.name || '').trim();
-        const parent = req.body.parent || null;
-        const position = parseInt(req.body.position) || 1;
-        const status = req.body.status || 'active';
-        const description = req.body.description || '';
+        const category = await Category.findOne({
+            _id: req.params.id,
+            isDeleted: false
+        });
 
-        console.log('========================================');
-        console.log('📝 SỬA DANH MỤC - DỮ LIỆU NHẬN ĐƯỢC:');
-        console.log('  - name:', name);
-        console.log('  - parent:', parent);
-        console.log('  - position:', position);
-        console.log('  - status:', status);
-        console.log('  - description (TinyMCE):', description);
-        console.log('  - description length:', description?.length || 0);
-        console.log('========================================');
-        console.log('🔍 SESSION USER:', req.session.user);
-
-        if (!name) {
-            return res.redirect('/admin/categories/' + req.params.id + '/edit');
+        if (!category) {
+            return res.redirect('/admin/categories');
         }
 
-        let slug = toSlug(name);
-        const existingSlug = await Category.findOne({ slug: slug, _id: { $ne: req.params.id }, isDeleted: false });
-        if (existingSlug) {
-            slug = slug + '-' + Date.now();
-        }
+        let slug = toSlug(trimmedName);
+        const existingSlug = await Category.findOne({
+            slug,
+            _id: { $ne: category._id },
+            isDeleted: false
+        });
+        if (existingSlug) slug += '-' + Date.now();
 
         const userId = req.session.user?._id || null;
 
         const updateData = {
-            name: name,
-            slug: slug,
+            name: trimmedName,
+            slug,
             parent: parent || null,
-            position: position || 1,
+            position: parseInt(position) || 1,
             status: status === 'inactive' ? 'inactive' : 'active',
             description: description || '',
             updatedBy: userId
         };
 
+        // Xử lý ảnh nếu có upload mới
         if (req.file) {
             const localPath = req.file.path;
             const fileName = req.file.filename;
-            
-            console.log('📤 Uploading new image to GitHub:', fileName);
-            console.log('📁 Local path:', localPath);
-            
-            if (fs.existsSync(localPath)) {
-                const githubImageUrl = await uploadImage(localPath, fileName, 'github');
-                
-                if (githubImageUrl) {
-                    updateData.image = githubImageUrl;
-                    console.log('✅ Updated image URL to GitHub:', githubImageUrl);
-                    
-                    try {
-                        if (fs.existsSync(localPath)) {
-                            fs.unlinkSync(localPath);
-                            console.log('🗑️ Đã xóa ảnh local:', localPath);
-                        }
-                    } catch (unlinkError) {
-                        console.warn('⚠️ Không thể xóa ảnh local:', unlinkError.message);
-                    }
-                } else {
-                    updateData.image = '/uploads/categories/' + fileName;
-                    console.warn('⚠️ GitHub upload failed, keeping local image.');
-                }
+            const githubUrl = await uploadImage(localPath, fileName);
+            if (githubUrl) {
+                updateData.image = githubUrl;
+                fs.unlinkSync(localPath);
             } else {
-                console.warn('⚠️ File not found, skipping upload:', localPath);
+                updateData.image = '/uploads/categories/' + fileName;
             }
         }
 
-        console.log('📝 UPDATE DATA:', JSON.stringify(updateData, null, 2));
-
-        const updatedCategory = await Category.findByIdAndUpdate(
-            req.params.id,
-            updateData,
-            { new: true }
-        ).populate('updatedBy');
-
-        console.log('✅ Updated category:');
-        console.log('  - ID:', updatedCategory._id);
-        console.log('  - Name:', updatedCategory.name);
-        console.log('  - UpdatedBy Name:', updatedCategory.updatedBy?.fullName);
+        await Category.findByIdAndUpdate(req.params.id, updateData);
 
         req.session.success = 'Cập nhật danh mục thành công!';
         res.redirect('/admin/categories');
-
     } catch (error) {
-        console.error('❌ UPDATE CATEGORY ERROR:', error);
+        console.error('❌ EDIT ERROR:', error);
+        req.session.error = 'Có lỗi xảy ra khi cập nhật.';
         res.redirect('/admin/categories/' + req.params.id + '/edit');
     }
 };
 
 // =============================================================
-// ✅ THÙNG RÁC DANH MỤC
+// 6. XÓA MỀM (Đưa vào thùng rác)
+// =============================================================
+
+exports.delete = async (req, res) => {
+    try {
+        const userId = req.session.user?._id || null;
+        await Category.findByIdAndUpdate(req.params.id, {
+            isDeleted: true,
+            deletedAt: new Date(),
+            deletedBy: userId
+        });
+        res.json({ success: true });
+    } catch (error) {
+        console.error('❌ DELETE ERROR:', error);
+        res.status(500).json({ success: false });
+    }
+};
+
+// =============================================================
+// 7. THÙNG RÁC - DANH SÁCH
 // =============================================================
 
 exports.trash = async (req, res) => {
@@ -672,8 +508,7 @@ exports.trash = async (req, res) => {
             deletedAt: cat.deletedAt ? cat.deletedAt.toLocaleString('vi-VN') : ''
         }));
 
-        let baseUrl = '/admin/categories/trash?';
-        if (keyword) baseUrl += 'keyword=' + encodeURIComponent(keyword) + '&';
+        const baseUrl = keyword ? '/admin/categories/trash?keyword=' + encodeURIComponent(keyword) : '/admin/categories/trash?';
 
         res.render('admin/pages/category/category-trash', {
             categories,
@@ -684,9 +519,8 @@ exports.trash = async (req, res) => {
             pageTitle: 'Thùng Rác Danh Mục',
             activeMenu: 'categories'
         });
-
     } catch (error) {
-        console.log(error);
+        console.error('❌ TRASH ERROR:', error);
         res.render('admin/pages/category/category-trash', {
             categories: [],
             filter: {},
@@ -700,27 +534,7 @@ exports.trash = async (req, res) => {
 };
 
 // =============================================================
-// ✅ XÓA MỀM (Chuyển vào thùng rác) - GIỮ NGUYÊN LOGIC
-// =============================================================
-
-exports.delete = async (req, res) => {
-    try {
-        const userId = req.session.user?._id || null;
-        
-        await Category.findByIdAndUpdate(req.params.id, {
-            isDeleted: true,
-            deletedAt: new Date(),
-            deletedBy: userId
-        });
-        res.json({ success: true });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ success: false });
-    }
-};
-
-// =============================================================
-// ✅ KHÔI PHỤC TỪ THÙNG RÁC
+// 8. KHÔI PHỤC TỪ THÙNG RÁC
 // =============================================================
 
 exports.restore = async (req, res) => {
@@ -733,20 +547,18 @@ exports.restore = async (req, res) => {
             },
             { new: true }
         );
-
         if (!category) {
-            return res.status(404).json({ success: false, message: 'Không tìm thấy danh mục' });
+            return res.status(404).json({ success: false, message: 'Không tìm thấy' });
         }
-
         res.json({ success: true });
     } catch (error) {
-        console.log(error);
+        console.error('❌ RESTORE ERROR:', error);
         res.status(500).json({ success: false });
     }
 };
 
 // =============================================================
-// ✅ XÓA VĨNH VIỄN
+// 9. XÓA VĨNH VIỄN
 // =============================================================
 
 exports.forceDelete = async (req, res) => {
@@ -754,43 +566,86 @@ exports.forceDelete = async (req, res) => {
         await Category.deleteOne({ _id: req.params.id, isDeleted: true });
         res.json({ success: true });
     } catch (error) {
-        console.log(error);
+        console.error('❌ FORCE DELETE ERROR:', error);
         res.status(500).json({ success: false });
     }
 };
 
 // =============================================================
-// ✅ BULK ACTION CHO THÙNG RÁC
+// 10. HÀNH ĐỘNG HÀNG LOẠT TRÊN DANH SÁCH CHÍNH
+// =============================================================
+
+exports.bulkAction = async (req, res) => {
+    try {
+        const { bulkAction, ids } = req.body;
+        const idArray = normalizeIds(ids);
+        const userId = req.session.user?._id || null;
+
+        if (idArray.length === 0) {
+            return res.redirect('/admin/categories');
+        }
+
+        switch (bulkAction) {
+            case 'activate':
+                await Category.updateMany(
+                    { _id: { $in: idArray } },
+                    { status: 'active', updatedBy: userId }
+                );
+                break;
+            case 'deactivate':
+                await Category.updateMany(
+                    { _id: { $in: idArray } },
+                    { status: 'inactive', updatedBy: userId }
+                );
+                break;
+            case 'delete':
+                await Category.updateMany(
+                    { _id: { $in: idArray } },
+                    { isDeleted: true, deletedAt: new Date(), deletedBy: userId }
+                );
+                break;
+            default:
+                break;
+        }
+
+        res.redirect('/admin/categories');
+    } catch (error) {
+        console.error('❌ BULK ACTION ERROR:', error);
+        res.redirect('/admin/categories');
+    }
+};
+
+// =============================================================
+// 11. HÀNH ĐỘNG HÀNG LOẠT TRONG THÙNG RÁC
 // =============================================================
 
 exports.bulkTrashAction = async (req, res) => {
     try {
-        const bulkAction = req.body.bulkAction;
-        const ids = normalizeIds(req.body.ids);
+        const { bulkAction, ids } = req.body;
+        const idArray = normalizeIds(ids);
 
-        if (ids.length) {
-            if (bulkAction === 'restore') {
-                await Category.updateMany(
-                    { _id: { $in: ids } },
-                    {
-                        $set: { isDeleted: false },
-                        $unset: { deletedAt: '', deletedBy: '' }
-                    }
-                );
-            } else if (bulkAction === 'delete') {
-                await Category.deleteMany({ _id: { $in: ids } });
-            }
+        if (idArray.length === 0) {
+            return res.redirect('/admin/categories/trash');
+        }
+
+        if (bulkAction === 'restore') {
+            await Category.updateMany(
+                { _id: { $in: idArray } },
+                { $set: { isDeleted: false }, $unset: { deletedAt: '', deletedBy: '' } }
+            );
+        } else if (bulkAction === 'delete') {
+            await Category.deleteMany({ _id: { $in: idArray } });
         }
 
         res.redirect('/admin/categories/trash');
     } catch (error) {
-        console.log(error);
+        console.error('❌ BULK TRASH ACTION ERROR:', error);
         res.redirect('/admin/categories/trash');
     }
 };
 
 // =============================================================
-// API
+// 12. API - LẤY CHI TIẾT MỘT DANH MỤC
 // =============================================================
 
 exports.getDetail = async (req, res) => {
@@ -798,9 +653,11 @@ exports.getDetail = async (req, res) => {
         const category = await Category.findById(req.params.id)
             .populate('createdBy')
             .populate('updatedBy');
+
         if (!category) {
-            return res.status(404).json({ success: false, message: 'Không tìm thấy danh mục' });
+            return res.status(404).json({ success: false, message: 'Không tìm thấy' });
         }
+
         res.json({
             success: true,
             data: {
@@ -819,15 +676,20 @@ exports.getDetail = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('❌ GET CATEGORY ERROR:', error);
+        console.error('❌ GET DETAIL ERROR:', error);
         res.status(500).json({ success: false, message: 'Có lỗi xảy ra' });
     }
 };
+
+// =============================================================
+// 13. API - LẤY TẤT CẢ DANH MỤC (active)
+// =============================================================
 
 exports.getAll = async (req, res) => {
     try {
         const categories = await Category.find({ status: 'active', isDeleted: false })
             .sort({ position: 1, name: 1 });
+
         res.json({
             success: true,
             data: categories.map(cat => ({
@@ -841,13 +703,13 @@ exports.getAll = async (req, res) => {
             }))
         });
     } catch (error) {
-        console.error('❌ GET ALL CATEGORIES ERROR:', error);
+        console.error('❌ GET ALL ERROR:', error);
         res.status(500).json({ success: false, message: 'Có lỗi xảy ra' });
     }
 };
 
 // =============================================================
-// EXPORT UPLOAD
+// EXPORT MIDDLEWARE UPLOAD
 // =============================================================
 
 exports.upload = upload;

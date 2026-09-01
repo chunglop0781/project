@@ -12,7 +12,8 @@ const categorySchema = new mongoose.Schema({
         unique: true,
         sparse: true,
         trim: true,
-        lowercase: true
+        lowercase: true,
+        slug: "name"   // 👈 THÊM DÒNG NÀY ĐỂ TỰ ĐỘNG SINH SLUG TỪ name
     },
     parent: {
         type: mongoose.Schema.Types.ObjectId,

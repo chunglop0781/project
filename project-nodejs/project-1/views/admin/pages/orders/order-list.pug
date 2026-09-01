@@ -362,13 +362,14 @@ block content
     }
 
   .admin-page-head
-
     div
-
       h2.admin-page-title Quản lý đơn hàng
-
       p.admin-page-subtitle Quản lý toàn bộ đơn đặt tour từ khách hàng.
-
+    // 🆕 Thêm nút Thùng rác bên phải
+    div(style="display: flex; gap: 10px;")
+      a.admin-btn.admin-btn-outline(href="/admin/orders/trash")
+        i.fas.fa-trash-can
+        |  Thùng rác
 
   .admin-card
 
@@ -536,10 +537,11 @@ block content
                   .admin-table-actions
                     a.admin-icon-btn(href="/admin/orders/" + order.id + "/edit" title="Sửa")
                       i.fas.fa-pen
+                    // 🆕 Thay đổi message confirm và vẫn gọi DELETE /admin/orders/:id (xóa mềm)
                     button.admin-icon-btn.admin-icon-btn-danger(
                       type="button"
                       title="Xóa"
-                      data-confirm="Bạn có chắc muốn xóa đơn hàng " + order.code + "?"
+                      data-confirm="Bạn có chắc muốn xóa đơn hàng " + order.code + "? (Sẽ chuyển vào thùng rác)"
                       data-delete-url="/admin/orders/" + order.id
                     )
                       i.fas.fa-trash
