@@ -1,82 +1,111 @@
 header.admin-topbar
 
-  //- =========================================================
-  //- BÊN TRÁI
-  //- =========================================================
-
   .admin-topbar-left
-
     button.admin-sidebar-toggle#adminSidebarToggle(type="button" aria-label="Menu")
       i.fas.fa-bars
-
     h1.admin-topbar-title= pageTitle || "Tổng Quan"
 
-
-  //- =========================================================
-  //- BÊN PHẠI
-  //- =========================================================
-
   .admin-topbar-right
-
     button.admin-topbar-icon(type="button" aria-label="Thông báo")
       i.fas.fa-bell
       if typeof notificationCount !== "undefined" && notificationCount > 0
         span.admin-topbar-dot
 
     .admin-user-menu
-
       button.admin-user-trigger#adminUserTrigger(type="button")
-
-        //- =====================================================
-        //- LẤY ẢNH ĐẠI DIỆN - CHECK TỪ SESSION USER
-        //- =====================================================
         - var avatarSrc = '/admin/image/avatar-default.png'
-        - if (typeof adminUser !== 'undefined' && adminUser && adminUser.avatar) {
-        -   avatarSrc = adminUser.avatar
-        - } else if (typeof currentUser !== 'undefined' && currentUser && currentUser.avatar) {
-        -   avatarSrc = currentUser.avatar
-        - }
-        - if (avatarSrc === '/admin/image/avatar-default.png' || avatarSrc === '' || avatarSrc === null) {
-        -   avatarSrc = '/admin/image/avatar-default.png'
-        - }
-        
-        img#adminAvatar.admin-user-avatar(
-          src=avatarSrc
-          alt=(adminUser && adminUser.fullName) ? adminUser.fullName : "Admin"
-        )
-
-        //- =====================================================
-        //- THÔNG TIN USER
-        //- =====================================================
+        - if (typeof adminUser !== 'undefined' && adminUser && adminUser.avatar) avatarSrc = adminUser.avatar
+        - else if (typeof currentUser !== 'undefined' && currentUser && currentUser.avatar) avatarSrc = currentUser.avatar
+        - if (!avatarSrc) avatarSrc = '/admin/image/avatar-default.png'
+        img#adminAvatar.admin-user-avatar(src=avatarSrc alt=(adminUser && adminUser.fullName) ? adminUser.fullName : "Admin")
         .admin-user-info
           span.admin-user-name= (adminUser && adminUser.fullName) ? adminUser.fullName : "Quản Trị Viên"
           if adminUser && adminUser.role
             span.admin-user-role= adminUser.role.charAt(0).toUpperCase() + adminUser.role.slice(1)
-
         i.fas.fa-chevron-down
-
       .admin-user-dropdown#adminUserDropdown
-
         a(href="/admin/profile")
           i.fas.fa-user
-          | Hồ sơ cá nhân
-
+          span  Hồ sơ cá nhân
         a(href="/admin/settings")
           i.fas.fa-gear
-          | Cài đặt
-
+          span  Cài đặt
         .admin-user-dropdown-divider
-
         a.admin-logout-link(href="/admin/logout")
           i.fas.fa-right-from-bracket
-          | Đăng xuất
+          span  Đăng xuất
 
+  //- Flash messages container (từ server, redirect thường)
+  .admin-alert-container#adminAlertContainer
+    each msgs, type in (messages || {})
+      each msg in msgs
+        - var alertClass = 'admin-alert admin-alert-' + type
+        - var iconClass = type === 'success' ? 'fas fa-circle-check' : type === 'error' ? 'fas fa-circle-xmark' : type === 'info' ? 'fas fa-circle-info' : 'fas fa-triangle-exclamation'
+        .admin-alert(class=alertClass, data-delay="5000")
+          i(class=iconClass)
+          span= msg
+          button.admin-alert-close(type="button" aria-label="Đóng")
+            i.fas.fa-xmark
 
-  //- =========================================================
-  //- CSS TRỰC TIẾP - FIX ẢNH ĐẠI DIỆN
-  //- =========================================================
   style.
-    /* Avatar style */
+    .admin-alert-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 400px;
+      width: 100%;
+      pointer-events: none;
+    }
+    .admin-alert {
+      pointer-events: auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-left: 5px solid #ccc;
+      font-size: 14px;
+      color: #1e293b;
+      transform: translateX(120%);
+      opacity: 0;
+      animation: slideInAlert 0.4s forwards;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .admin-alert-success { border-left-color: #22c55e; }
+    .admin-alert-success i { color: #22c55e; }
+    .admin-alert-error { border-left-color: #ef4444; }
+    .admin-alert-error i { color: #ef4444; }
+    .admin-alert-info { border-left-color: #3b82f6; }
+    .admin-alert-info i { color: #3b82f6; }
+    .admin-alert-warning { border-left-color: #f59e0b; }
+    .admin-alert-warning i { color: #f59e0b; }
+    .admin-alert i { font-size: 22px; flex-shrink: 0; }
+    .admin-alert span { flex: 1; line-height: 1.4; }
+    .admin-alert-close {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 0 4px;
+      transition: color 0.2s;
+    }
+    .admin-alert-close:hover { color: #1e293b; }
+    @keyframes slideInAlert {
+      0% { transform: translateX(120%); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+    .admin-alert.hiding { animation: slideOutAlert 0.4s forwards; }
+    @keyframes slideOutAlert {
+      0% { transform: translateX(0); opacity: 1; }
+      100% { transform: translateX(120%); opacity: 0; }
+    }
     #adminAvatar {
       width: 36px;
       height: 36px;
@@ -86,8 +115,6 @@ header.admin-topbar
       display: inline-block;
       background: linear-gradient(135deg, #5200c9, #7a3fe0);
     }
-    
-    /* Nếu ảnh lỗi, hiển thị chữ cái đầu */
     #adminAvatar[src="/admin/image/avatar-default.png"] {
       background: linear-gradient(135deg, #5200c9, #7a3fe0);
       border-color: #5200c9;
@@ -98,3 +125,86 @@ header.admin-topbar
       font-weight: 700;
       font-size: 16px;
     }
+
+  script.
+    (function() {
+      // Ẩn 1 alert, chạy callback sau khi animation kết thúc (nếu có)
+      function hideAlert(alert, onDone) {
+        if (alert.classList.contains('hiding')) return;
+        alert.classList.add('hiding');
+        alert.addEventListener('animationend', function handler() {
+          alert.removeEventListener('animationend', handler);
+          alert.remove();
+          if (typeof onDone === 'function') onDone();
+        });
+      }
+
+      // Gắn sự kiện cho các alert có sẵn từ flash (server-side, không cần reload)
+      document.querySelectorAll('.admin-alert').forEach(function(alert) {
+        var delay = parseInt(alert.dataset.delay) || 5000;
+        var closeBtn = alert.querySelector('.admin-alert-close');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            hideAlert(alert);
+          });
+        }
+        var timer = setTimeout(function() { hideAlert(alert); }, delay);
+        alert.addEventListener('mouseenter', function() { clearTimeout(timer); });
+        alert.addEventListener('mouseleave', function() {
+          timer = setTimeout(function() { hideAlert(alert); }, delay);
+        });
+      });
+
+      // Toast tạo từ client (dùng cho fetch/AJAX như xoá tạm, khôi phục...)
+      // reload = true => sau khi toast tắt (tự tắt hoặc bấm đóng) sẽ tự load lại trang
+      window.showToast = function(message, type, reload) {
+        if (!message) return;
+        type = type || 'success';
+
+        var container = document.getElementById('adminAlertContainer');
+        if (!container) {
+          container = document.createElement('div');
+          container.id = 'adminAlertContainer';
+          container.className = 'admin-alert-container';
+          document.body.appendChild(container);
+        }
+
+        var iconMap = {
+          success: 'fas fa-circle-check',
+          error: 'fas fa-circle-xmark',
+          info: 'fas fa-circle-info',
+          warning: 'fas fa-triangle-exclamation'
+        };
+
+        var alertDiv = document.createElement('div');
+        alertDiv.className = 'admin-alert admin-alert-' + type;
+        alertDiv.setAttribute('data-delay', '5000');
+        alertDiv.innerHTML =
+          '<i class="' + (iconMap[type] || 'fas fa-bell') + '"></i>' +
+          '<span>' + message + '</span>' +
+          '<button class="admin-alert-close" type="button" aria-label="Đóng"><i class="fas fa-xmark"></i></button>';
+        container.appendChild(alertDiv);
+
+        function doHide() {
+          hideAlert(alertDiv, function() {
+            if (reload) window.location.reload();
+          });
+        }
+
+        var closeBtn = alertDiv.querySelector('.admin-alert-close');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            clearTimeout(timer);
+            doHide();
+          });
+        }
+
+        var timer = setTimeout(doHide, 5000);
+        alertDiv.addEventListener('mouseenter', function() { clearTimeout(timer); });
+        alertDiv.addEventListener('mouseleave', function() {
+          timer = setTimeout(doHide, 5000);
+        });
+      };
+    })();

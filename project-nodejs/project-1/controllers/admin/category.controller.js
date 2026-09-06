@@ -310,11 +310,11 @@ exports.create = async (req, res) => {
             }
         }
 
-        req.session.success = 'Tạo danh mục thành công!';
+        req.flash2('success', 'Tạo danh mục thành công!');
         res.redirect('/admin/categories');
     } catch (error) {
         console.error('❌ CREATE ERROR:', error);
-        req.session.error = 'Có lỗi xảy ra khi tạo danh mục.';
+        req.flash2('error', 'Có lỗi xảy ra khi tạo danh mục.');
         res.redirect('/admin/categories/new');
     }
 };
@@ -442,31 +442,38 @@ exports.edit = async (req, res) => {
 
         await Category.findByIdAndUpdate(req.params.id, updateData);
 
-        req.session.success = 'Cập nhật danh mục thành công!';
+        req.flash2('success', 'Cập nhật danh mục thành công!');
         res.redirect('/admin/categories');
     } catch (error) {
         console.error('❌ EDIT ERROR:', error);
-        req.session.error = 'Có lỗi xảy ra khi cập nhật.';
+        req.flash2('error', 'Có lỗi xảy ra khi cập nhật.');
         res.redirect('/admin/categories/' + req.params.id + '/edit');
     }
 };
 
 // =============================================================
-// 6. XÓA MỀM (Đưa vào thùng rác)
+// 6. XÓA MỀM (Đưa vào thùng rác) - TRẢ VỀ JSON CHO FETCH
 // =============================================================
 
 exports.delete = async (req, res) => {
     try {
         const userId = req.session.user?._id || null;
-        await Category.findByIdAndUpdate(req.params.id, {
-            isDeleted: true,
-            deletedAt: new Date(),
-            deletedBy: userId
-        });
-        res.json({ success: true });
+        const category = await Category.findByIdAndUpdate(
+            req.params.id,
+            {
+                isDeleted: true,
+                deletedAt: new Date(),
+                deletedBy: userId
+            },
+            { new: true }
+        );
+        if (!category) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy danh mục!' });
+        }
+        res.status(200).json({ success: true, message: 'Đã chuyển danh mục vào thùng rác!' });
     } catch (error) {
         console.error('❌ DELETE ERROR:', error);
-        res.status(500).json({ success: false });
+        res.status(500).json({ success: false, message: 'Xóa thất bại!' });
     }
 };
 
@@ -534,7 +541,7 @@ exports.trash = async (req, res) => {
 };
 
 // =============================================================
-// 8. KHÔI PHỤC TỪ THÙNG RÁC
+// 8. KHÔI PHỤC - TRẢ VỀ JSON
 // =============================================================
 
 exports.restore = async (req, res) => {
@@ -548,26 +555,29 @@ exports.restore = async (req, res) => {
             { new: true }
         );
         if (!category) {
-            return res.status(404).json({ success: false, message: 'Không tìm thấy' });
+            return res.status(404).json({ success: false, message: 'Không tìm thấy danh mục!' });
         }
-        res.json({ success: true });
+        res.status(200).json({ success: true, message: 'Khôi phục thành công!' });
     } catch (error) {
         console.error('❌ RESTORE ERROR:', error);
-        res.status(500).json({ success: false });
+        res.status(500).json({ success: false, message: 'Khôi phục thất bại!' });
     }
 };
 
 // =============================================================
-// 9. XÓA VĨNH VIỄN
+// 9. XÓA VĨNH VIỄN - TRẢ VỀ JSON
 // =============================================================
 
 exports.forceDelete = async (req, res) => {
     try {
-        await Category.deleteOne({ _id: req.params.id, isDeleted: true });
-        res.json({ success: true });
+        const result = await Category.deleteOne({ _id: req.params.id, isDeleted: true });
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy danh mục!' });
+        }
+        res.status(200).json({ success: true, message: 'Xóa vĩnh viễn thành công!' });
     } catch (error) {
         console.error('❌ FORCE DELETE ERROR:', error);
-        res.status(500).json({ success: false });
+        res.status(500).json({ success: false, message: 'Xóa vĩnh viễn thất bại!' });
     }
 };
 
@@ -582,6 +592,7 @@ exports.bulkAction = async (req, res) => {
         const userId = req.session.user?._id || null;
 
         if (idArray.length === 0) {
+            req.flash2('error', 'Vui lòng chọn ít nhất một danh mục.');
             return res.redirect('/admin/categories');
         }
 
@@ -591,26 +602,31 @@ exports.bulkAction = async (req, res) => {
                     { _id: { $in: idArray } },
                     { status: 'active', updatedBy: userId }
                 );
+                req.flash2('success', `Đã kích hoạt ${idArray.length} danh mục.`);
                 break;
             case 'deactivate':
                 await Category.updateMany(
                     { _id: { $in: idArray } },
                     { status: 'inactive', updatedBy: userId }
                 );
+                req.flash2('success', `Đã tạm dừng ${idArray.length} danh mục.`);
                 break;
             case 'delete':
                 await Category.updateMany(
                     { _id: { $in: idArray } },
                     { isDeleted: true, deletedAt: new Date(), deletedBy: userId }
                 );
+                req.flash2('success', `Đã chuyển ${idArray.length} danh mục vào thùng rác.`);
                 break;
             default:
+                req.flash2('error', 'Hành động không hợp lệ.');
                 break;
         }
 
         res.redirect('/admin/categories');
     } catch (error) {
         console.error('❌ BULK ACTION ERROR:', error);
+        req.flash2('error', 'Có lỗi xảy ra khi thực hiện hành động hàng loạt.');
         res.redirect('/admin/categories');
     }
 };
@@ -625,6 +641,7 @@ exports.bulkTrashAction = async (req, res) => {
         const idArray = normalizeIds(ids);
 
         if (idArray.length === 0) {
+            req.flash2('error', 'Vui lòng chọn ít nhất một danh mục.');
             return res.redirect('/admin/categories/trash');
         }
 
@@ -633,13 +650,18 @@ exports.bulkTrashAction = async (req, res) => {
                 { _id: { $in: idArray } },
                 { $set: { isDeleted: false }, $unset: { deletedAt: '', deletedBy: '' } }
             );
+            req.flash2('success', `Đã khôi phục ${idArray.length} danh mục.`);
         } else if (bulkAction === 'delete') {
             await Category.deleteMany({ _id: { $in: idArray } });
+            req.flash2('success', `Đã xóa vĩnh viễn ${idArray.length} danh mục.`);
+        } else {
+            req.flash2('error', 'Hành động không hợp lệ.');
         }
 
         res.redirect('/admin/categories/trash');
     } catch (error) {
         console.error('❌ BULK TRASH ACTION ERROR:', error);
+        req.flash2('error', 'Có lỗi xảy ra khi thực hiện hành động hàng loạt.');
         res.redirect('/admin/categories/trash');
     }
 };

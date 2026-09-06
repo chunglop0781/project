@@ -817,7 +817,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"connect-flash@npm:^0.1.1":
+"connect-flash@npm:0.1.x, connect-flash@npm:^0.1.1":
   version: 0.1.1
   resolution: "connect-flash@npm:0.1.1"
   checksum: 10c0/43c1c62ed26714b27efad30807e70637a651ccd764a6bfd485a7d93f2e009cf7c4c9fab52e8d583a0e40a799558b987b616bb5150f72d07baf3ea14f77cc881d
@@ -1134,6 +1134,15 @@ __metadata:
   version: 3.1.3
   resolution: "exponential-backoff@npm:3.1.3"
   checksum: 10c0/77e3ae682b7b1f4972f563c6dbcd2b0d54ac679e62d5d32f3e5085feba20483cf28bd505543f520e287a56d4d55a28d7874299941faf637e779a1aa5994d1267
+  languageName: node
+  linkType: hard
+
+"express-flash@npm:^0.0.2":
+  version: 0.0.2
+  resolution: "express-flash@npm:0.0.2"
+  dependencies:
+    connect-flash: "npm:0.1.x"
+  checksum: 10c0/ee878be8ba29c26e406735dd3f801157841a6cdb49ec86ad96a732e564b6c3abc2d12b3b4405bdf150c53950e1ee70dbfeaaf3f43ca959f603ea0d8c390490c4
   languageName: node
   linkType: hard
 
@@ -2315,6 +2324,7 @@ __metadata:
     cookie-parser: "npm:^1.4.7"
     dotenv: "npm:^17.4.2"
     express: "npm:^5.2.1"
+    express-flash: "npm:^0.0.2"
     express-session: "npm:^1.19.0"
     form-data: "npm:^4.0.6"
     joi: "npm:^18.2.5"

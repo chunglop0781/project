@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 const methodOverride = require('method-override');
 const fs = require('fs');
 const flash = require('connect-flash');
+const flash2 = require('express-flash');
 
 require('dotenv').config();
 
@@ -81,7 +82,10 @@ app.use(methodOverride('_method'));
 // COOKIE PARSER
 // =============================================================
 
-app.use(cookieParser());
+app.use(cookieParser('keyboard cat'));
+// Nhúng flash2 middleware để sử dụng flash messages
+app.use(session({ cookie: { maxAge: 60000 }}));
+app.use(flash2());
 
 // =============================================================
 // SESSION
@@ -151,6 +155,20 @@ app.use(async (req, res, next) => {
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
+    next();
+});
+
+// =============================================================
+// 🆕 BỔ SUNG ALIAS CHO flash2 VÀ GÁN messages VÀO VIEW
+// =============================================================
+app.use((req, res, next) => {
+    // Alias để controller gọi req.flash2('type', 'message')
+    req.flash2 = req.flash;
+
+    // Đưa tất cả flash messages vào res.locals.messages
+    // (sẽ dùng trong view: messages.info, messages.success, messages.error, ...)
+    res.locals.messages = req.flash();
+
     next();
 });
 
