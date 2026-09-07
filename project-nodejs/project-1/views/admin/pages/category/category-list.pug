@@ -42,7 +42,7 @@ block content
         i.fas.fa-filter
         |  Bộ lọc
 
-      select.admin-filter-select(name="status")
+      select.admin-filter-select(name="status" onchange="this.form.submit()")
 
         option(value="") Trạng thái
 
@@ -52,7 +52,7 @@ block content
         option(value="inactive" selected=(typeof filter !== "undefined" && filter.status === "inactive"))
           | Tạm dừng
 
-      select.admin-filter-select(name="creator")
+      select.admin-filter-select(name="creator" onchange="this.form.submit()")
 
         option(value="") Người tạo
 
@@ -67,11 +67,27 @@ block content
 
       .admin-filter-daterange
 
+        -
+          // Format giá trị ngày hiển thị theo dd/mm/yyyy.
+          // Nhận cả Date object lẫn string (ISO...), luôn parse về Date thật
+          // rồi mới format ra chuỗi hiển thị - tránh in thẳng string thô chưa qua kiểm tra.
+          var formatDateDDMMYYYY = function (d) {
+            if (!d) return "";
+            var date = (d instanceof Date) ? d : new Date(d);
+            if (isNaN(date.getTime())) return "";
+            var dd = String(date.getDate()).padStart(2, "0");
+            var mm = String(date.getMonth() + 1).padStart(2, "0");
+            var yyyy = date.getFullYear();
+            return dd + "/" + mm + "/" + yyyy;
+          };
+          var dateFromValue = (typeof filter !== "undefined") ? formatDateDDMMYYYY(filter.dateFrom) : "";
+          var dateToValue = (typeof filter !== "undefined") ? formatDateDDMMYYYY(filter.dateTo) : "";
+
         input.admin-filter-date(
           type="text"
           name="dateFrom"
           placeholder="dd/mm/yyyy"
-          value=(typeof filter !== "undefined" && filter.dateFrom) ? filter.dateFrom : ""
+          value=dateFromValue
         )
 
         span -
@@ -80,8 +96,12 @@ block content
           type="text"
           name="dateTo"
           placeholder="dd/mm/yyyy"
-          value=(typeof filter !== "undefined" && filter.dateTo) ? filter.dateTo : ""
+          value=dateToValue
         )
+
+      button.admin-btn.admin-btn-outline(type="submit")
+        i.fas.fa-filter
+        |  Lọc
 
       a.admin-filter-clear(href="/admin/categories")
         i.fas.fa-rotate-left
@@ -93,20 +113,6 @@ block content
     //- ===============================================================
 
     .admin-toolbar
-
-      form.admin-bulk-form(action="/admin/categories/bulk" method="POST")
-
-        select.admin-select(name="bulkAction")
-
-          option(value="") -- Hành động --
-
-          option(value="activate") Kích hoạt
-
-          option(value="deactivate") Tạm dừng
-
-          option(value="delete") Xóa
-
-        button.admin-btn.admin-btn-outline(type="submit") Áp dụng
 
       form.admin-search-form(action="/admin/categories" method="GET")
 

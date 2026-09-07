@@ -83,26 +83,34 @@ app.use(methodOverride('_method'));
 // =============================================================
 
 app.use(cookieParser('keyboard cat'));
-// Nhúng flash2 middleware để sử dụng flash messages
-app.use(session({ cookie: { maxAge: 60000 }}));
-app.use(flash2());
 
 // =============================================================
 // SESSION
 // =============================================================
-
+// ⚠️ TRƯỚC ĐÂY có 2 lần app.use(session(...)) chồng lên nhau:
+//    - 1 lần maxAge=60000 (1 phút, không có secret) chỉ để dùng cho flash2
+//    - 1 lần maxAge=24h là session thật
+//    => cả 2 cùng ghi đè cookie "connect.sid" khiến session bị hết hạn
+//       thất thường dù user vẫn đang thao tác. Đã gộp lại thành 1 session
+//       duy nhất, và bật "rolling: true" để mỗi request (tức là mỗi lần
+//       user còn tương tác) sẽ RESET lại thời gian đếm ngược logout.
+//       Chỉ khi nào user ngừng thao tác lâu hơn maxAge thì mới bị đăng xuất.
 app.use(
     session({
         secret: process.env.SESSION_SECRET || 'default-secret-key-change-in-production',
         resave: false,
         saveUninitialized: false,
+        rolling: true, // 🔑 mỗi request hợp lệ sẽ reset lại maxAge của cookie
         cookie: {
-            maxAge: 24 * 60 * 60 * 1000,
+            maxAge: 24 * 60 * 60 * 1000, // 24h không hoạt động mới bị logout
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production'
         }
     })
 );
+
+// Nhúng flash2 middleware để sử dụng flash messages (dùng chung session ở trên, không tạo session riêng nữa)
+app.use(flash2());
 
 // ✅ FLASH MIDDLEWARE
 app.use(flash());

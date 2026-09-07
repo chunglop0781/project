@@ -41,6 +41,26 @@ const storage = multer.diskStorage({
     }
 });
 
+// Trả về danh sách category đã dựng cây + thụt lề sẵn trong "name",
+// để dùng cho <select> của tour-form.pug — cùng kiểu với parentCategories
+// bên category-form.pug (option label đã có tiền tố "- " theo độ sâu).
+async function getCategoryTreeForSelect() {
+    const categoriesRaw = await Category.find().sort({ position: 1, name: 1 });
+    const tree = buildCategoryTree(
+        categoriesRaw.map(cat => ({
+            _id: cat._id,
+            name: cat.name,
+            parent: cat.parent || null,
+            position: cat.position
+        }))
+    );
+    return flattenCategoryTree(tree).map(cat => ({
+        id: cat._id.toString(), // ✅ ép về string để so sánh selected đúng trong pug (tour.category cũng là string)
+        name: cat.label, // đã có "- ", "- - "... theo depth
+        depth: cat.depth
+    }));
+}
+
 const upload = multer({ storage: storage });
 
 // =============================================================
@@ -56,9 +76,9 @@ async function uploadToGitHub(filePath, fileName) {
 
         const fileBuffer = fs.readFileSync(filePath);
         const contentBase64 = fileBuffer.toString('base64');
-        
+
         const githubPath = `${GITHUB_CONFIG.path}${fileName}`;
-        
+
         const response = await axios.put(
             `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${githubPath}`,
             {
@@ -73,10 +93,10 @@ async function uploadToGitHub(filePath, fileName) {
                 }
             }
         );
-        
+
         console.log('✅ Uploaded tour image to GitHub:', response.data.content.download_url);
         return response.data.content.download_url || response.data.content.html_url;
-        
+
     } catch (error) {
         console.error('❌ Upload to GitHub failed:', error.response?.data?.message || error.message);
         return null;
@@ -106,6 +126,60 @@ function parseVNDate(str, endOfDay) {
         ? new Date(y, m - 1, d, 23, 59, 59, 999)
         : new Date(y, m - 1, d, 0, 0, 0, 0);
     return isNaN(date.getTime()) ? null : date;
+}
+
+// =============================================================
+// XÂY DỰNG CÂY DANH MỤC (dựa trên field "parent") - dùng cho dropdown lọc
+// =============================================================
+
+function buildCategoryTree(categories) {
+    const map = new Map();
+
+    categories.forEach(cat => {
+        map.set(String(cat._id), { ...cat, children: [] });
+    });
+
+    const roots = [];
+
+    map.forEach(node => {
+        const parentId = node.parent ? String(node.parent) : null;
+        if (parentId && map.has(parentId)) {
+            map.get(parentId).children.push(node);
+        } else {
+            roots.push(node);
+        }
+    });
+
+    const sortNodes = (nodes) => {
+        nodes.sort((a, b) => {
+            const posA = a.position || 0;
+            const posB = b.position || 0;
+            if (posA !== posB) return posA - posB;
+            return (a.name || '').localeCompare(b.name || '');
+        });
+        nodes.forEach(n => sortNodes(n.children));
+    };
+    sortNodes(roots);
+
+    return roots;
+}
+
+// Làm phẳng cây thành mảng theo thứ tự cha -> con, có "depth" và "label" đã thụt lề,
+// dùng để đổ vào <select> của bộ lọc category trên danh sách tour.
+// Ví dụ: "Tour châu Á" -> "- Tour Việt Nam" -> "- - Tour Hà Nội"
+function flattenCategoryTree(nodes, depth = 0, result = []) {
+    nodes.forEach(node => {
+        const { children, ...rest } = node;
+        result.push({
+            ...rest,
+            depth,
+            label: (depth > 0 ? '- '.repeat(depth) : '') + rest.name
+        });
+        if (children && children.length) {
+            flattenCategoryTree(children, depth + 1, result);
+        }
+    });
+    return result;
 }
 
 function applyPriceRange(filter, priceRange) {
@@ -179,7 +253,24 @@ exports.index = async (req, res) => {
             .limit(PAGE_SIZE);
 
         const tours = toursRaw.map(toTourViewModel);
-        const categories = await Category.find().sort({ position: 1 });
+
+        // ✅ Dựng cây danh mục để dropdown lọc "Danh mục" hiển thị phân cấp
+        // cha -> con (Tour châu Á > Tour Việt Nam > Tour Hà Nội) thay vì phẳng.
+        const categoriesRaw = await Category.find().sort({ position: 1, name: 1 });
+        const categoryTree = buildCategoryTree(
+            categoriesRaw.map(cat => ({
+                _id: cat._id,
+                name: cat.name,
+                parent: cat.parent || null,
+                position: cat.position
+            }))
+        );
+        const categories = flattenCategoryTree(categoryTree).map(cat => ({
+            id: cat._id.toString(), // ✅ ép về string để so sánh selected đúng với filter.category (string từ query)
+            name: cat.name,   // giữ lại để view cũ không bị vỡ nếu đang dùng .name
+            depth: cat.depth,
+            label: cat.label  // dùng field này để hiển thị có thụt lề trong <option>
+        }));
 
         let baseUrl = '/admin/tours?';
         if (status) baseUrl += 'status=' + status + '&';
@@ -194,7 +285,9 @@ exports.index = async (req, res) => {
             tours,
             categories,
             creators: [],
-            filter: { status, creator, category, priceRange, dateFrom, dateTo, keyword },
+            // ✅ Truyền Date đã parse xuống view (đồng bộ với category-list),
+            // để view format lại dd/mm/yyyy thay vì in string thô
+            filter: { status, creator, category, priceRange, dateFrom: fromDate, dateTo: toDate, keyword },
             currentPage,
             totalPages,
             baseUrl,
@@ -276,7 +369,7 @@ exports.trash = async (req, res) => {
 
 exports.createPage = async (req, res) => {
     try {
-        const categories = await Category.find().sort({ position: 1 });
+        const categories = await getCategoryTreeForSelect();
         const LOCATION_OPTIONS = [
             { value: 'ha-noi', label: 'Hà Nội' },
             { value: 'da-nang', label: 'Đà Nẵng' },
@@ -285,7 +378,7 @@ exports.createPage = async (req, res) => {
             { value: 'da-lat', label: 'Đà Lạt' },
             { value: 'phu-quoc', label: 'Phú Quốc' }
         ];
-        
+
         res.render('admin/pages/tours/tour-form', {
             categories,
             locationOptions: LOCATION_OPTIONS,
@@ -315,21 +408,24 @@ exports.create = async (req, res) => {
 
         const body = req.body;
 
+        // ✅ Lấy 1 lần, dùng chung cho cả createdBy và updatedBy
+        const userId = req.session.user?.id || null;
+
         // Xử lý ảnh
         let imageUrl = undefined;
         if (req.file) {
             const localPath = req.file.path;
             const fileName = req.file.filename;
-            
+
             console.log('📤 Uploading tour image to GitHub:', fileName);
-            
+
             // Upload lên GitHub
             const githubImageUrl = await uploadToGitHub(localPath, fileName);
-            
+
             if (githubImageUrl) {
                 imageUrl = githubImageUrl;
                 console.log('✅ Uploaded tour image to GitHub:', imageUrl);
-                
+
                 // Xóa ảnh local sau khi upload thành công
                 try {
                     if (fs.existsSync(localPath)) {
@@ -376,17 +472,21 @@ exports.create = async (req, res) => {
 
             price: body.newPriceAdult || 0,
             locations: normalizeLocations(body.locations),
-            createdBy: req.session.user?._id || null
+            // ✅ FIX: gán cả createdBy và updatedBy = người tạo,
+            // để tour mới tạo không hiển thị "Cập nhật bởi: N/A"
+            createdBy: userId,
+            updatedBy: userId
         });
 
         console.log('✅ Tour created successfully:', newTour._id);
-        req.session.success = 'Tạo tour thành công!';
+        req.flash2('success', 'Tạo tour thành công!');
         res.redirect('/admin/tours');
 
     } catch (error) {
         console.error('❌ CREATE TOUR ERROR:', error);
-        
-        const categories = await Category.find().sort({ position: 1 });
+        req.flash2('error', 'Có lỗi xảy ra khi tạo tour.');
+
+        const categories = await getCategoryTreeForSelect();
         const LOCATION_OPTIONS = [
             { value: 'ha-noi', label: 'Hà Nội' },
             { value: 'da-nang', label: 'Đà Nẵng' },
@@ -418,7 +518,7 @@ exports.editPage = async (req, res) => {
             return res.redirect('/admin/tours');
         }
 
-        const categories = await Category.find().sort({ position: 1 });
+        const categories = await getCategoryTreeForSelect();
         const LOCATION_OPTIONS = [
             { value: 'ha-noi', label: 'Hà Nội' },
             { value: 'da-nang', label: 'Đà Nẵng' },
@@ -506,22 +606,23 @@ exports.edit = async (req, res) => {
 
             price: body.newPriceAdult || 0,
             locations: normalizeLocations(body.locations),
-            updatedBy: req.session.user?._id || null
+            // ✅ Không đụng vào createdBy khi edit — chỉ cập nhật updatedBy
+            updatedBy: req.session.user?.id || null
         };
 
         // Xử lý ảnh mới
         if (req.file) {
             const localPath = req.file.path;
             const fileName = req.file.filename;
-            
+
             console.log('📤 Uploading updated tour image to GitHub:', fileName);
-            
+
             const githubImageUrl = await uploadToGitHub(localPath, fileName);
-            
+
             if (githubImageUrl) {
                 updateData.image = githubImageUrl;
                 console.log('✅ Updated tour image to GitHub:', githubImageUrl);
-                
+
                 try {
                     if (fs.existsSync(localPath)) {
                         fs.unlinkSync(localPath);
@@ -537,11 +638,12 @@ exports.edit = async (req, res) => {
         }
 
         await Tour.findByIdAndUpdate(req.params.id, updateData);
-        req.session.success = 'Cập nhật tour thành công!';
+        req.flash2('success', 'Cập nhật tour thành công!');
         res.redirect('/admin/tours');
 
     } catch (error) {
         console.error('❌ UPDATE TOUR ERROR:', error);
+        req.flash2('error', 'Có lỗi xảy ra khi cập nhật tour.');
         res.redirect('/admin/tours/' + req.params.id + '/edit');
     }
 };
@@ -555,7 +657,7 @@ exports.delete = async (req, res) => {
         await Tour.findByIdAndUpdate(req.params.id, {
             isDeleted: true,
             deletedAt: new Date(),
-            deletedBy: req.session.user?._id || null
+            deletedBy: req.session.user?.id || null
         });
         res.json({ success: true });
     } catch (error) {
@@ -612,27 +714,49 @@ exports.bulkAction = async (req, res) => {
     try {
         const bulkAction = req.body.bulkAction;
         const ids = normalizeIds(req.body.ids);
+        // ✅ Lấy userId 1 lần, dùng chung cho updatedBy/deletedBy
+        const userId = req.session.user?.id || null;
 
-        if (ids.length) {
-            if (bulkAction === 'activate') {
-                await Tour.updateMany({ _id: { $in: ids } }, { status: 'active' });
-            } else if (bulkAction === 'deactivate') {
-                await Tour.updateMany({ _id: { $in: ids } }, { status: 'inactive' });
-            } else if (bulkAction === 'delete') {
+        if (ids.length === 0) {
+            req.flash2('error', 'Vui lòng chọn ít nhất một tour.');
+            return res.redirect('/admin/tours');
+        }
+
+        switch (bulkAction) {
+            case 'activate':
+                await Tour.updateMany(
+                    { _id: { $in: ids } },
+                    { status: 'active', updatedBy: userId }
+                );
+                req.flash2('success', `Đã kích hoạt ${ids.length} tour.`);
+                break;
+            case 'deactivate':
+                await Tour.updateMany(
+                    { _id: { $in: ids } },
+                    { status: 'inactive', updatedBy: userId }
+                );
+                req.flash2('success', `Đã tạm dừng ${ids.length} tour.`);
+                break;
+            case 'delete':
                 await Tour.updateMany(
                     { _id: { $in: ids } },
                     {
                         isDeleted: true,
                         deletedAt: new Date(),
-                        deletedBy: req.session.user?._id || null
+                        deletedBy: userId
                     }
                 );
-            }
+                req.flash2('success', `Đã chuyển ${ids.length} tour vào thùng rác.`);
+                break;
+            default:
+                req.flash2('error', 'Hành động không hợp lệ.');
+                break;
         }
 
         res.redirect('/admin/tours');
     } catch (error) {
         console.log(error);
+        req.flash2('error', 'Có lỗi xảy ra khi thực hiện hành động hàng loạt.');
         res.redirect('/admin/tours');
     }
 };
@@ -646,23 +770,31 @@ exports.bulkTrashAction = async (req, res) => {
         const bulkAction = req.body.bulkAction;
         const ids = normalizeIds(req.body.ids);
 
-        if (ids.length) {
-            if (bulkAction === 'restore') {
-                await Tour.updateMany(
-                    { _id: { $in: ids } },
-                    {
-                        $set: { isDeleted: false },
-                        $unset: { deletedAt: '', deletedBy: '' }
-                    }
-                );
-            } else if (bulkAction === 'delete') {
-                await Tour.deleteMany({ _id: { $in: ids } });
-            }
+        if (ids.length === 0) {
+            req.flash2('error', 'Vui lòng chọn ít nhất một tour.');
+            return res.redirect('/admin/tours/trash');
+        }
+
+        if (bulkAction === 'restore') {
+            await Tour.updateMany(
+                { _id: { $in: ids } },
+                {
+                    $set: { isDeleted: false },
+                    $unset: { deletedAt: '', deletedBy: '' }
+                }
+            );
+            req.flash2('success', `Đã khôi phục ${ids.length} tour.`);
+        } else if (bulkAction === 'delete') {
+            await Tour.deleteMany({ _id: { $in: ids } });
+            req.flash2('success', `Đã xóa vĩnh viễn ${ids.length} tour.`);
+        } else {
+            req.flash2('error', 'Hành động không hợp lệ.');
         }
 
         res.redirect('/admin/tours/trash');
     } catch (error) {
         console.log(error);
+        req.flash2('error', 'Có lỗi xảy ra khi thực hiện hành động hàng loạt.');
         res.redirect('/admin/tours/trash');
     }
 };

@@ -83,6 +83,57 @@ function parseVNDate(str, endOfDay) {
 }
 
 // =============================================================
+// XÂY DỰNG CÂY DANH MỤC (dựa trên field "parent")
+// =============================================================
+
+// Nhận vào mảng danh mục phẳng (đã populate createdBy/updatedBy nếu cần),
+// trả về mảng cây lồng nhau (mỗi node có thêm field "children").
+function buildCategoryTree(categories) {
+    const map = new Map();
+
+    categories.forEach(cat => {
+        map.set(String(cat._id), { ...cat, children: [] });
+    });
+
+    const roots = [];
+
+    map.forEach(node => {
+        const parentId = node.parent ? String(node.parent) : null;
+        if (parentId && map.has(parentId)) {
+            map.get(parentId).children.push(node);
+        } else {
+            roots.push(node);
+        }
+    });
+
+    const sortNodes = (nodes) => {
+        nodes.sort((a, b) => {
+            const posA = a.position || 0;
+            const posB = b.position || 0;
+            if (posA !== posB) return posA - posB;
+            return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+        });
+        nodes.forEach(n => sortNodes(n.children));
+    };
+    sortNodes(roots);
+
+    return roots;
+}
+
+// Làm phẳng cây lại thành 1 mảng, theo đúng thứ tự cha -> con,
+// mỗi phần tử có thêm "depth" (0 = gốc) để view dùng thụt lề / hiển thị dấu "-".
+function flattenCategoryTree(nodes, depth = 0, result = []) {
+    nodes.forEach(node => {
+        const { children, ...rest } = node;
+        result.push({ ...rest, depth });
+        if (children && children.length) {
+            flattenCategoryTree(children, depth + 1, result);
+        }
+    });
+    return result;
+}
+
+// =============================================================
 // UPLOAD ẢNH LÊN GITHUB
 // =============================================================
 
@@ -137,45 +188,67 @@ exports.index = async (req, res) => {
         const keyword = (req.query.keyword || '').trim();
         const page = parseInt(req.query.page) || 1;
 
-        const filter = { isDeleted: false };
-
-        if (status === 'active' || status === 'inactive') filter.status = status;
-        if (creator) filter.createdBy = creator;
-
         const fromDate = parseVNDate(dateFrom, false);
         const toDate = parseVNDate(dateTo, true);
-        if (fromDate || toDate) {
-            filter.createdAt = {};
-            if (fromDate) filter.createdAt.$gte = fromDate;
-            if (toDate) filter.createdAt.$lte = toDate;
-        }
 
-        if (keyword) {
-            filter.name = { $regex: keyword, $options: 'i' };
-        }
+        // Lấy danh sách người tạo (distinct createdBy) để đổ vào dropdown "Người tạo"
+        const creatorIds = await Category.distinct('createdBy', { isDeleted: false });
+        const creatorUsers = await User.find(
+            { _id: { $in: creatorIds.filter(Boolean) } },
+            'fullName'
+        ).sort({ fullName: 1 });
+        const creators = creatorUsers.map(u => ({
+            id: u._id.toString(),
+            fullName: u.fullName
+        }));
 
-        const totalCategories = await Category.countDocuments(filter);
+        // ✅ Lấy TOÀN BỘ danh mục (không phân trang, không filter ở query)
+        // để dựng đúng cây cha -> con, rồi mới lọc/phân trang trên cây đã làm phẳng.
+        // Nếu lọc thẳng bằng query Mongo, những node con khớp filter nhưng cha
+        // không khớp sẽ bị tách khỏi cây, sai thứ tự phân cấp.
+        const allCategoriesRaw = await Category.find({ isDeleted: false })
+            .populate('createdBy')
+            .populate('updatedBy');
+
+        const tree = buildCategoryTree(allCategoriesRaw.map(cat => cat.toObject()));
+        const flatTree = flattenCategoryTree(tree);
+
+        // Áp filter trên danh sách đã làm phẳng (giữ nguyên thứ tự cây)
+        const matchesFilter = (cat) => {
+            if ((status === 'active' || status === 'inactive') && cat.status !== status) return false;
+            if (creator && String(cat.createdBy?._id || '') !== creator) return false;
+            if (fromDate && (!cat.createdAt || new Date(cat.createdAt) < fromDate)) return false;
+            if (toDate && (!cat.createdAt || new Date(cat.createdAt) > toDate)) return false;
+            if (keyword && !cat.name.toLowerCase().includes(keyword.toLowerCase())) return false;
+            return true;
+        };
+
+        const filtered = flatTree.filter(matchesFilter);
+
+        const totalCategories = filtered.length;
         const totalPages = Math.max(Math.ceil(totalCategories / PAGE_SIZE), 1);
         const currentPage = Math.min(Math.max(page, 1), totalPages);
 
-        const categoriesRaw = await Category.find(filter)
-            .populate('createdBy')
-            .populate('updatedBy')
-            .sort({ position: 1, createdAt: -1 })
-            .skip((currentPage - 1) * PAGE_SIZE)
-            .limit(PAGE_SIZE);
+        const pageItems = filtered.slice(
+            (currentPage - 1) * PAGE_SIZE,
+            currentPage * PAGE_SIZE
+        );
 
-        const categories = categoriesRaw.map(cat => ({
+        const categories = pageItems.map(cat => ({
             id: cat._id,
             name: cat.name,
+            // Ví dụ: depth 0 -> "Tour châu Á", depth 1 -> "- Tour Việt Nam",
+            // depth 2 -> "- - Tour Hà Nội" (view có thể tự style lại nếu muốn).
+            depth: cat.depth,
+            treeLabel: (cat.depth > 0 ? '- '.repeat(cat.depth) : '') + cat.name,
             image: cat.image || '/admin/image/no-image.png',
             position: cat.position || 1,
             status: cat.status,
             statusLabel: STATUS_LABELS[cat.status] || cat.status,
             createdByName: cat.createdBy ? cat.createdBy.fullName : 'N/A',
-            createdAt: cat.createdAt ? cat.createdAt.toLocaleString('vi-VN') : '',
+            createdAt: cat.createdAt ? new Date(cat.createdAt).toLocaleString('vi-VN') : '',
             updatedByName: cat.updatedBy ? cat.updatedBy.fullName : 'N/A',
-            updatedAt: cat.updatedAt ? cat.updatedAt.toLocaleString('vi-VN') : ''
+            updatedAt: cat.updatedAt ? new Date(cat.updatedAt).toLocaleString('vi-VN') : ''
         }));
 
         // Xây dựng baseUrl để giữ filter khi phân trang
@@ -189,8 +262,11 @@ exports.index = async (req, res) => {
 
         res.render('admin/pages/category/category-list', {
             categories,
-            creators: [],
-            filter: { status, creator, dateFrom, dateTo, keyword },
+            creators,
+            // ✅ Truyền Date đã parse (fromDate/toDate) xuống view thay vì
+            // string thô dateFrom/dateTo, để view format lại dd/mm/yyyy chính xác
+            // kể cả khi user gõ sai định dạng (parseVNDate trả null -> ô lọc trống)
+            filter: { status, creator, dateFrom: fromDate, dateTo: toDate, keyword },
             currentPage,
             totalPages,
             baseUrl,
@@ -280,7 +356,7 @@ exports.create = async (req, res) => {
         const existingSlug = await Category.findOne({ slug, isDeleted: false });
         if (existingSlug) slug += '-' + Date.now();
 
-        const userId = req.session.user?._id || null;
+        const userId = req.session.user?.id || null;
 
         const newCategory = await Category.create({
             name: trimmedName,
@@ -415,7 +491,7 @@ exports.edit = async (req, res) => {
         });
         if (existingSlug) slug += '-' + Date.now();
 
-        const userId = req.session.user?._id || null;
+        const userId = req.session.user?.id || null;
 
         const updateData = {
             name: trimmedName,
@@ -457,7 +533,7 @@ exports.edit = async (req, res) => {
 
 exports.delete = async (req, res) => {
     try {
-        const userId = req.session.user?._id || null;
+        const userId = req.session.user?.id || null;
         const category = await Category.findByIdAndUpdate(
             req.params.id,
             {
@@ -589,7 +665,7 @@ exports.bulkAction = async (req, res) => {
     try {
         const { bulkAction, ids } = req.body;
         const idArray = normalizeIds(ids);
-        const userId = req.session.user?._id || null;
+        const userId = req.session.user?.id || null;
 
         if (idArray.length === 0) {
             req.flash2('error', 'Vui lòng chọn ít nhất một danh mục.');
