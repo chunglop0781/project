@@ -159,7 +159,7 @@ block content
 
       if (confirmMsg && !window.confirm(confirmMsg)) return;
 
-      fetch(url, { method: 'POST' })
+      fetch(url, { method: 'POST', credentials: 'same-origin' })
         .then(function (res) { return res.json(); })
         .then(function (data) {
           if (data && data.success) {
@@ -174,8 +174,53 @@ block content
     });
 
     // Check all checkbox
+    // Lưu ý: các checkbox "ids" nằm trong bảng, KHÔNG lồng trong
+    // form#trashBulkForm (chỉ liên kết qua thuộc tính form="trashBulkForm"),
+    // nên phải querySelectorAll ở document, không phải bên trong form.
     document.getElementById('checkAllTrashCategories').addEventListener('change', function (e) {
-      document.querySelectorAll('#trashBulkForm input[type="checkbox"]').forEach(function (cb) {
+      document.querySelectorAll('input[name="ids"][form="trashBulkForm"]').forEach(function (cb) {
         cb.checked = e.target.checked;
       });
+    });
+
+    // Submit hành động hàng loạt (khôi phục / xóa vĩnh viễn) bằng AJAX
+    // vì controller trả về JSON { code, message } thay vì redirect.
+    document.getElementById('trashBulkForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var form = e.target;
+      var bulkAction = form.querySelector('[name="bulkAction"]').value;
+      var ids = Array.from(
+        document.querySelectorAll('input[name="ids"][form="trashBulkForm"]:checked')
+      ).map(function (cb) { return cb.value; });
+
+      if (!bulkAction) {
+        alert('Vui lòng chọn một hành động.');
+        return;
+      }
+      if (ids.length === 0) {
+        alert('Vui lòng chọn ít nhất một danh mục.');
+        return;
+      }
+      if (bulkAction === 'delete' && !confirm('Xóa vĩnh viễn các danh mục đã chọn? Hành động không thể hoàn tác.')) {
+        return;
+      }
+
+      fetch(form.getAttribute('action'), {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bulkAction: bulkAction, ids: ids })
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data && data.code === 'success') {
+            window.location.reload();
+          } else {
+            alert((data && data.message) || 'Có lỗi xảy ra, vui lòng thử lại.');
+          }
+        })
+        .catch(function () {
+          alert('Có lỗi xảy ra, vui lòng thử lại.');
+        });
     });

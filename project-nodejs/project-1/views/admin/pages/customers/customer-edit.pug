@@ -3,7 +3,7 @@ extends ../../layouts/admin-layout.pug
 block content
   .admin-page-head
     div
-      h2.admin-page-title Sửa Khách Hàng
+      h2.admin-page-title= typeof pageTitle !== "undefined" ? pageTitle : "Sửa Khách Hàng"
       p.admin-page-subtitle Cập nhật thông tin khách hàng.
 
     div(style="display: flex; gap: 10px;")
@@ -68,6 +68,28 @@ block content
               rows="3"
               placeholder="VD: Số 123, Đường ABC, Quận XYZ, TP.HCM"
             )= customer.address
+
+          //- ===============================================================
+          //- VAI TRÒ (ROLE) - CHỈ ADMIN MỚI ĐƯỢC XEM/SỬA
+          //- Cho phép gõ role mới chưa từng có trong hệ thống (datalist chỉ
+          //- gợi ý, không giới hạn giá trị được nhập).
+          //- ===============================================================
+          if typeof currentUserRole !== "undefined" && currentUserRole === "admin"
+            .admin-form-row
+              .admin-form-group
+                label(for="role") Vai trò (role)
+                input#role.admin-input(
+                  type="text"
+                  name="role"
+                  list="roleList"
+                  value=customer.role
+                  placeholder="VD: admin, customer, staff..."
+                )
+                datalist#roleList
+                  option(value="admin")
+                  option(value="customer")
+                  option(value="staff")
+                p.admin-form-hint Chỉ quản trị viên (admin) mới thấy và sửa được trường này. Có thể gõ một vai trò mới nếu hệ thống chưa có.
 
         .admin-form-col.admin-form-col-side
           .admin-form-group

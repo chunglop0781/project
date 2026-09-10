@@ -405,11 +405,53 @@ block content
 
         label(for="filter-date-from") Ngày đặt
 
-        input#filter-date-from(type="text" name="dateFrom" placeholder="dd/mm/yyyy" value=filter.dateFrom)
+        -
+          // Format giá trị ngày hiển thị dd/mm/yyyy và giữ bản ISO (yyyy-mm-dd)
+          // để nạp vào input type="date" lúc focus (input date bắt buộc dùng ISO).
+          var formatDateDDMMYYYY = function (d) {
+            if (!d) return "";
+            var date = (d instanceof Date) ? d : new Date(d);
+            if (isNaN(date.getTime())) return "";
+            var dd = String(date.getDate()).padStart(2, "0");
+            var mm = String(date.getMonth() + 1).padStart(2, "0");
+            var yyyy = date.getFullYear();
+            return dd + "/" + mm + "/" + yyyy;
+          };
+          var formatDateISO = function (d) {
+            if (!d) return "";
+            var date = (d instanceof Date) ? d : new Date(d);
+            if (isNaN(date.getTime())) return "";
+            var dd = String(date.getDate()).padStart(2, "0");
+            var mm = String(date.getMonth() + 1).padStart(2, "0");
+            var yyyy = date.getFullYear();
+            return yyyy + "-" + mm + "-" + dd;
+          };
+          var dateFromValue = (typeof filter !== "undefined") ? formatDateDDMMYYYY(filter.dateFrom) : "";
+          var dateToValue = (typeof filter !== "undefined") ? formatDateDDMMYYYY(filter.dateTo) : "";
+          var dateFromISO = (typeof filter !== "undefined") ? formatDateISO(filter.dateFrom) : "";
+          var dateToISO = (typeof filter !== "undefined") ? formatDateISO(filter.dateTo) : "";
+
+        input#filter-date-from(
+          type="text"
+          name="dateFrom"
+          placeholder="dd/mm/yyyy"
+          value=dateFromValue
+          data-iso=dateFromISO
+          onfocus="this.type='date'; if(this.dataset.iso) this.value = this.dataset.iso;"
+          onblur="if(this.value){ this.dataset.iso = this.value; var p = this.value.split('-'); this.type='text'; this.value = p[2] + '/' + p[1] + '/' + p[0]; } else { this.type='text'; }"
+        )
 
         span –
 
-        input#filter-date-to(type="text" name="dateTo" placeholder="dd/mm/yyyy" value=filter.dateTo)
+        input#filter-date-to(
+          type="text"
+          name="dateTo"
+          placeholder="dd/mm/yyyy"
+          value=dateToValue
+          data-iso=dateToISO
+          onfocus="this.type='date'; if(this.dataset.iso) this.value = this.dataset.iso;"
+          onblur="if(this.value){ this.dataset.iso = this.value; var p = this.value.split('-'); this.type='text'; this.value = p[2] + '/' + p[1] + '/' + p[0]; } else { this.type='text'; }"
+        )
 
       .admin-filter-group
 
@@ -431,7 +473,7 @@ block content
 
           option(value="" selected=!filter.paymentStatus) Tất cả
 
-          option(value="unpaid" selected=filter.paymentStatus === "unpaid") Chưa thanh toán
+          option(value="pending" selected=filter.paymentStatus === "pending") Chưa thanh toán
 
           option(value="paid" selected=filter.paymentStatus === "paid") Đã thanh toán
 

@@ -80,14 +80,30 @@ block content
             var yyyy = date.getFullYear();
             return dd + "/" + mm + "/" + yyyy;
           };
+          // Format ISO (yyyy-mm-dd) - đây là định dạng bắt buộc mà input type="date"
+          // của trình duyệt hiểu được, dùng để nạp giá trị lúc focus.
+          var formatDateISO = function (d) {
+            if (!d) return "";
+            var date = (d instanceof Date) ? d : new Date(d);
+            if (isNaN(date.getTime())) return "";
+            var dd = String(date.getDate()).padStart(2, "0");
+            var mm = String(date.getMonth() + 1).padStart(2, "0");
+            var yyyy = date.getFullYear();
+            return yyyy + "-" + mm + "-" + dd;
+          };
           var dateFromValue = (typeof filter !== "undefined") ? formatDateDDMMYYYY(filter.dateFrom) : "";
           var dateToValue = (typeof filter !== "undefined") ? formatDateDDMMYYYY(filter.dateTo) : "";
+          var dateFromISO = (typeof filter !== "undefined") ? formatDateISO(filter.dateFrom) : "";
+          var dateToISO = (typeof filter !== "undefined") ? formatDateISO(filter.dateTo) : "";
 
         input.admin-filter-date(
           type="text"
           name="dateFrom"
           placeholder="dd/mm/yyyy"
           value=dateFromValue
+          data-iso=dateFromISO
+          onfocus="this.removeAttribute('placeholder'); this.type='date'; if(this.dataset.iso) this.value = this.dataset.iso;"
+          onblur="if(this.value){ this.dataset.iso = this.value; var p = this.value.split('-'); this.type='text'; this.value = p[2] + '/' + p[1] + '/' + p[0]; } else { this.type='text'; } this.setAttribute('placeholder','dd/mm/yyyy');"
         )
 
         span -
@@ -97,11 +113,18 @@ block content
           name="dateTo"
           placeholder="dd/mm/yyyy"
           value=dateToValue
+          data-iso=dateToISO
+          onfocus="this.removeAttribute('placeholder'); this.type='date'; if(this.dataset.iso) this.value = this.dataset.iso;"
+          onblur="if(this.value){ this.dataset.iso = this.value; var p = this.value.split('-'); this.type='text'; this.value = p[2] + '/' + p[1] + '/' + p[0]; } else { this.type='text'; } this.setAttribute('placeholder','dd/mm/yyyy');"
         )
 
       button.admin-btn.admin-btn-outline(type="submit")
         i.fas.fa-filter
         |  Lọc
+
+      button.admin-btn.admin-btn-text(type="submit")
+        i.fas.fa-magnifying-glass
+        | Áp dụng
 
       a.admin-filter-clear(href="/admin/categories")
         i.fas.fa-rotate-left
@@ -113,6 +136,20 @@ block content
     //- ===============================================================
 
     .admin-toolbar
+
+      .admin-bulk-bar
+        select#categoryBulkAction(name="bulkAction" form="categoryBulkForm")
+          option(value="") -- Hành động --
+          option(value="activate") Kích hoạt
+          option(value="deactivate") Tạm dừng
+          option(value="delete") Chuyển vào thùng rác
+        button.admin-btn.admin-btn-primary(
+          type="submit"
+          form="categoryBulkForm"
+          onclick="return confirm('Bạn có chắc muốn thực hiện hành động này với các danh mục đã chọn?');"
+        )
+          i.fas.fa-bolt
+          |  Thực hiện
 
       form.admin-search-form(action="/admin/categories" method="GET")
 
@@ -130,7 +167,7 @@ block content
     //- BẢNG DANH SÁCH
     //- ===============================================================
 
-    .admin-table-scroll
+    form#categoryBulkForm.admin-table-scroll(action="/admin/categories/bulk" method="POST")
 
       table.admin-table
 
@@ -212,3 +249,49 @@ block content
 
 
     include ../../partials/pagination.pug
+
+  script.
+    // Tick "chọn tất cả" trong bảng danh sách chính
+    document.getElementById('checkAllCategories').addEventListener('change', function (e) {
+      document.querySelectorAll('#categoryBulkForm input[name="ids"]').forEach(function (cb) {
+        cb.checked = e.target.checked;
+      });
+    });
+
+    // Submit hành động hàng loạt bằng AJAX (controller trả về JSON { code, message })
+    document.getElementById('categoryBulkForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var form = e.target;
+      var bulkAction = document.getElementById('categoryBulkAction').value;
+      var ids = Array.from(form.querySelectorAll('input[name="ids"]:checked')).map(function (cb) {
+        return cb.value;
+      });
+
+      if (!bulkAction) {
+        alert('Vui lòng chọn một hành động.');
+        return;
+      }
+      if (ids.length === 0) {
+        alert('Vui lòng chọn ít nhất một danh mục.');
+        return;
+      }
+
+      fetch(form.getAttribute('action'), {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bulkAction: bulkAction, ids: ids })
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data && data.code === 'success') {
+            window.location.reload();
+          } else {
+            alert((data && data.message) || 'Có lỗi xảy ra, vui lòng thử lại.');
+          }
+        })
+        .catch(function () {
+          alert('Có lỗi xảy ra, vui lòng thử lại.');
+        });
+    });

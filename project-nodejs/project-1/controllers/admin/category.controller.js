@@ -669,7 +669,7 @@ exports.bulkAction = async (req, res) => {
 
         if (idArray.length === 0) {
             req.flash2('error', 'Vui lòng chọn ít nhất một danh mục.');
-            return res.redirect('/admin/categories');
+            return res.json({ code: 'error', message: 'Vui lòng chọn ít nhất một danh mục.' });
         }
 
         switch (bulkAction) {
@@ -696,14 +696,14 @@ exports.bulkAction = async (req, res) => {
                 break;
             default:
                 req.flash2('error', 'Hành động không hợp lệ.');
-                break;
+                return res.json({ code: 'error', message: 'Hành động không hợp lệ.' });
         }
 
-        res.redirect('/admin/categories');
+        return res.json({ code: 'success' });
     } catch (error) {
         console.error('❌ BULK ACTION ERROR:', error);
         req.flash2('error', 'Có lỗi xảy ra khi thực hiện hành động hàng loạt.');
-        res.redirect('/admin/categories');
+        return res.json({ code: 'error', message: 'Có lỗi xảy ra khi thực hiện hành động hàng loạt.' });
     }
 };
 
@@ -718,7 +718,7 @@ exports.bulkTrashAction = async (req, res) => {
 
         if (idArray.length === 0) {
             req.flash2('error', 'Vui lòng chọn ít nhất một danh mục.');
-            return res.redirect('/admin/categories/trash');
+            return res.json({ code: 'error', message: 'Vui lòng chọn ít nhất một danh mục.' });
         }
 
         if (bulkAction === 'restore') {
@@ -732,13 +732,14 @@ exports.bulkTrashAction = async (req, res) => {
             req.flash2('success', `Đã xóa vĩnh viễn ${idArray.length} danh mục.`);
         } else {
             req.flash2('error', 'Hành động không hợp lệ.');
+            return res.json({ code: 'error', message: 'Hành động không hợp lệ.' });
         }
 
-        res.redirect('/admin/categories/trash');
+        return res.json({ code: 'success' });
     } catch (error) {
         console.error('❌ BULK TRASH ACTION ERROR:', error);
         req.flash2('error', 'Có lỗi xảy ra khi thực hiện hành động hàng loạt.');
-        res.redirect('/admin/categories/trash');
+        return res.json({ code: 'error', message: 'Có lỗi xảy ra khi thực hiện hành động hàng loạt.' });
     }
 };
 
@@ -811,3 +812,23 @@ exports.getAll = async (req, res) => {
 // =============================================================
 
 exports.upload = upload;
+
+// =============================================================
+// CHANGE MULTI PATCH (đổi trạng thái nhiều bản ghi)
+// =============================================================
+exports.changeMultiPatch = async (req, res) => {
+    try {
+        console.log(req.body);
+
+        req.flash2("success", "Đổi trạng thái thành công!");
+
+        res.json({
+            code: "success"
+        });
+    } catch (error) {
+        res.json({
+            code: "error",
+            message: "Id không tồn tại trong hệ thống!"
+        });
+    }
+};

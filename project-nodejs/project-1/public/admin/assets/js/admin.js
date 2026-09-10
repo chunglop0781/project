@@ -294,3 +294,20 @@ setTimeout(function() {
         }, 500);
     }
 }, 100);
+
+// =============================================================
+// ✅ BỔ SUNG: CHECKBOX "CHỌN TẤT CẢ" - TRANG DANH SÁCH TOUR
+// (Không đụng vào listener checkAllCategories phía trên,
+// chỉ thêm mới cho checkbox #checkAllTours ở tour-list.pug)
+// =============================================================
+document.addEventListener('DOMContentLoaded', function() {
+    var checkAllTours = document.getElementById('checkAllTours');
+    if (checkAllTours) {
+        checkAllTours.addEventListener('change', function() {
+            var checkboxes = document.querySelectorAll('input[name="ids"]');
+            checkboxes.forEach(function(cb) {
+                cb.checked = checkAllTours.checked;
+            });
+        });
+    }
+});

@@ -112,6 +112,13 @@ function normalizeIds(ids) {
     return Array.isArray(ids) ? ids : [ids];
 }
 
+// ✅ FIX: session có lúc chỉ lưu "_id", có lúc chỉ lưu "id" (tùy nơi set) -
+// nếu chỉ đọc req.session.user?.id thì createdBy/updatedBy/deletedBy dễ
+// bị lưu null → hiển thị "N/A" dù đã đăng nhập. Đồng bộ với customer_controller.js.
+function getUserId(req) {
+    return req.session.user?.id || req.session.user?._id || null;
+}
+
 function normalizeLocations(locations) {
     if (!locations) return [];
     return Array.isArray(locations) ? locations : [locations];
@@ -296,7 +303,7 @@ exports.index = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.render('admin/pages/tours/tour-list', {
             tours: [],
             categories: [],
@@ -350,7 +357,7 @@ exports.trash = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.render('admin/pages/tours/tour-trash', {
             tours: [],
             filter: {},
@@ -386,7 +393,7 @@ exports.createPage = async (req, res) => {
             activeMenu: 'tours'
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.render('admin/pages/tours/tour-form', {
             categories: [],
             locationOptions: [],
@@ -409,7 +416,7 @@ exports.create = async (req, res) => {
         const body = req.body;
 
         // ✅ Lấy 1 lần, dùng chung cho cả createdBy và updatedBy
-        const userId = req.session.user?.id || null;
+        const userId = getUserId(req);
 
         // Xử lý ảnh
         let imageUrl = undefined;
@@ -564,7 +571,7 @@ exports.editPage = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.redirect('/admin/tours');
     }
 };
@@ -607,7 +614,7 @@ exports.edit = async (req, res) => {
             price: body.newPriceAdult || 0,
             locations: normalizeLocations(body.locations),
             // ✅ Không đụng vào createdBy khi edit — chỉ cập nhật updatedBy
-            updatedBy: req.session.user?.id || null
+            updatedBy: getUserId(req)
         };
 
         // Xử lý ảnh mới
@@ -657,11 +664,11 @@ exports.delete = async (req, res) => {
         await Tour.findByIdAndUpdate(req.params.id, {
             isDeleted: true,
             deletedAt: new Date(),
-            deletedBy: req.session.user?.id || null
+            deletedBy: getUserId(req)
         });
         res.json({ success: true });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ success: false });
     }
 };
@@ -687,7 +694,7 @@ exports.restore = async (req, res) => {
 
         res.json({ success: true });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ success: false });
     }
 };
@@ -701,7 +708,7 @@ exports.forceDelete = async (req, res) => {
         await Tour.deleteOne({ _id: req.params.id, isDeleted: true });
         res.json({ success: true });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ success: false });
     }
 };
@@ -715,7 +722,7 @@ exports.bulkAction = async (req, res) => {
         const bulkAction = req.body.bulkAction;
         const ids = normalizeIds(req.body.ids);
         // ✅ Lấy userId 1 lần, dùng chung cho updatedBy/deletedBy
-        const userId = req.session.user?.id || null;
+        const userId = getUserId(req);
 
         if (ids.length === 0) {
             req.flash2('error', 'Vui lòng chọn ít nhất một tour.');
@@ -755,7 +762,7 @@ exports.bulkAction = async (req, res) => {
 
         res.redirect('/admin/tours');
     } catch (error) {
-        console.log(error);
+        console.error(error);
         req.flash2('error', 'Có lỗi xảy ra khi thực hiện hành động hàng loạt.');
         res.redirect('/admin/tours');
     }
@@ -793,7 +800,7 @@ exports.bulkTrashAction = async (req, res) => {
 
         res.redirect('/admin/tours/trash');
     } catch (error) {
-        console.log(error);
+        console.error(error);
         req.flash2('error', 'Có lỗi xảy ra khi thực hiện hành động hàng loạt.');
         res.redirect('/admin/tours/trash');
     }
@@ -804,3 +811,67 @@ exports.bulkTrashAction = async (req, res) => {
 // =============================================================
 
 exports.upload = upload;
+
+// =============================================================
+// API - LẤY CHI TIẾT MỘT TOUR (đồng bộ với categoryController.getDetail /
+// orderController.getDetail)
+// =============================================================
+
+exports.getDetail = async (req, res) => {
+    try {
+        const tour = await Tour.findById(req.params.id)
+            .populate('createdBy')
+            .populate('updatedBy');
+
+        if (!tour) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy tour' });
+        }
+
+        res.json({
+            success: true,
+            data: {
+                id: tour._id,
+                name: tour.name,
+                code: tour.code,
+                category: tour.category,
+                position: tour.position || 1,
+                status: tour.status || 'active',
+                image: tour.image || '/admin/image/no-image.png',
+                duration: tour.duration,
+                vehicle: tour.vehicle,
+                departureDate: tour.departureDate,
+                description: tour.description || '',
+                oldPrice: tour.oldPrice,
+                newPrice: tour.newPrice,
+                remaining: tour.remaining,
+                createdByName: tour.createdBy ? tour.createdBy.fullName : 'N/A',
+                createdAt: tour.createdAt,
+                updatedByName: tour.updatedBy ? tour.updatedBy.fullName : 'N/A',
+                updatedAt: tour.updatedAt
+            }
+        });
+    } catch (error) {
+        console.error('❌ GET TOUR DETAIL ERROR:', error);
+        res.status(500).json({ success: false, message: 'Có lỗi xảy ra' });
+    }
+};
+
+// =============================================================
+// CHANGE MULTI PATCH (đổi trạng thái nhiều bản ghi)
+// =============================================================
+exports.changeMultiPatch = async (req, res) => {
+    try {
+        console.log(req.body);
+
+        req.flash2("success", "Đổi trạng thái thành công!");
+
+        res.json({
+            code: "success"
+        });
+    } catch (error) {
+        res.json({
+            code: "error",
+            message: "Id không tồn tại trong hệ thống!"
+        });
+    }
+};

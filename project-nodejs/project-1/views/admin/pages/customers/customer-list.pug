@@ -381,12 +381,41 @@ block content
           option(value="active" selected=status === "active") Hoạt động
           option(value="inactive" selected=status === "inactive") Tạm dừng
 
+        -
+          // Format giá trị ngày hiển thị dd/mm/yyyy và giữ bản ISO (yyyy-mm-dd)
+          // để nạp vào input type="date" lúc focus (input date bắt buộc dùng ISO).
+          var formatDateDDMMYYYY = function (d) {
+            if (!d) return "";
+            var date = (d instanceof Date) ? d : new Date(d);
+            if (isNaN(date.getTime())) return "";
+            var dd = String(date.getDate()).padStart(2, "0");
+            var mm = String(date.getMonth() + 1).padStart(2, "0");
+            var yyyy = date.getFullYear();
+            return dd + "/" + mm + "/" + yyyy;
+          };
+          var formatDateISO = function (d) {
+            if (!d) return "";
+            var date = (d instanceof Date) ? d : new Date(d);
+            if (isNaN(date.getTime())) return "";
+            var dd = String(date.getDate()).padStart(2, "0");
+            var mm = String(date.getMonth() + 1).padStart(2, "0");
+            var yyyy = date.getFullYear();
+            return yyyy + "-" + mm + "-" + dd;
+          };
+          var fromDateValue = formatDateDDMMYYYY(fromDate);
+          var toDateValue = formatDateDDMMYYYY(toDate);
+          var fromDateISO = formatDateISO(fromDate);
+          var toDateISO = formatDateISO(toDate);
+
         input(
           type="text"
           name="fromDate"
           placeholder="dd/mm/yyyy"
-          value=fromDate
+          value=fromDateValue
+          data-iso=fromDateISO
           autocomplete="off"
+          onfocus="this.removeAttribute('placeholder'); this.type='date'; if(this.dataset.iso) this.value = this.dataset.iso;"
+          onblur="if(this.value){ this.dataset.iso = this.value; var p = this.value.split('-'); this.type='text'; this.value = p[2] + '/' + p[1] + '/' + p[0]; } else { this.type='text'; } this.setAttribute('placeholder','dd/mm/yyyy');"
         )
 
         span –
@@ -395,9 +424,16 @@ block content
           type="text"
           name="toDate"
           placeholder="dd/mm/yyyy"
-          value=toDate
+          value=toDateValue
+          data-iso=toDateISO
           autocomplete="off"
+          onfocus="this.removeAttribute('placeholder'); this.type='date'; if(this.dataset.iso) this.value = this.dataset.iso;"
+          onblur="if(this.value){ this.dataset.iso = this.value; var p = this.value.split('-'); this.type='text'; this.value = p[2] + '/' + p[1] + '/' + p[0]; } else { this.type='text'; } this.setAttribute('placeholder','dd/mm/yyyy');"
         )
+
+        button.admin-btn.admin-btn-primary(type="submit")
+          i.fas.fa-filter
+          |  Áp dụng
 
         a.admin-btn.admin-btn-outline(href="/admin/customers")
           i.fas.fa-rotate-left
@@ -425,7 +461,12 @@ block content
           option(value="deactivate") Tạm dừng
           option(value="delete") Xóa
 
-        button.admin-btn.admin-btn-primary(type="submit") Áp dụng
+        button.admin-btn.admin-btn-primary(
+          type="submit"
+          onclick="return confirm('Bạn có chắc muốn thực hiện hành động này với các khách hàng đã chọn?');"
+        )
+          i.fas.fa-bolt
+          |  Thực hiện
 
 
       .admin-table-wrap

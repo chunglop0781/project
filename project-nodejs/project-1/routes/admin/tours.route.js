@@ -20,6 +20,10 @@ router.post('/new', requireAdmin, tourController.upload.single('image'), tourCon
 // Bulk action (danh sách chính)
 router.post('/bulk', requireAdmin, tourController.bulkAction);
 
+// ✅ API - lấy chi tiết 1 tour (đặt TRƯỚC "/:id/edit" để tránh Express khớp
+// nhầm segment đầu "api" vào tham số ":id" của các route bên dưới)
+router.get('/api/:id', requireAdmin, tourController.getDetail);
+
 // Sửa tour
 router.get('/:id/edit', requireAdmin, tourController.editPage);
 router.post('/:id/edit', requireAdmin, tourController.upload.single('image'), tourController.edit);

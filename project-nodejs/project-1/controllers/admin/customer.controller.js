@@ -104,6 +104,15 @@ function parseVNDate(str) {
     return isNaN(date.getTime()) ? null : date;
 }
 
+function normalizeIds(ids) {
+    if (!ids) return [];
+    return Array.isArray(ids) ? ids : [ids];
+}
+
+function getUserId(req) {
+    return req.session.user?.id || req.session.user?._id || null;
+}
+
 // =============================================================
 // DANH SÁCH KHÁCH HÀNG
 // =============================================================
@@ -116,7 +125,8 @@ exports.index = async (req, res) => {
         const toDate = (req.query.toDate || '').trim();
         const page = parseInt(req.query.page) || 1;
 
-        const filter = { role: 'customer' };
+        // ✅ Chỉ lấy khách hàng chưa bị xóa mềm (giống categories/tours)
+        const filter = { role: 'customer', isDeleted: { $ne: true } };
 
         if (keyword) {
             filter.$or = [
@@ -201,8 +211,11 @@ exports.index = async (req, res) => {
             baseUrl,
             keyword,
             status,
-            fromDate,
-            toDate,
+            // ✅ FIX: truyền Date đã parse (from/to) thay vì chuỗi "dd/mm/yyyy" thô,
+            // vì new Date("dd/mm/yyyy") trong view bị hiểu nhầm thành mm/dd/yyyy
+            // -> Invalid Date -> ô ngày hiển thị trống sau khi submit lọc.
+            fromDate: from,
+            toDate: to,
             pageTitle: 'Quản Lý Khách Hàng'
         });
 
@@ -229,7 +242,7 @@ exports.index = async (req, res) => {
 
 exports.detail = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findOne({ _id: req.params.id, role: 'customer', isDeleted: { $ne: true } });
 
         if (!user) {
             return res.redirect('/admin/customers');
@@ -288,7 +301,7 @@ exports.detail = async (req, res) => {
 
 exports.editPage = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findOne({ _id: req.params.id, role: 'customer', isDeleted: { $ne: true } });
 
         if (!user) {
             return res.redirect('/admin/customers');
@@ -301,12 +314,15 @@ exports.editPage = async (req, res) => {
             email: user.email,
             address: user.address || '',
             avatar: user.avatar || '/admin/image/no-image.png',
-            status: user.status || 'active'
+            status: user.status || 'active',
+            role: user.role || 'customer'
         };
 
         res.render('admin/pages/customers/customer-edit', {
             activeMenu: 'customers',
             customer,
+            // ✅ Chỉ admin mới được phép sửa role (kiểm tra thêm ở view lẫn controller.edit)
+            currentUserRole: req.session.user?.role || null,
             pageTitle: 'Sửa Khách Hàng'
         });
 
@@ -335,8 +351,8 @@ exports.edit = async (req, res) => {
         console.log('  - File:', req.file);
         console.log('========================================');
 
-        // Kiểm tra user tồn tại
-        const existingUser = await User.findById(userId);
+        // Kiểm tra user tồn tại (và chưa bị xóa)
+        const existingUser = await User.findOne({ _id: userId, role: 'customer', isDeleted: { $ne: true } });
         if (!existingUser) {
             return res.redirect('/admin/customers');
         }
@@ -347,8 +363,16 @@ exports.edit = async (req, res) => {
             email: body.email,
             address: body.address || '',
             status: body.status === 'inactive' ? 'inactive' : 'active',
-            updatedBy: req.session.user?._id || null
+            updatedBy: getUserId(req)
         };
+
+        // ✅ CHỈ ADMIN MỚI ĐƯỢC PHÉP SỬA ROLE
+        // (cho phép gán một role mới chưa từng tồn tại trong hệ thống,
+        // miễn schema User.role không giới hạn bằng enum cố định)
+        const currentUserRole = req.session.user?.role;
+        if (currentUserRole === 'admin' && typeof body.role === 'string' && body.role.trim()) {
+            updateData.role = body.role.trim();
+        }
 
         // Xử lý upload ảnh đại diện
         let avatarUrl = null;
@@ -384,51 +408,239 @@ exports.edit = async (req, res) => {
 
         await User.findByIdAndUpdate(userId, updateData);
 
-        req.session.success = 'Cập nhật khách hàng thành công!';
+        req.flash2('success', 'Cập nhật khách hàng thành công!');
         res.redirect('/admin/customers/' + userId);
 
     } catch (error) {
         console.error('❌ UPDATE CUSTOMER ERROR:', error);
+        req.flash2('error', 'Có lỗi xảy ra khi cập nhật khách hàng.');
         res.redirect('/admin/customers/' + req.params.id + '/edit');
     }
 };
 
 // =============================================================
-// HÀNH ĐỘNG HÀNG LOẠT
+// HÀNH ĐỘNG HÀNG LOẠT (danh sách chính)
 // =============================================================
 
 exports.bulkAction = async (req, res) => {
     try {
-        const action = req.body.action;
-        let ids = req.body.ids || [];
-        if (!Array.isArray(ids)) ids = [ids];
+        // Chấp nhận cả "bulkAction" (chuẩn giống categories/tours) lẫn "action" (tên cũ) để không phá view hiện tại
+        const bulkAction = req.body.bulkAction || req.body.action;
+        const ids = normalizeIds(req.body.ids);
+        const userId = getUserId(req);
 
-        if (ids.length) {
-            if (action === 'activate') {
-                await User.updateMany({ _id: { $in: ids }, role: 'customer' }, { status: 'active' });
-            } else if (action === 'deactivate') {
-                await User.updateMany({ _id: { $in: ids }, role: 'customer' }, { status: 'inactive' });
-            } else if (action === 'delete') {
-                await User.deleteMany({ _id: { $in: ids }, role: 'customer' });
-            }
+        if (ids.length === 0) {
+            req.flash2('error', 'Vui lòng chọn ít nhất một khách hàng.');
+            return res.redirect('/admin/customers');
         }
+
+        switch (bulkAction) {
+            case 'activate':
+                await User.updateMany(
+                    { _id: { $in: ids }, role: 'customer' },
+                    { status: 'active', updatedBy: userId }
+                );
+                req.flash2('success', `Đã kích hoạt ${ids.length} khách hàng.`);
+                break;
+            case 'deactivate':
+                await User.updateMany(
+                    { _id: { $in: ids }, role: 'customer' },
+                    { status: 'inactive', updatedBy: userId }
+                );
+                req.flash2('success', `Đã tạm dừng ${ids.length} khách hàng.`);
+                break;
+            case 'delete':
+                await User.updateMany(
+                    { _id: { $in: ids }, role: 'customer' },
+                    { isDeleted: true, deletedAt: new Date(), deletedBy: userId }
+                );
+                req.flash2('success', `Đã chuyển ${ids.length} khách hàng vào thùng rác.`);
+                break;
+            default:
+                req.flash2('error', 'Hành động không hợp lệ.');
+                break;
+        }
+
+        res.redirect('/admin/customers');
     } catch (error) {
-        console.log(error);
+        console.error('❌ CUSTOMER BULK ACTION ERROR:', error);
+        req.flash2('error', 'Có lỗi xảy ra khi thực hiện hành động hàng loạt.');
+        res.redirect('/admin/customers');
     }
-    res.redirect('back');
 };
 
 // =============================================================
-// XÓA KHÁCH HÀNG
+// XÓA MỀM (Chuyển vào thùng rác) - TRẢ VỀ JSON
 // =============================================================
 
 exports.delete = async (req, res) => {
     try {
-        await User.findOneAndDelete({ _id: req.params.id, role: 'customer' });
-        res.json({ success: true });
+        const userId = getUserId(req);
+        const customer = await User.findOneAndUpdate(
+            { _id: req.params.id, role: 'customer' },
+            {
+                isDeleted: true,
+                deletedAt: new Date(),
+                deletedBy: userId
+            },
+            { new: true }
+        );
+
+        if (!customer) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy khách hàng!' });
+        }
+
+        res.status(200).json({ success: true, message: 'Đã chuyển khách hàng vào thùng rác!' });
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ success: false });
+        console.error('❌ DELETE CUSTOMER ERROR:', error);
+        res.status(500).json({ success: false, message: 'Xóa thất bại!' });
+    }
+};
+
+// =============================================================
+// THÙNG RÁC KHÁCH HÀNG - DANH SÁCH
+// =============================================================
+
+exports.trash = async (req, res) => {
+    try {
+        const keyword = (req.query.keyword || '').trim();
+        const page = parseInt(req.query.page) || 1;
+
+        const filter = { role: 'customer', isDeleted: true };
+        if (keyword) {
+            filter.$or = [
+                { fullName: { $regex: keyword, $options: 'i' } },
+                { phone: { $regex: keyword, $options: 'i' } },
+                { email: { $regex: keyword, $options: 'i' } }
+            ];
+        }
+
+        const totalCustomers = await User.countDocuments(filter);
+        const totalPages = Math.max(Math.ceil(totalCustomers / PAGE_SIZE), 1);
+        const currentPage = Math.min(Math.max(page, 1), totalPages);
+
+        const usersRaw = await User.find(filter)
+            .populate('deletedBy')
+            .sort({ deletedAt: -1 })
+            .skip((currentPage - 1) * PAGE_SIZE)
+            .limit(PAGE_SIZE);
+
+        const customers = usersRaw.map(function (user) {
+            return {
+                id: user._id,
+                name: user.fullName,
+                phone: user.phone || '',
+                email: user.email,
+                avatar: user.avatar || '/admin/image/no-image.png',
+                status: user.status || 'active',
+                statusLabel: USER_STATUS_LABELS[user.status] || USER_STATUS_LABELS.active,
+                deletedByName: user.deletedBy ? user.deletedBy.fullName : 'N/A',
+                deletedAt: user.deletedAt ? new Date(user.deletedAt).toLocaleString('vi-VN') : ''
+            };
+        });
+
+        const baseUrl = keyword
+            ? '/admin/customers/trash?keyword=' + encodeURIComponent(keyword)
+            : '/admin/customers/trash?';
+
+        res.render('admin/pages/customers/customer-trash', {
+            activeMenu: 'customers',
+            customers,
+            filter: { keyword },
+            currentPage,
+            totalPages,
+            baseUrl,
+            pageTitle: 'Thùng Rác Khách Hàng'
+        });
+    } catch (error) {
+        console.error('❌ CUSTOMER TRASH ERROR:', error);
+        res.render('admin/pages/customers/customer-trash', {
+            activeMenu: 'customers',
+            customers: [],
+            filter: {},
+            currentPage: 1,
+            totalPages: 1,
+            baseUrl: '/admin/customers/trash?',
+            pageTitle: 'Thùng Rác Khách Hàng'
+        });
+    }
+};
+
+// =============================================================
+// KHÔI PHỤC TỪ THÙNG RÁC
+// =============================================================
+
+exports.restore = async (req, res) => {
+    try {
+        const customer = await User.findOneAndUpdate(
+            { _id: req.params.id, role: 'customer' },
+            {
+                $set: { isDeleted: false },
+                $unset: { deletedAt: '', deletedBy: '' }
+            },
+            { new: true }
+        );
+
+        if (!customer) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy khách hàng!' });
+        }
+
+        res.status(200).json({ success: true, message: 'Khôi phục thành công!' });
+    } catch (error) {
+        console.error('❌ RESTORE CUSTOMER ERROR:', error);
+        res.status(500).json({ success: false, message: 'Khôi phục thất bại!' });
+    }
+};
+
+// =============================================================
+// XÓA VĨNH VIỄN
+// =============================================================
+
+exports.forceDelete = async (req, res) => {
+    try {
+        const result = await User.deleteOne({ _id: req.params.id, role: 'customer', isDeleted: true });
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy khách hàng!' });
+        }
+        res.status(200).json({ success: true, message: 'Xóa vĩnh viễn thành công!' });
+    } catch (error) {
+        console.error('❌ FORCE DELETE CUSTOMER ERROR:', error);
+        res.status(500).json({ success: false, message: 'Xóa vĩnh viễn thất bại!' });
+    }
+};
+
+// =============================================================
+// HÀNH ĐỘNG HÀNG LOẠT TRONG THÙNG RÁC
+// =============================================================
+
+exports.bulkTrashAction = async (req, res) => {
+    try {
+        const bulkAction = req.body.bulkAction;
+        const ids = normalizeIds(req.body.ids);
+
+        if (ids.length === 0) {
+            req.flash2('error', 'Vui lòng chọn ít nhất một khách hàng.');
+            return res.redirect('/admin/customers/trash');
+        }
+
+        if (bulkAction === 'restore') {
+            await User.updateMany(
+                { _id: { $in: ids }, role: 'customer' },
+                { $set: { isDeleted: false }, $unset: { deletedAt: '', deletedBy: '' } }
+            );
+            req.flash2('success', `Đã khôi phục ${ids.length} khách hàng.`);
+        } else if (bulkAction === 'delete') {
+            await User.deleteMany({ _id: { $in: ids }, role: 'customer' });
+            req.flash2('success', `Đã xóa vĩnh viễn ${ids.length} khách hàng.`);
+        } else {
+            req.flash2('error', 'Hành động không hợp lệ.');
+        }
+
+        res.redirect('/admin/customers/trash');
+    } catch (error) {
+        console.error('❌ CUSTOMER BULK TRASH ACTION ERROR:', error);
+        req.flash2('error', 'Có lỗi xảy ra khi thực hiện hành động hàng loạt.');
+        res.redirect('/admin/customers/trash');
     }
 };
 
@@ -437,3 +649,23 @@ exports.delete = async (req, res) => {
 // =============================================================
 
 exports.upload = upload;
+
+// =============================================================
+// CHANGE MULTI PATCH (đổi trạng thái nhiều bản ghi)
+// =============================================================
+exports.changeMultiPatch = async (req, res) => {
+    try {
+        console.log(req.body);
+
+        req.flash2("success", "Đổi trạng thái thành công!");
+
+        res.json({
+            code: "success"
+        });
+    } catch (error) {
+        res.json({
+            code: "error",
+            message: "Id không tồn tại trong hệ thống!"
+        });
+    }
+};

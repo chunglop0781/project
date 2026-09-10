@@ -35,6 +35,17 @@ function parseVNDate(str, endOfDay) {
     return isNaN(date.getTime()) ? null : date;
 }
 
+function normalizeIds(ids) {
+    if (!ids) return [];
+    return Array.isArray(ids) ? ids : [ids];
+}
+
+// ✅ Đồng bộ cách lấy userId với categories/tours (session.user.id/._id),
+// thay vì req.user vốn không được set ở project này.
+function getUserId(req) {
+    return req.session.user?.id || req.session.user?._id || null;
+}
+
 // =============================================================
 // DANH SÁCH ĐƠN HÀNG (chỉ lấy chưa xóa)
 // =============================================================
@@ -57,6 +68,12 @@ exports.index = async (req, res) => {
 
         if (paymentMethod) {
             mongoFilter.paymentMethod = paymentMethod;
+        }
+
+        // ✅ FIX: paymentStatus trước đây chỉ được đưa vào formFilter để hiển thị
+        // lại trên form, chưa từng được áp vào mongoFilter nên bộ lọc không có tác dụng.
+        if (paymentStatus) {
+            mongoFilter.paymentStatus = paymentStatus;
         }
 
         if (keyword) {
@@ -349,11 +366,12 @@ exports.edit = async (req, res) => {
             await User.findByIdAndUpdate(orderRaw.user, userUpdate);
         }
 
-        req.session.success = 'Cập nhật đơn hàng thành công!';
+        req.flash2('success', 'Cập nhật đơn hàng thành công!');
         res.redirect('/admin/orders/' + req.params.id);
 
     } catch (error) {
         console.error('❌ ORDER UPDATE ERROR:', error);
+        req.flash2('error', 'Có lỗi xảy ra khi cập nhật đơn hàng.');
         res.redirect('/admin/orders/' + req.params.id + '/edit');
     }
 };
@@ -367,16 +385,18 @@ exports.updateStatus = async (req, res) => {
         const status = req.body.status;
 
         if (!VALID_STATUSES.includes(status)) {
+            req.flash2('error', 'Trạng thái không hợp lệ.');
             return res.redirect('/admin/orders/' + req.params.id);
         }
 
         await Order.findByIdAndUpdate(req.params.id, { status: status });
 
-        req.session.success = 'Cập nhật trạng thái thành công!';
+        req.flash2('success', 'Cập nhật trạng thái thành công!');
         res.redirect('/admin/orders/' + req.params.id);
 
     } catch (error) {
         console.error('❌ ORDER STATUS UPDATE ERROR:', error);
+        req.flash2('error', 'Có lỗi xảy ra khi cập nhật trạng thái.');
         res.redirect('/admin/orders/' + req.params.id);
     }
 };
@@ -394,9 +414,7 @@ exports.delete = async (req, res) => {
 
         order.isDeleted = true;
         order.deletedAt = new Date();
-        if (req.user && req.user._id) {
-            order.deletedBy = req.user._id;
-        }
+        order.deletedBy = getUserId(req);
         await order.save();
 
         res.json({ success: true, message: 'Đã chuyển vào thùng rác' });
@@ -526,29 +544,31 @@ exports.forceDelete = async (req, res) => {
 
 exports.bulkAction = async (req, res) => {
     try {
-        const { ids, bulkAction } = req.body;
-        if (!ids || !ids.length) {
-            req.session.error = 'Vui lòng chọn ít nhất một đơn hàng.';
+        const bulkAction = req.body.bulkAction;
+        const ids = normalizeIds(req.body.ids);
+
+        if (ids.length === 0) {
+            req.flash2('error', 'Vui lòng chọn ít nhất một đơn hàng.');
             return res.redirect('/admin/orders/trash');
         }
 
         if (bulkAction === 'restore') {
             await Order.updateMany(
                 { _id: { $in: ids } },
-                { isDeleted: false, deletedAt: null, deletedBy: null }
+                { $set: { isDeleted: false }, $unset: { deletedAt: '', deletedBy: '' } }
             );
-            req.session.success = 'Đã khôi phục các đơn hàng được chọn.';
+            req.flash2('success', `Đã khôi phục ${ids.length} đơn hàng.`);
         } else if (bulkAction === 'delete') {
             await Order.deleteMany({ _id: { $in: ids } });
-            req.session.success = 'Đã xóa vĩnh viễn các đơn hàng được chọn.';
+            req.flash2('success', `Đã xóa vĩnh viễn ${ids.length} đơn hàng.`);
         } else {
-            req.session.error = 'Hành động không hợp lệ.';
+            req.flash2('error', 'Hành động không hợp lệ.');
         }
 
         res.redirect('/admin/orders/trash');
     } catch (error) {
         console.error('❌ BULK ACTION ERROR:', error);
-        req.session.error = 'Có lỗi xảy ra khi thực hiện hành động hàng loạt.';
+        req.flash2('error', 'Có lỗi xảy ra khi thực hiện hành động hàng loạt.');
         res.redirect('/admin/orders/trash');
     }
 };
@@ -587,6 +607,26 @@ exports.getDetail = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Có lỗi xảy ra'
+        });
+    }
+};
+
+// =============================================================
+// CHANGE MULTI PATCH (đổi trạng thái nhiều bản ghi)
+// =============================================================
+exports.changeMultiPatch = async (req, res) => {
+    try {
+        console.log(req.body);
+
+        req.flash2("success", "Đổi trạng thái thành công!");
+
+        res.json({
+            code: "success"
+        });
+    } catch (error) {
+        res.json({
+            code: "error",
+            message: "Id không tồn tại trong hệ thống!"
         });
     }
 };

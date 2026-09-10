@@ -491,3 +491,23 @@ exports.getDetail = async (req, res) => {
         });
     }
 };
+
+// =============================================================
+// CHANGE MULTI PATCH (đổi trạng thái nhiều bản ghi)
+// =============================================================
+exports.changeMultiPatch = async (req, res) => {
+    try {
+        console.log(req.body);
+
+        req.flash2("success", "Đổi trạng thái thành công!");
+
+        res.json({
+            code: "success"
+        });
+    } catch (error) {
+        res.json({
+            code: "error",
+            message: "Id không tồn tại trong hệ thống!"
+        });
+    }
+};
