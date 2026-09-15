@@ -13,6 +13,48 @@ const STATUS_LABELS = {
 };
 
 // =============================================================
+// DANH SÁCH ĐỊA ĐIỂM (34 tỉnh/thành sau sáp nhập) - dùng chung
+// cho tour-form.pug (checkbox "Những địa điểm có tour")
+// =============================================================
+
+const LOCATION_OPTIONS = [
+    { value: 'cao-bang', label: 'Cao Bằng' },
+    { value: 'son-la', label: 'Sơn La' },
+    { value: 'lai-chau', label: 'Lai Châu' },
+    { value: 'lang-son', label: 'Lạng Sơn' },
+    { value: 'tuyen-quang', label: 'Tuyên Quang' },
+    { value: 'lao-cai', label: 'Lào Cai' },
+    { value: 'thai-nguyen', label: 'Thái Nguyên' },
+    { value: 'dien-bien', label: 'Điện Biên' },
+    { value: 'phu-tho', label: 'Phú Thọ' },
+    { value: 'bac-ninh', label: 'Bắc Ninh' },
+    { value: 'ha-noi', label: 'Hà Nội' },
+    { value: 'quang-ninh', label: 'Quảng Ninh' },
+    { value: 'hai-phong', label: 'Hải Phòng' },
+    { value: 'hung-yen', label: 'Hưng Yên' },
+    { value: 'ninh-binh', label: 'Ninh Bình' },
+    { value: 'thanh-hoa', label: 'Thanh Hóa' },
+    { value: 'nghe-an', label: 'Nghệ An' },
+    { value: 'ha-tinh', label: 'Hà Tĩnh' },
+    { value: 'quang-tri', label: 'Quảng Trị' },
+    { value: 'hue', label: 'Huế' },
+    { value: 'da-nang', label: 'Đà Nẵng' },
+    { value: 'quang-ngai', label: 'Quảng Ngãi' },
+    { value: 'gia-lai', label: 'Gia Lai' },
+    { value: 'dak-lak', label: 'Đắk Lắk' },
+    { value: 'khanh-hoa', label: 'Khánh Hòa' },
+    { value: 'lam-dong', label: 'Lâm Đồng' },
+    { value: 'dong-nai', label: 'Đồng Nai' },
+    { value: 'ho-chi-minh', label: 'TP. Hồ Chí Minh' },
+    { value: 'tay-ninh', label: 'Tây Ninh' },
+    { value: 'dong-thap', label: 'Đồng Tháp' },
+    { value: 'vinh-long', label: 'Vĩnh Long' },
+    { value: 'can-tho', label: 'Cần Thơ' },
+    { value: 'an-giang', label: 'An Giang' },
+    { value: 'ca-mau', label: 'Cà Mau' }
+];
+
+// =============================================================
 // CẤU HÌNH GITHUB
 // =============================================================
 
@@ -377,14 +419,6 @@ exports.trash = async (req, res) => {
 exports.createPage = async (req, res) => {
     try {
         const categories = await getCategoryTreeForSelect();
-        const LOCATION_OPTIONS = [
-            { value: 'ha-noi', label: 'Hà Nội' },
-            { value: 'da-nang', label: 'Đà Nẵng' },
-            { value: 'ho-chi-minh', label: 'Hồ Chí Minh' },
-            { value: 'nha-trang', label: 'Nha Trang' },
-            { value: 'da-lat', label: 'Đà Lạt' },
-            { value: 'phu-quoc', label: 'Phú Quốc' }
-        ];
 
         res.render('admin/pages/tours/tour-form', {
             categories,
@@ -494,14 +528,6 @@ exports.create = async (req, res) => {
         req.flash2('error', 'Có lỗi xảy ra khi tạo tour.');
 
         const categories = await getCategoryTreeForSelect();
-        const LOCATION_OPTIONS = [
-            { value: 'ha-noi', label: 'Hà Nội' },
-            { value: 'da-nang', label: 'Đà Nẵng' },
-            { value: 'ho-chi-minh', label: 'Hồ Chí Minh' },
-            { value: 'nha-trang', label: 'Nha Trang' },
-            { value: 'da-lat', label: 'Đà Lạt' },
-            { value: 'phu-quoc', label: 'Phú Quốc' }
-        ];
 
         res.render('admin/pages/tours/tour-form', {
             categories,
@@ -526,14 +552,6 @@ exports.editPage = async (req, res) => {
         }
 
         const categories = await getCategoryTreeForSelect();
-        const LOCATION_OPTIONS = [
-            { value: 'ha-noi', label: 'Hà Nội' },
-            { value: 'da-nang', label: 'Đà Nẵng' },
-            { value: 'ho-chi-minh', label: 'Hồ Chí Minh' },
-            { value: 'nha-trang', label: 'Nha Trang' },
-            { value: 'da-lat', label: 'Đà Lạt' },
-            { value: 'phu-quoc', label: 'Phú Quốc' }
-        ];
 
         const tour = {
             id: tourRaw._id,
