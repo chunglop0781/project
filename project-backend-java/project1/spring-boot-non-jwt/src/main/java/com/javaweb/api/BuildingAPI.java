@@ -6,13 +6,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.javaweb.model.BuildingDTO;
+
 import org.springframework.web.bind.annotation.PathVariable;
 
-import com.javaweb.Beans.BuildingDTO;
 //import com.sun.jdi.connect.spi.Connection;
 //import com.sun.tools.javac.util.List;
 import java.sql.Connection;
@@ -24,9 +27,10 @@ import customexception.FieldRequiredException;
 @RestController
 public class BuildingAPI {
 
-	static final String DB_URL = "jdbc:mysql://localhost:3306/estatebasic";
-	static final String USER = "root";
-	static final String PASS = "123456";
+    // ==== THÊM 3 HẰNG SỐ NÀY ĐỂ SỬA LỖI DB_URL, USER, PASS ====
+    public static final String DB_URL = "jdbc:mysql://localhost:3306/estatebasic";
+    public static final String USER = "root";
+    public static final String PASS = "123456";
 
 
 
@@ -63,35 +67,39 @@ public class BuildingAPI {
 //        return building;
 //    }
 	
-	
-	@PostMapping(value="/api/building/")
-	public List<BuildingDTO> getBuilding() {
-		String sql = "SELECT * FROM building";
-		List<BuildingDTO> result = new ArrayList<>();
-//		BuildingDTO building;
-		//	public Object getBuilding(@RequestBody BuildingDTO building) {
-	    //xu ly duoi DB xong roi
-//	    valiDate(building);
-		try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-				Statement stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(sql)) {   // <-- ĐÃ BỎ dấu ; thừa
-			while(rs.next()) {
-				
-			}
-			
-//		    System.out.println("Connected database successfully...");
-		} catch (SQLException e) {
-		    e.printStackTrace();
-		    System.out.println("Connected database failed...");
-		}
-	    return null;
+	@GetMapping(value="/api/building/")	
+//	@PostMapping(value="/api/building/")
+	public List<BuildingDTO> getBuilding(@RequestParam(name="name") String name) {
+		////	public List<BuildingDTO> getBuilding() {
+////		String sql = "SELECT * FROM building";
+//		String sql = "SELECT * FROM building b WHERE name like '%" + name + "%'";
+//		List<BuildingDTO> result = new ArrayList<>();
+////		BuildingDTO building;
+////	public Object getBuilding(@RequestBody BuildingDTO building) {
+//	    //xu ly duoi DB xong roi
+////	    valiDate(building);
+//		try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+//				Statement stmt = conn.createStatement();
+//				ResultSet rs = stmt.executeQuery(sql)) {   // <-- ĐÃ BỎ dấu ; thừa
+//			while(rs.next()) {
+//				
+//			}
+//			
+////		    System.out.println("Connected database successfully...");
+//		} catch (SQLException e) {
+//		    e.printStackTrace();
+//		    System.out.println("Connected database failed...");
+//		}
+	    // ==== THÊM DÒNG KHAI BÁO result ĐỂ SỬA LỖI "result cannot be resolved" ====
+	    List<BuildingDTO> result = new ArrayList<>();
+	    return result;
 	}
 
 
 	
 	
 	
-	public void valiDate(BuildingDTO buildingDTO) {
+	public void valiDate(BuildingDTO buildingDTO) throws FieldRequiredException { // ==== THÊM throws FieldRequiredException ====
 	    if(buildingDTO.getName() == null || buildingDTO.getName().equals("") || buildingDTO.getNumberOfBasement() == null) {
 	    	throw new FieldRequiredException("name or numberofbasement is null");
 	    }
