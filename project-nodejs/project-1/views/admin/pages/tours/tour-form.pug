@@ -627,6 +627,13 @@ block content
 
           .admin-form-group
 
+            label(for="info_tour") Thông tin tour
+
+            textarea#info_tour(name="info_tour")= (typeof tour !== "undefined" && tour) ? tour.info_tour : ""
+
+
+          .admin-form-group
+
             label Lịch trình tour
 
             #itineraryContainer
@@ -705,6 +712,45 @@ block scripts
     (function () {
 
       document.addEventListener('DOMContentLoaded', function () {
+
+        // ==========================================================
+        // TINYMCE - THÔNG TIN TOUR (info_tour)
+        // ==========================================================
+
+        tinymce.init({
+
+          selector: '#info_tour',
+
+          height: 300,
+
+          menubar: true,
+
+          plugins:
+            'lists link image table code',
+
+          toolbar:
+            'undo redo | blocks | bold italic underline strikethrough | ' +
+            'alignleft aligncenter alignright alignjustify | ' +
+            'bullist numlist | outdent indent | ' +
+            'link image table | code',
+
+          branding: false,
+
+          promotion: false,
+
+          statusbar: true,
+
+          setup: function (editor) {
+
+            editor.on('change keyup', function () {
+
+              editor.save();
+
+            });
+
+          }
+
+        });
 
         const container =
           document.getElementById('itineraryContainer');

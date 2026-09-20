@@ -7,6 +7,7 @@ const tourSchema = new mongoose.Schema({
     duration: String,       // vd: "3 ngày 2 đêm" - dùng ở order-detail.pug
     departureDate: Date,    // ngày khởi hành - dùng ở order-detail.pug
     description: String,
+    info_tour: String, 
     image: String,
 
     // giữ lại "price" cũ để không phá code cũ (order.model.js, order-detail.pug...)

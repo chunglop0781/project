@@ -1,3 +1,4 @@
+const moment = require('moment');
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
@@ -297,7 +298,7 @@ exports.index = async (req, res) => {
         const toursRaw = await Tour.find(filter)
             .populate('createdBy')
             .populate('updatedBy')
-            .sort({ position: 1, createdAt: -1 })
+            .sort({ position: -1, createdAt: -1 }) //position: -1 (=) position: desc, createdAt: -1 (=) createdAt: desc
             .skip((currentPage - 1) * PAGE_SIZE)
             .limit(PAGE_SIZE);
 
@@ -493,6 +494,7 @@ exports.create = async (req, res) => {
             vehicle: body.vehicle,
             departureDate: body.departureDate ? new Date(body.departureDate) : undefined,
             description: body.description,
+            info_tour: body.info_tour,
             image: imageUrl,
 
             oldPrice: {
@@ -566,6 +568,7 @@ exports.editPage = async (req, res) => {
                 ? tourRaw.departureDate.toISOString().slice(0, 10)
                 : '',
             description: tourRaw.description,
+            info_tour: tourRaw.info_tour,
             image: tourRaw.image,
             bookedCount: tourRaw.bookedCount,
             oldPriceAdult: tourRaw.oldPrice ? tourRaw.oldPrice.adult : 0,
@@ -612,6 +615,7 @@ exports.edit = async (req, res) => {
             vehicle: body.vehicle,
             departureDate: body.departureDate ? new Date(body.departureDate) : undefined,
             description: body.description,
+            info_tour: body.info_tour,
 
             oldPrice: {
                 adult: body.oldPriceAdult || 0,
@@ -859,6 +863,7 @@ exports.getDetail = async (req, res) => {
                 vehicle: tour.vehicle,
                 departureDate: tour.departureDate,
                 description: tour.description || '',
+                info_tour: tour.info_tour || '',
                 oldPrice: tour.oldPrice,
                 newPrice: tour.newPrice,
                 remaining: tour.remaining,
