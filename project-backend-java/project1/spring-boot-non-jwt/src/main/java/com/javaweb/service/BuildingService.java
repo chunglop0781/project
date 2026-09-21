@@ -6,5 +6,6 @@ import com.javaweb.model.BuildingDTO;
 import com.javaweb.repository.entity.BuildingEntity;
 
 public interface BuildingService {
-	public List<BuildingDTO> findAll(String name);
+	//abstract method
+	public List<BuildingDTO> findAll(String name, Long districtId);
 }

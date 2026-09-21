@@ -8,22 +8,28 @@ import org.springframework.stereotype.Service;
 import com.javaweb.model.BuildingDTO;
 import com.javaweb.repository.BuildingRepository;
 import com.javaweb.repository.entity.BuildingEntity;
+import com.javaweb.repository.impl.BuildingRepositoryImpl;
 import com.javaweb.service.BuildingService;
 
 @Service
 public class BuildingServiceImpl implements BuildingService{
     
-	private BuildingRepository buildingRepository;
+	private BuildingRepositoryImpl buildingRepository = new BuildingRepositoryImpl();
 	@Override
-	public List<BuildingDTO> findAll(String name) {
+	public List<BuildingDTO> findAll(String name, Long districtId) {
 	    // TODO Auto-generated method stub
-	    List<BuildingEntity> buildingEntities = buildingRepository.findAll(name);
+	    List<BuildingEntity> buildingEntities = buildingRepository.findAll(name, districtId);
+//	    buildingRepository.DeleteById(id);
 	    List<BuildingDTO> result = new ArrayList<BuildingDTO>();
 	    for(BuildingEntity item : buildingEntities) {
-	    	
+	    	BuildingDTO building = new BuildingDTO();
+	    	building.setName(item.getName());
+	    	building.setAddress(item.getStreet() + "," + item.getWard());
+	    	building.setNumberOfBasement(item.getNumberOfBasement());
+	    	result.add(building);
 	    }
 	    
-	    return null;
+	    return result;
 	}
 
 }
