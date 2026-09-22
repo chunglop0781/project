@@ -40,7 +40,8 @@ public class BuildingAPI {
 	private BuildingServiceImpl buildingService = new BuildingServiceImpl();
 	@GetMapping(value="/api/building/")
 	public List<BuildingDTO> getBuilding(@RequestParam(name="name", required = false) String name,
-										@RequestParam(name="districtid", required = false) Long district) {
+										@RequestParam(name="districtid", required = false) Long district,
+										@RequestParam(name="typeCode", required = false) List<String> typeCode) {
 		List<BuildingDTO> result = buildingService.findAll(name, district);
 //	    List<BuildingDTO> result = new ArrayList<>();
 	    return result;
