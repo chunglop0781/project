@@ -38,6 +38,7 @@ console.log('☁️ Cloudinary configured:', {
 const database = require('./config/database.config');
 const User = require('./models/user.model');
 const Category = require('./models/category.model');
+const Website = require('./models/website.model');   // 🆕 THÊM
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -159,7 +160,7 @@ app.use(async (req, res, next) => {
     next();
 });
 
-// ✅ FLASH MESSAGES - LẤY VÀ GÁN VÀO res.locals
+// ✅ FLASH MESSAGES - LẤY VÀ GẮN VÀO res.locals
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
@@ -167,7 +168,7 @@ app.use((req, res, next) => {
 });
 
 // =============================================================
-// 🆕 BỔ SUNG ALIAS CHO flash2 VÀ GÁN messages VÀO VIEW
+// 🆕 BỔ SUNG ALIAS CHO flash2 VÀ GẮN messages VÀO VIEW
 // =============================================================
 app.use((req, res, next) => {
     // Alias để controller gọi req.flash2('type', 'message')
@@ -177,6 +178,66 @@ app.use((req, res, next) => {
     // (sẽ dùng trong view: messages.info, messages.success, messages.error, ...)
     res.locals.messages = req.flash();
 
+    next();
+});
+
+// =============================================================
+// 🆕 LOAD WEBSITE INFO (logo, phone, email, address) CHO MỌI VIEW
+// =============================================================
+// Load 1 lần, cache 60 giây để tránh query DB mỗi request.
+// Admin có thể gọi req.app.locals.resetWebsiteCache() để xoá cache
+// ngay sau khi cập nhật website (để header hiển thị logo mới lập tức).
+// =============================================================
+
+const __websiteCache = {
+    data: null,
+    time: 0
+};
+const WEBSITE_CACHE_TTL = 60 * 1000; // 60 giây
+
+// Hàm reset cache — controller có thể gọi qua req.app.locals.resetWebsiteCache()
+app.locals.resetWebsiteCache = function () {
+    __websiteCache.data = null;
+    __websiteCache.time = 0;
+    console.log('🔄 Website cache đã được reset');
+};
+
+app.use(async (req, res, next) => {
+    try {
+        const now = Date.now();
+
+        // Nếu cache còn hạn → dùng luôn
+        if (__websiteCache.data && (now - __websiteCache.time) < WEBSITE_CACHE_TTL) {
+            res.locals.website = __websiteCache.data;
+            return next();
+        }
+
+        // Hết hạn → query DB
+        const website = await Website.findOne().lean();
+
+        // Fallback nếu DB chưa có data
+        __websiteCache.data = website || {
+            name: 'Website Du Lịch',
+            phone: '',
+            email: '',
+            address: '',
+            logo: '',
+            favicon: ''
+        };
+        __websiteCache.time = now;
+
+        res.locals.website = __websiteCache.data;
+    } catch (error) {
+        console.error('❌ Load website info error:', error.message);
+        res.locals.website = {
+            name: 'Website Du Lịch',
+            phone: '',
+            email: '',
+            address: '',
+            logo: '',
+            favicon: ''
+        };
+    }
     next();
 });
 
@@ -298,7 +359,8 @@ const startServer = async () => {
             path.join(__dirname, 'public/uploads/tours'),
             path.join(__dirname, 'public/uploads/news'),
             path.join(__dirname, 'public/uploads/profiles'),
-            path.join(__dirname, 'public/uploads/customers')
+            path.join(__dirname, 'public/uploads/customers'),
+            path.join(__dirname, 'public/uploads/website')
         ];
         uploadDirs.forEach(dir => {
             if (!fs.existsSync(dir)) {

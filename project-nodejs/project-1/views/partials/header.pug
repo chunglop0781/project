@@ -10,25 +10,31 @@ header.header
 
       .header-contact
 
-        a.contact-item(
-          href="tel:0123456789"
-        )
-          i.fas.fa-phone
-          span 0123.456.789
+        if website && website.phone
+
+          a.contact-item(
+            href="tel:" + website.phone
+          )
+            i.fas.fa-phone
+            span= website.phone
 
 
-        a.contact-item(
-          href="mailto:contact@28travel.com"
-        )
-          i.fas.fa-envelope
-          span contact@28travel.com
+        if website && website.email
+
+          a.contact-item(
+            href="mailto:" + website.email
+          )
+            i.fas.fa-envelope
+            span= website.email
 
 
-        span.contact-item
+        if website && website.address
 
-          i.fas.fa-map-marker-alt
+          span.contact-item
 
-          span Số 123, đường ABC, thành phố XYZ
+            i.fas.fa-map-marker-alt
+
+            span= website.address
 
 
   // =========================================================
@@ -61,10 +67,9 @@ header.header
       )
 
         img(
-          src="/assets/image/logo.png"
-          alt="Website Du Lịch"
+          src=website.logo
+          alt=website.name
         )
-
 
       // =======================================================
       // MENU

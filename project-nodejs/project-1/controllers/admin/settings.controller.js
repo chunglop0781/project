@@ -1,7 +1,92 @@
+// =============================================================
+// controllers/admin/settings.controller.js
+// =============================================================
+
 const Website = require('../../models/website.model');
 const User = require('../../models/user.model');
 const Role = require('../../models/role.model');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const axios = require('axios');
+
+
+// =============================================================
+// GITHUB CONFIG
+// =============================================================
+
+const GITHUB_CONFIG = {
+    owner: process.env.GITHUB_OWNER || 'chunglop0781',
+    repo: process.env.GITHUB_REPO || 'project-cache',
+    token: process.env.GITHUB_TOKEN,
+    branch: process.env.GITHUB_BRANCH || 'main',
+    path: process.env.GITHUB_WEBSITE_PATH
+        || 'project-nodejs/project-1/public/uploads/website/'
+};
+
+console.log('🐙 [SETTINGS] GITHUB_CONFIG loaded:', {
+    owner: GITHUB_CONFIG.owner,
+    repo: GITHUB_CONFIG.repo,
+    branch: GITHUB_CONFIG.branch,
+    path: GITHUB_CONFIG.path,
+    token: GITHUB_CONFIG.token ? '✅ có' : '❌ THIẾU'
+});
+
+
+// =============================================================
+// UPLOAD LÊN GITHUB
+// =============================================================
+
+async function uploadToGitHub(filePath, fileName) {
+    console.log('🐙 [GH] Bắt đầu upload:', fileName);
+
+    if (!fs.existsSync(filePath)) {
+        console.warn('⚠️ [GH] File not found:', filePath);
+        return null;
+    }
+    if (!process.env.GITHUB_TOKEN) {
+        console.warn('⚠️ [GH] GITHUB_TOKEN MISSING');
+        return null;
+    }
+
+    const fileBuffer = fs.readFileSync(filePath);
+    const contentBase64 = fileBuffer.toString('base64');
+    const githubPath = `${GITHUB_CONFIG.path}${fileName}`;
+    const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${githubPath}`;
+
+    console.log('🐙 [GH] URL   :', apiUrl);
+    console.log('🐙 [GH] Branch:', GITHUB_CONFIG.branch);
+    console.log('🐙 [GH] Size  :', fileBuffer.length, 'bytes');
+
+    try {
+        const response = await axios.put(
+            apiUrl,
+            {
+                message: `Upload website asset: ${fileName}`,
+                content: contentBase64,
+                branch: GITHUB_CONFIG.branch
+            },
+            {
+                headers: {
+                    Authorization: `token ${GITHUB_CONFIG.token}`,
+                    Accept: 'application/vnd.github.v3+json'
+                }
+            }
+        );
+
+        console.log('✅ [GH] OK:', response.data.content.download_url);
+        return response.data.content.download_url || response.data.content.html_url;
+    } catch (error) {
+        console.error('❌ [GH] FAILED');
+        console.error('   Status :', error.response?.status);
+        console.error('   Message:', error.response?.data?.message);
+        console.error('   Docs   :', error.response?.data?.documentation_url);
+        return null;
+    }
+}
+
+async function uploadImage(filePath, fileName) {
+    return await uploadToGitHub(filePath, fileName);
+}
 
 
 // =============================================================
@@ -13,62 +98,50 @@ const rolePermissions = [
         value: 'dashboard.view',
         label: 'Xem trang Tổng quan'
     },
-
     {
         value: 'categories.view',
         label: 'Xem danh mục'
     },
-
     {
         value: 'categories.create',
         label: 'Tạo danh mục'
     },
-
     {
         value: 'categories.edit',
         label: 'Sửa danh mục'
     },
-
     {
         value: 'categories.delete',
         label: 'Xóa danh mục'
     },
-
     {
         value: 'tours.view',
         label: 'Xem tour'
     },
-
     {
         value: 'tours.create',
         label: 'Tạo tour'
     },
-
     {
         value: 'tours.edit',
         label: 'Sửa tour'
     },
-
     {
         value: 'tours.delete',
         label: 'Xóa tour'
     },
-
     {
         value: 'orders.view',
         label: 'Xem đơn hàng'
     },
-
     {
         value: 'orders.create',
         label: 'Tạo đơn hàng'
     },
-
     {
         value: 'orders.edit',
         label: 'Sửa đơn hàng'
     },
-
     {
         value: 'orders.delete',
         label: 'Xóa đơn hàng'
@@ -78,13 +151,6 @@ const rolePermissions = [
 
 // =============================================================
 // ROLE HỢP LỆ
-// =============================================================
-//
-// customer       = tài khoản khách hàng bình thường
-// admin          = quản trị viên
-// tour-manager   = quản lý tour
-// order-manager  = quản lý đơn hàng
-//
 // =============================================================
 
 const allowedRoles = [
@@ -140,12 +206,10 @@ exports.accounts = async (req, res) => {
                 createdAt: -1
             });
 
-
         console.log(
             'ACCOUNTS FROM DATABASE:',
             accounts
         );
-
 
         res.render(
             'admin/pages/settings/accounts',
@@ -155,14 +219,12 @@ exports.accounts = async (req, res) => {
             }
         );
 
-
     } catch (error) {
 
         console.error(
             'LỖI LOAD ACCOUNTS:',
             error
         );
-
 
         res.status(500).render(
             'admin/pages/settings/accounts',
@@ -198,16 +260,6 @@ exports.accountsCreate = (req, res) => {
 // =============================================================
 // XỬ LÝ TẠO TÀI KHOẢN
 // =============================================================
-//
-// QUAN TRỌNG:
-//
-// Nếu không gửi role:
-//     => customer
-//
-// Nếu gửi role hợp lệ:
-//     => lưu role đó
-//
-// =============================================================
 
 exports.accountsCreatePost = async (req, res) => {
 
@@ -225,23 +277,18 @@ exports.accountsCreatePost = async (req, res) => {
             avatar
         } = req.body;
 
-
         // =====================================================
         // ROLE
         // =====================================================
 
         let userRole = 'customer';
 
-
         if (
             role &&
             allowedRoles.includes(role)
         ) {
-
             userRole = role;
-
         }
-
 
         // =====================================================
         // PASSWORD
@@ -256,14 +303,12 @@ exports.accountsCreatePost = async (req, res) => {
                 'admin/pages/settings/accounts-create',
                 {
                     activeMenu: 'settings',
-
                     error:
                         'Vui lòng nhập mật khẩu.'
                 }
             );
 
         }
-
 
         // =====================================================
         // HASH PASSWORD
@@ -274,7 +319,6 @@ exports.accountsCreatePost = async (req, res) => {
                 password,
                 10
             );
-
 
         // =====================================================
         // TẠO USER
@@ -312,21 +356,14 @@ exports.accountsCreatePost = async (req, res) => {
 
             });
 
-
         console.log(
             'TẠO ACCOUNT THÀNH CÔNG:',
             account
         );
 
-
-        // =====================================================
-        // REDIRECT
-        // =====================================================
-
         res.redirect(
             '/admin/settings/accounts'
         );
-
 
     } catch (error) {
 
@@ -335,10 +372,8 @@ exports.accountsCreatePost = async (req, res) => {
             error
         );
 
-
         let errorMessage =
             'Có lỗi xảy ra, vui lòng kiểm tra lại thông tin.';
-
 
         // =====================================================
         // EMAIL TRÙNG
@@ -347,12 +382,9 @@ exports.accountsCreatePost = async (req, res) => {
         if (
             error.code === 11000
         ) {
-
             errorMessage =
                 'Email này đã tồn tại trong hệ thống.';
-
         }
-
 
         res.status(500).render(
             'admin/pages/settings/accounts-create',
@@ -386,7 +418,6 @@ exports.accountsEdit = async (req, res) => {
 
             });
 
-
         if (!account) {
 
             return res.status(404).send(
@@ -394,7 +425,6 @@ exports.accountsEdit = async (req, res) => {
             );
 
         }
-
 
         res.render(
             'admin/pages/settings/accounts-edit',
@@ -404,14 +434,12 @@ exports.accountsEdit = async (req, res) => {
             }
         );
 
-
     } catch (error) {
 
         console.error(
             'LỖI ACCOUNT EDIT:',
             error
         );
-
 
         res.status(500).send(
             'Lỗi khi tải tài khoản.'
@@ -436,7 +464,6 @@ exports.accountsEditPost = async (req, res) => {
 
         let userRole = req.body.role;
 
-
         // =====================================================
         // NẾU ROLE KHÔNG HỢP LỆ
         // => GIỮ ADMIN
@@ -446,11 +473,8 @@ exports.accountsEditPost = async (req, res) => {
             !userRole ||
             !allowedRoles.includes(userRole)
         ) {
-
             userRole = 'admin';
-
         }
-
 
         // =====================================================
         // DATA CẦN UPDATE
@@ -484,7 +508,6 @@ exports.accountsEditPost = async (req, res) => {
 
         };
 
-
         // =====================================================
         // PASSWORD
         // =====================================================
@@ -493,15 +516,12 @@ exports.accountsEditPost = async (req, res) => {
             req.body.password &&
             req.body.password.trim() !== ''
         ) {
-
             updateData.password =
                 await bcrypt.hash(
                     req.body.password,
                     10
                 );
-
         }
-
 
         // =====================================================
         // UPDATE DATABASE
@@ -528,7 +548,6 @@ exports.accountsEditPost = async (req, res) => {
 
             );
 
-
         if (!account) {
 
             return res.status(404).send(
@@ -537,21 +556,14 @@ exports.accountsEditPost = async (req, res) => {
 
         }
 
-
         console.log(
             'ACCOUNT UPDATED:',
             account
         );
 
-
-        // =====================================================
-        // REDIRECT
-        // =====================================================
-
         res.redirect(
             '/admin/settings/accounts'
         );
-
 
     } catch (error) {
 
@@ -560,20 +572,15 @@ exports.accountsEditPost = async (req, res) => {
             error
         );
 
-
         let errorMessage =
             'Lỗi khi cập nhật tài khoản.';
-
 
         if (
             error.code === 11000
         ) {
-
             errorMessage =
                 'Email này đã tồn tại trong hệ thống.';
-
         }
-
 
         res.status(500).send(
             errorMessage
@@ -603,7 +610,6 @@ exports.accountsDelete = async (req, res) => {
 
             });
 
-
         if (!account) {
 
             return res.status(404).send(
@@ -612,17 +618,14 @@ exports.accountsDelete = async (req, res) => {
 
         }
 
-
         console.log(
             'ACCOUNT DELETED:',
             account.email
         );
 
-
         res.redirect(
             '/admin/settings/accounts'
         );
-
 
     } catch (error) {
 
@@ -630,7 +633,6 @@ exports.accountsDelete = async (req, res) => {
             'LỖI DELETE ACCOUNT:',
             error
         );
-
 
         res.status(500).send(
             'Lỗi khi xóa tài khoản.'
@@ -652,7 +654,6 @@ exports.website = async (req, res) => {
         const website =
             await Website.findOne();
 
-
         res.render(
             'admin/pages/settings/settings-website',
             {
@@ -661,14 +662,12 @@ exports.website = async (req, res) => {
             }
         );
 
-
     } catch (error) {
 
         console.error(
             'LỖI LOAD WEBSITE:',
             error
         );
-
 
         res.status(500).render(
             'admin/pages/settings/settings-website',
@@ -686,114 +685,118 @@ exports.website = async (req, res) => {
 
 
 // =============================================================
-// XỬ LÝ CẬP NHẬT WEBSITE
+// XỬ LÝ CẬP NHẬT WEBSITE (UPLOAD LOGO + FAVICON LÊN GITHUB)
 // =============================================================
 
 exports.updateWebsite = async (req, res) => {
-
     try {
+        // ===== DEBUG =====
+        console.log('🔍 UPDATE WEBSITE CALLED');
+        console.log('   req.files keys:', req.files ? Object.keys(req.files) : 'KHÔNG CÓ');
+        console.log('   logo file:', req.files?.logo?.[0]?.filename || 'không có');
+        console.log('   favicon file:', req.files?.favicon?.[0]?.filename || 'không có');
+        // =================
 
-        const {
-            name,
-            phone,
-            email,
-            address
-        } = req.body;
+        const { name, phone, email, address } = req.body;
+        const update = { name, phone, email, address };
 
+        // Mảng gom thông báo
+        const githubSuccess = [];
+        const githubFailed = [];
 
-        const update = {
+        // ============ LOGO ============
+        if (req.files?.logo?.[0]) {
+            const file = req.files.logo[0];
+            const githubUrl = await uploadImage(file.path, file.filename);
 
-            name,
-
-            phone,
-
-            email,
-
-            address
-
-        };
-
-
-        // =====================================================
-        // LOGO
-        // =====================================================
-
-        if (
-            req.files &&
-            req.files.logo &&
-            req.files.logo[0]
-        ) {
-
-            update.logo =
-                '/uploads/' +
-                req.files.logo[0].filename;
-
+            if (githubUrl) {
+                update.logo = githubUrl;
+                try { fs.unlinkSync(file.path); } catch (e) {}
+                console.log('✅ Logo → GitHub:', githubUrl);
+                githubSuccess.push('Logo');
+            } else {
+                update.logo = '/uploads/' + file.filename;
+                console.log('⚠️ Logo → local fallback:', update.logo);
+                githubFailed.push({
+                    name: 'Logo',
+                    localPath: '/uploads/' + file.filename
+                });
+            }
         }
 
+        // ============ FAVICON ============
+        if (req.files?.favicon?.[0]) {
+            const file = req.files.favicon[0];
+            const githubUrl = await uploadImage(file.path, file.filename);
 
-        // =====================================================
-        // FAVICON
-        // =====================================================
-
-        if (
-            req.files &&
-            req.files.favicon &&
-            req.files.favicon[0]
-        ) {
-
-            update.favicon =
-                '/uploads/' +
-                req.files.favicon[0].filename;
-
+            if (githubUrl) {
+                update.favicon = githubUrl;
+                try { fs.unlinkSync(file.path); } catch (e) {}
+                console.log('✅ Favicon → GitHub:', githubUrl);
+                githubSuccess.push('Favicon');
+            } else {
+                update.favicon = '/uploads/' + file.filename;
+                console.log('⚠️ Favicon → local fallback:', update.favicon);
+                githubFailed.push({
+                    name: 'Favicon',
+                    localPath: '/uploads/' + file.filename
+                });
+            }
         }
 
-
+        // ============ LƯU DB ============
         await Website.findOneAndUpdate(
             {},
             update,
-            {
-                new: true,
-                upsert: true,
-                setDefaultsOnInsert: true
-            }
+            { new: true, upsert: true, setDefaultsOnInsert: true }
         );
 
+        // =====================================================
+        // FLASH MESSAGE — THÔNG BÁO CHO USER
+        // =====================================================
 
-        res.redirect(
-            '/admin/settings/websiteInfo'
-        );
+        // Trường hợp 1: Có file upload lên GitHub thành công (hết)
+        if (githubSuccess.length > 0 && githubFailed.length === 0) {
+            req.flash2(
+                'success',
+                `✅ Cập nhật thành công! ${githubSuccess.join(' & ')} đã upload lên GitHub.`
+            );
+        }
 
+        // Trường hợp 2: Có file upload GitHub thất bại → lưu local
+        else if (githubFailed.length > 0 && githubSuccess.length === 0) {
+            const names = githubFailed.map(f => f.name).join(' & ');
+            const paths = githubFailed.map(f => f.localPath).join(', ');
+            req.flash2(
+                'error',
+                `⚠️ ${names} upload lên GitHub thất bại — đã lưu tạm vào local (${paths}). ` +
+                `Ảnh này sẽ MẤT khi chuyển server. Vui lòng kiểm tra token GitHub!`
+            );
+        }
+
+        // Trường hợp 3: Có cả thành công lẫn thất bại
+        else if (githubFailed.length > 0 && githubSuccess.length > 0) {
+            const failNames = githubFailed.map(f => f.name).join(' & ');
+            req.flash2(
+                'error',
+                `⚠️ ${githubSuccess.join(' & ')} đã lên GitHub. ` +
+                `Nhưng ${failNames} upload thất bại — lưu tạm vào local, sẽ MẤT khi chuyển server!`
+            );
+        }
+
+        // Trường hợp 4: Không có file upload (chỉ sửa text)
+        else {
+            req.flash2('success', '✅ Cập nhật thông tin website thành công!');
+        }
+
+        res.redirect('/admin/settings/websiteInfo');
 
     } catch (error) {
-
-        console.error(
-            'LỖI UPDATE WEBSITE:',
-            error
-        );
-
-
-        const website =
-            await Website.findOne();
-
-
-        res.status(500).render(
-            'admin/pages/settings/settings-website',
-            {
-                website,
-                activeMenu: 'settings',
-                error:
-                    'Có lỗi xảy ra, vui lòng thử lại.'
-            }
-        );
-
+        console.error('❌ LỖI UPDATE WEBSITE:', error);
+        req.flash2('error', '❌ Có lỗi xảy ra, vui lòng thử lại.');
+        res.redirect('/admin/settings/websiteInfo');
     }
-
 };
-
-
-// =============================================================
-// NHÓM QUYỀN
-// =============================================================
 
 
 // =============================================================
@@ -810,12 +813,10 @@ exports.roles = async (req, res) => {
                     createdAt: -1
                 });
 
-
         console.log(
             'ROLES FROM DATABASE:',
             roles
         );
-
 
         res.render(
             'admin/pages/settings/role-list',
@@ -825,14 +826,12 @@ exports.roles = async (req, res) => {
             }
         );
 
-
     } catch (error) {
 
         console.error(
             'LỖI LOAD ROLES:',
             error
         );
-
 
         res.status(500).render(
             'admin/pages/settings/role-list',
@@ -859,13 +858,9 @@ exports.roleCreate = (req, res) => {
         'admin/pages/settings/role-edit',
         {
             role: {
-
                 name: '',
-
                 description: '',
-
                 permissions: []
-
             },
 
             permissions:
@@ -876,7 +871,6 @@ exports.roleCreate = (req, res) => {
 
             activeMenu:
                 'settings'
-
         }
     );
 
@@ -894,7 +888,6 @@ exports.roleCreatePost = async (req, res) => {
         let permissions =
             req.body.permissions || [];
 
-
         // =====================================================
         // STRING -> ARRAY
         // =====================================================
@@ -902,13 +895,8 @@ exports.roleCreatePost = async (req, res) => {
         if (
             !Array.isArray(permissions)
         ) {
-
-            permissions = [
-                permissions
-            ];
-
+            permissions = [permissions];
         }
-
 
         const role =
             await Role.create({
@@ -926,17 +914,14 @@ exports.roleCreatePost = async (req, res) => {
 
             });
 
-
         console.log(
             'ROLE CREATED:',
             role
         );
 
-
         res.redirect(
             '/admin/settings/roles'
         );
-
 
     } catch (error) {
 
@@ -945,28 +930,19 @@ exports.roleCreatePost = async (req, res) => {
             error
         );
 
-
         let permissions =
             req.body.permissions || [];
-
 
         if (
             !Array.isArray(permissions)
         ) {
-
-            permissions = [
-                permissions
-            ];
-
+            permissions = [permissions];
         }
-
 
         res.status(500).render(
             'admin/pages/settings/role-edit',
             {
-
                 role: {
-
                     name:
                         req.body.name || '',
 
@@ -974,7 +950,6 @@ exports.roleCreatePost = async (req, res) => {
                         req.body.description || '',
 
                     permissions
-
                 },
 
                 permissions:
@@ -988,7 +963,6 @@ exports.roleCreatePost = async (req, res) => {
 
                 error:
                     'Không thể tạo nhóm quyền.'
-
             }
         );
 
@@ -1008,16 +982,13 @@ exports.roleEdit = async (req, res) => {
         const id =
             req.params.id;
 
-
         console.log(
             'ID NHÓM QUYỀN:',
             id
         );
 
-
         const role =
             await Role.findById(id);
-
 
         if (!role) {
 
@@ -1027,11 +998,9 @@ exports.roleEdit = async (req, res) => {
 
         }
 
-
         res.render(
             'admin/pages/settings/role-edit',
             {
-
                 role,
 
                 permissions:
@@ -1042,10 +1011,8 @@ exports.roleEdit = async (req, res) => {
 
                 activeMenu:
                     'settings'
-
             }
         );
-
 
     } catch (error) {
 
@@ -1053,7 +1020,6 @@ exports.roleEdit = async (req, res) => {
             'LỖI ROLE EDIT:',
             error
         );
-
 
         res.status(500).send(
             'Lỗi khi tải nhóm quyền.'
@@ -1075,7 +1041,6 @@ exports.roleEditPost = async (req, res) => {
         let permissions =
             req.body.permissions || [];
 
-
         // =====================================================
         // STRING -> ARRAY
         // =====================================================
@@ -1083,13 +1048,8 @@ exports.roleEditPost = async (req, res) => {
         if (
             !Array.isArray(permissions)
         ) {
-
-            permissions = [
-                permissions
-            ];
-
+            permissions = [permissions];
         }
-
 
         const role =
             await Role.findByIdAndUpdate(
@@ -1097,7 +1057,6 @@ exports.roleEditPost = async (req, res) => {
                 req.params.id,
 
                 {
-
                     name:
                         req.body.name,
 
@@ -1105,19 +1064,14 @@ exports.roleEditPost = async (req, res) => {
                         req.body.description || '',
 
                     permissions
-
                 },
 
                 {
-
                     new: true,
-
                     runValidators: true
-
                 }
 
             );
-
 
         if (!role) {
 
@@ -1127,17 +1081,14 @@ exports.roleEditPost = async (req, res) => {
 
         }
 
-
         console.log(
             'ROLE UPDATED:',
             role
         );
 
-
         res.redirect(
             '/admin/settings/roles'
         );
-
 
     } catch (error) {
 
@@ -1145,7 +1096,6 @@ exports.roleEditPost = async (req, res) => {
             'LỖI UPDATE ROLE:',
             error
         );
-
 
         res.status(500).send(
             'Lỗi khi cập nhật nhóm quyền.'

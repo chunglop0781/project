@@ -1,13 +1,12 @@
+// routes/admin/index.route.js
 const router = require('express').Router();
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
 
-// Import middleware
 const requireLogin = require('../../middlewares/requireLogin');
 const requireAdmin = require('../../middlewares/requireAdmin');
 
-// Import routes
 const loginRoutes = require('./login.route');
 const dashboardRoutes = require('./dashboard.route');
 const toursRoutes = require('./tours.route');
@@ -52,26 +51,19 @@ var upload = multer({
     }
 });
 
-// API upload ảnh cho TinyMCE (không cần middleware vì có thể dùng public)
 router.post('/admin/api/upload-image', upload.single('file'), function(req, res) {
     try {
         if (!req.file) {
-            return res.status(400).json({
-                error: 'Không có file nào được upload'
-            });
+            return res.status(400).json({ error: 'Không có file nào được upload' });
         }
-
         var fileUrl = '/uploads/tinymce/' + req.file.filename;
-        res.json({
-            location: fileUrl
-        });
+        res.json({ location: fileUrl });
     } catch (error) {
         console.error('Upload error:', error);
-        res.status(500).json({
-            error: 'Upload thất bại: ' + error.message
-        });
+        res.status(500).json({ error: 'Upload thất bại: ' + error.message });
     }
 });
+
 
 // =============================================================
 // MIDDLEWARE CACHE
@@ -84,6 +76,7 @@ router.use(function(req, res, next) {
     next();
 });
 
+
 // =============================================================
 // ROUTES
 // =============================================================
@@ -92,16 +85,18 @@ router.use(function(req, res, next) {
 router.use('/', loginRoutes);
 router.use('/', dashboardRoutes);
 
-// ✅ Route upload cần đăng nhập admin (dùng requireLogin)
+// Route upload cần đăng nhập
 router.use('/', requireLogin, uploadRoute);
 
-// Các route cần admin (role = admin)
+// Các route cần admin
 router.use('/tours', requireAdmin, toursRoutes);
 router.use('/categories', requireAdmin, categoriesRoutes);
 router.use('/orders', requireAdmin, ordersRoutes);
 router.use('/customers', requireAdmin, customersRoutes);
 router.use('/news', requireAdmin, newsRoutes);
 router.use('/profile', requireAdmin, profileRoutes);
-router.use('/', settingsRoutes);
+
+// ✅ SỬA DÒNG NÀY: mount settings với prefix rõ ràng
+router.use('/settings', requireAdmin, settingsRoutes);
 
 module.exports = router;
